@@ -15,35 +15,18 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OVERWORLD_HPP
-#define OVERWORLD_HPP
+#include "engine.hpp"
+#include "hero.hpp"
 
-#include "scene.hpp"
-
-class Texture;
-class Level;
-
-class Overworld : public Scene
+Hero::Hero()
 {
-public:
-	Overworld();
-	~Overworld();
 
-	virtual void free();
-	virtual void init();
+}
+Hero::~Hero()
+{
+	free();
+}
+void Hero::free()
+{
 
-	virtual bool update();
-	virtual void render() const;
-
-private:
-	uint8_t anim_timer;
-
-	Level *current_level;
-	Texture *node_highlight;
-	std::vector<Texture*> pointers;
-
-	uint8_t frames, display_fps;
-	uint16_t frame_counter;
-};
-
-#endif // OVERWORLD_HPP
+}
