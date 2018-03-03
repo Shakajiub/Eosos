@@ -22,8 +22,6 @@
 #include "scene_manager.hpp"
 #include "sound_manager.hpp"
 #include "bitmap_font.hpp"
-#include "experience_bar.hpp"
-#include "health_indicator.hpp"
 #include "message_log.hpp"
 #include "ui.hpp"
 
@@ -176,12 +174,6 @@ void Options::apply()
 		ui.get_message_log()->set_position(0, camera.get_cam_h());
 		ui.get_message_log()->set_size((uint8_t)options_i["ui-log_width"], (uint8_t)options_i["ui-log_height"]);
 		ui.get_message_log()->clear_log();
-		ui.get_experience_bar()->set_position(0, camera.get_cam_h() - (options_i["ui-log_height"] * 32));
-
-		if (ui.get_healthbar(HB_PLAYER) != nullptr)
-			ui.get_healthbar(HB_PLAYER)->set_position(options_i["ui-log_width"] * 32 + 16, camera.get_cam_h() - 48);
-		if (ui.get_healthbar(HB_OTHER) != nullptr)
-			ui.get_healthbar(HB_OTHER)->set_position(options_i["ui-log_width"] * 32 + 16, camera.get_cam_h() - 96);
 	}
 	if (engine.get_sound_manager() != nullptr)
 		engine.get_sound_manager()->set_music_volume(options_i["sound-music_volume"]);

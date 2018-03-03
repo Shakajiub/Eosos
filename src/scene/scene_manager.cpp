@@ -19,7 +19,7 @@
 #include "scene_manager.hpp"
 #include "scene.hpp"
 
-#include "dungeon.hpp"
+#include "overworld.hpp"
 #include "sound_manager.hpp"
 #include "bitmap_font.hpp"
 #include "ui.hpp"
@@ -39,7 +39,7 @@ void SceneManager::free()
 }
 void SceneManager::init()
 {
-	load_scene<Dungeon>("test");
+	load_scene<Overworld>("test");
 	set_scene("test");
 }
 bool SceneManager::update()
@@ -81,8 +81,7 @@ bool SceneManager::update()
 				return false;
 			else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
 				return false;
-
-			return true; // This should not get called even once
+			return true;
 		}
 	}
 	return current_scene->update();
@@ -134,13 +133,14 @@ bool SceneManager::free_scene(const std::string &scene_name)
 	}
 	return false;
 }
-//template <class T>
-Dungeon* SceneManager::get_scene(const std::string &scene_name)
+Overworld* SceneManager::get_scene(const std::string &scene_name)
 {
+	// TODO - Return any scene (not just overworld)
+
 	auto it = scene_map.find(scene_name);
 	if (it != scene_map.end())
 	{
-		Dungeon *scene = dynamic_cast<Dungeon*>(it->second.get());
+		Overworld *scene = dynamic_cast<Overworld*>(it->second.get());
 		if (scene != NULL)
 			return scene;
 	}

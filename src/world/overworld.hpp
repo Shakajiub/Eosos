@@ -15,41 +15,29 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef UI_HPP
-#define UI_HPP
+#ifndef OVERWORLD_HPP
+#define OVERWORLD_HPP
+
+#include "scene.hpp"
 
 class Texture;
-class BitmapFont;
-class MessageLog;
 
-class UI
+class Overworld : public Scene
 {
 public:
-	UI();
-	~UI();
+	Overworld();
+	~Overworld();
 
-	void free();
+	virtual void free();
+	virtual void init();
 
-	bool init_bitmap_font();
-	void init_message_log();
-
-	void update();
-	void render() const;
-
-	void draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight = false) const;
-
-	bool get_overlap(int16_t xpos, int16_t ypos) const;
-	bool get_click(int16_t xpos, int16_t ypos) const;
-
-	Texture* get_background() const { return ui_background; }
-	BitmapFont* get_bitmap_font() const { return main_font; }
-	MessageLog* get_message_log() const { return message_log; }
+	virtual bool update();
+	virtual void render() const;
 
 private:
-	Texture *ui_background;
-	BitmapFont *main_font;
-	MessageLog *message_log;
+	std::vector<Texture*> pointers;
+	uint8_t frames, display_fps;
+	uint16_t frame_counter;
 };
-extern UI ui;
 
-#endif // UI_HPP
+#endif // OVERWORLD_HPP

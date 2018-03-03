@@ -88,14 +88,9 @@ public:
 	uint32_t get_current_time() const { return current_time; }
 	uint8_t get_dt() const { return delta_time; }
 
-	uint16_t get_mouse_x() const { return mouse_x; }
-	uint16_t get_mouse_y() const { return mouse_y; }
-	void set_mouse_pos(uint16_t x, uint16_t y) { mouse_x = x; mouse_y = y; }
-
 private:
 	SDL_Window *main_window;
 	SDL_Renderer *main_renderer;
-	SDL_Joystick *main_controller;
 
 	LuaManager *lua_manager;
 	SceneManager *scene_manager;
@@ -108,8 +103,6 @@ private:
 
 	uint8_t delta_time;
 	uint32_t current_time;
-
-	uint16_t mouse_x, mouse_y;
 };
 extern Engine engine;
 

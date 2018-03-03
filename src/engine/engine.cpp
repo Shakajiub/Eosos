@@ -22,16 +22,13 @@
 #include "texture_manager.hpp"
 #include "particle_manager.hpp"
 
-#include "player.hpp"
 #include "camera.hpp"
 #include "options.hpp"
-#include "dungeon.hpp"
 #include "ui.hpp"
 
 Engine::Engine() :
-	main_window(nullptr), main_renderer(nullptr), main_controller(nullptr), delta_time(0), current_time(0),
-	lua_manager(nullptr), scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr),
-	particle_manager(nullptr), mouse_x(1), mouse_y(1)
+	main_window(nullptr), main_renderer(nullptr), delta_time(0), current_time(0), lua_manager(nullptr),
+	scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr), particle_manager(nullptr)
 {
 
 }
@@ -42,7 +39,7 @@ Engine::~Engine()
 bool Engine::init()
 {
 	// Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 	{
 		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
 		return false;
@@ -88,18 +85,6 @@ bool Engine::init()
 	SDL_SetRenderDrawColor(main_renderer, 20, 12, 28, 255);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	// Check for a controller
-	if (SDL_NumJoysticks() > 0)
-	{
-		main_controller = SDL_JoystickOpen(0);
-		if (main_controller == NULL)
-		{
-			std::cout << "unable to open game controller! SDL Error: " << SDL_GetError() << std::endl;
-			main_controller = nullptr;
-		}
-	}
-	else std::cout << "no joysticks detected" << std::endl;
-
 	// Initialize SDL_image
 	const uint32_t img_flags = IMG_INIT_PNG;
 	if (!(IMG_Init(img_flags) & img_flags))
@@ -125,13 +110,6 @@ bool Engine::init()
 	texture_manager = new TextureManager;
 	particle_manager = new ParticleManager;
 
-	// Initialize the player (TODO - Move this all into a customizable character creation scene)
-	if (!player->init_class_script("core/script/data/class/test_subject.lua"))
-		return false;
-	const std::string appearance = player->get_class_texture("kobold");
-	if (!player->init("player", 0, 0, appearance))
-		return false;
-
 	camera.init();
 
 	// Initialize bitmap_font
@@ -145,9 +123,6 @@ bool Engine::init()
 }
 void Engine::close()
 {
-	if (player != nullptr)
-		delete player;
-
 	ui.free();
 
 	if (sound_manager != nullptr)
@@ -160,9 +135,6 @@ void Engine::close()
 		delete texture_manager;
 	if (lua_manager != nullptr)
 		delete lua_manager;
-
-	if (main_controller != nullptr)
-		SDL_JoystickClose(main_controller);
 
 	SDL_DestroyRenderer(main_renderer);
 	SDL_DestroyWindow(main_window);
