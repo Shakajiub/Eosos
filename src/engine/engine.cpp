@@ -16,7 +16,6 @@
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
 #include "engine.hpp"
-#include "lua_manager.hpp"
 #include "scene_manager.hpp"
 #include "sound_manager.hpp"
 #include "texture_manager.hpp"
@@ -27,7 +26,7 @@
 #include "ui.hpp"
 
 Engine::Engine() :
-	main_window(nullptr), main_renderer(nullptr), delta_time(0), current_time(0), lua_manager(nullptr),
+	main_window(nullptr), main_renderer(nullptr), delta_time(0), current_time(0),
 	scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr), particle_manager(nullptr)
 {
 
@@ -104,7 +103,6 @@ bool Engine::init()
 	generator.seed(std::mt19937::default_seed);
 
 	// Create the main engine managers
-	lua_manager = new LuaManager;
 	scene_manager = new SceneManager;
 	sound_manager = new SoundManager;
 	texture_manager = new TextureManager;
@@ -133,8 +131,6 @@ void Engine::close()
 		delete scene_manager;
 	if (texture_manager != nullptr)
 		delete texture_manager;
-	if (lua_manager != nullptr)
-		delete lua_manager;
 
 	SDL_DestroyRenderer(main_renderer);
 	SDL_DestroyWindow(main_window);

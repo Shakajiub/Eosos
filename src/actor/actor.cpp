@@ -15,28 +15,17 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LUA_MANAGER_HPP
-#define LUA_MANAGER_HPP
+#include "actor.hpp"
 
-#include <unordered_map>
-
-class LuaManager
+Actor::Actor()
 {
-public:
-	LuaManager();
-	~LuaManager();
 
-	void free();
+}
+Actor::~Actor()
+{
+	free();
+}
+void Actor::free()
+{
 
-	lua_State* load_script(const std::string &script_name);
-	void init_script(const std::string &script_name);
-	void free_script(const std::string &script_name);
-
-	uint16_t get_reference_count(const std::string &script_name) const;
-
-private:
-	std::unordered_map<std::string, lua_State*> script_map;
-	std::unordered_map<std::string, uint16_t> reference_count;
-};
-
-#endif // LUA_MANAGER_HPP
+}

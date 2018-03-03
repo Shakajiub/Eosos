@@ -109,7 +109,7 @@ void Overworld::render() const
 	SDL_GetMouseState(&mouse_x, &mouse_y);
 
 	ui.render();
-	ui.get_bitmap_font()->render_text(16, 176, "FPS: " + std::to_string(display_fps));
+	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
 
 	if (pointers.size() > 0)
 		pointers[0]->render(mouse_x, mouse_y);
