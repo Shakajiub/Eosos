@@ -17,9 +17,11 @@
 
 #include "engine.hpp"
 #include "overworld.hpp"
-#include "texture.hpp"
+#include "actor.hpp"
 #include "level.hpp"
+#include "texture.hpp"
 
+#include "hero.hpp"
 #include "camera.hpp"
 #include "options.hpp"
 #include "scene_manager.hpp"
@@ -39,6 +41,11 @@ Overworld::~Overworld()
 }
 void Overworld::free()
 {
+	if (current_actor != nullptr)
+	{
+		delete current_actor;
+		current_actor = nullptr;
+	}
 	if (current_level != nullptr)
 	{
 		delete current_level;
@@ -59,6 +66,12 @@ void Overworld::init()
 	current_level = new Level;
 	current_level->create();
 
+	current_actor = new Hero;
+	if (!current_actor->init(ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/peon.png"))
+	{
+		delete current_actor;
+		current_actor = nullptr;
+	}
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
 		node_highlight->set_color(COLOR_BERRY);
@@ -115,10 +128,22 @@ bool Overworld::update()
 					if (SDL_GetModState() & KMOD_CTRL)
 						options.load();
 					break;
-				default: break;
+				default:
+					if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
+						current_actor->input_keyboard_down(event.key.keysym.sym);
+					break;
 			}
 		}
 	}
+	while (current_actor->take_turn())
+	{
+		current_actor->end_turn();
+		// TODO - Loop to the next actor
+		current_actor->start_turn();
+	}
+	if (current_actor != nullptr)
+		current_actor->update();
+
 	// Idle / map animations
 	anim_timer += engine.get_dt();
 	while (anim_timer > 100)
@@ -133,6 +158,8 @@ bool Overworld::update()
 			if (current_level != nullptr)
 				current_level->animate();
 		}
+		if (current_actor != nullptr)
+			current_actor->action_idle();
 	}
 	ui.update();
 	camera.update();
@@ -145,6 +172,9 @@ void Overworld::render() const
 
 	if (current_level != nullptr)
 		current_level->render();
+
+	if (current_actor != nullptr)
+		current_actor->render();
 
 	int mouse_x, mouse_y;
 	SDL_GetMouseState(&mouse_x, &mouse_y);
@@ -164,7 +194,9 @@ void Overworld::render() const
 	}
 	ui.render();
 	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
-
+	ui.get_bitmap_font()->render_text(16, 16 + ui.get_bitmap_font()->get_height(),
+		"Moves: " + std::to_string(current_actor->get_moves().first) + "/" + std::to_string(current_actor->get_moves().second)
+	);
 	if (pointers.size() > 0)
 		pointers[0]->render(mouse_x, mouse_y);
 

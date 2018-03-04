@@ -20,8 +20,9 @@
 
 #include "scene.hpp"
 
-class Texture;
+class Actor;
 class Level;
+class Texture;
 
 class Overworld : public Scene
 {
@@ -38,7 +39,9 @@ public:
 private:
 	uint8_t anim_timer;
 
+	Actor *current_actor;
 	Level *current_level;
+
 	Texture *node_highlight;
 	std::vector<Texture*> pointers;
 

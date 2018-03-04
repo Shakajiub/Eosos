@@ -27,6 +27,12 @@ public:
 	~Hero();
 
 	void free();
+
+	virtual void start_turn();
+	virtual bool take_turn();
+	virtual void end_turn();
+
+	virtual void input_keyboard_down(SDL_Keycode key);
 };
 
 #endif // HERO_HPP
