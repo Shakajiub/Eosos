@@ -17,11 +17,10 @@
 
 #include "engine.hpp"
 #include "overworld.hpp"
-#include "actor.hpp"
+#include "actor_manager.hpp"
 #include "level.hpp"
 #include "texture.hpp"
 
-#include "hero.hpp"
 #include "camera.hpp"
 #include "options.hpp"
 #include "scene_manager.hpp"
@@ -31,7 +30,8 @@
 #include "ui.hpp"
 
 Overworld::Overworld() :
-	anim_timer(0), current_level(nullptr), node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
+	anim_timer(0), actor_manager(nullptr), current_level(nullptr),
+	node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
 {
 
 }
@@ -41,10 +41,10 @@ Overworld::~Overworld()
 }
 void Overworld::free()
 {
-	if (current_actor != nullptr)
+	if (actor_manager != nullptr)
 	{
-		delete current_actor;
-		current_actor = nullptr;
+		delete actor_manager;
+		actor_manager = nullptr;
 	}
 	if (current_level != nullptr)
 	{
@@ -66,17 +66,14 @@ void Overworld::init()
 	current_level = new Level;
 	current_level->create();
 
-	current_actor = new Hero;
-	if (!current_actor->init(ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/peon.png"))
-	{
-		delete current_actor;
-		current_actor = nullptr;
-	}
+	actor_manager = new ActorManager;
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/peon.png");
+
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
 		node_highlight->set_color(COLOR_BERRY);
 
-	const std::string pntrs[2] = { "pointer", "pointer_sword" };
+	const std::string pntrs[1] = { "pointer" };
 	for (auto pntr : pntrs)
 	{
 		Texture *temp_pntr = engine.get_texture_manager()->load_texture("core/texture/ui/" + pntr + ".png");
@@ -129,20 +126,14 @@ bool Overworld::update()
 						options.load();
 					break;
 				default:
-					if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
-						current_actor->input_keyboard_down(event.key.keysym.sym);
+					if (actor_manager != nullptr)
+						actor_manager->input_keyboard_down(event.key.keysym.sym);
 					break;
 			}
 		}
 	}
-	while (current_actor->take_turn())
-	{
-		current_actor->end_turn();
-		// TODO - Loop to the next actor
-		current_actor->start_turn();
-	}
-	if (current_actor != nullptr)
-		current_actor->update();
+	if (actor_manager != nullptr)
+		actor_manager->update(current_level);
 
 	// Idle / map animations
 	anim_timer += engine.get_dt();
@@ -158,8 +149,8 @@ bool Overworld::update()
 			if (current_level != nullptr)
 				current_level->animate();
 		}
-		if (current_actor != nullptr)
-			current_actor->action_idle();
+		if (actor_manager != nullptr)
+			actor_manager->animate();
 	}
 	ui.update();
 	camera.update();
@@ -171,11 +162,11 @@ void Overworld::render() const
 	SDL_RenderClear(engine.get_renderer());
 
 	if (current_level != nullptr)
+	{
 		current_level->render();
-
-	if (current_actor != nullptr)
-		current_actor->render();
-
+		if (actor_manager != nullptr)
+			actor_manager->render(current_level);
+	}
 	int mouse_x, mouse_y;
 	SDL_GetMouseState(&mouse_x, &mouse_y);
 
@@ -194,9 +185,7 @@ void Overworld::render() const
 	}
 	ui.render();
 	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
-	ui.get_bitmap_font()->render_text(16, 16 + ui.get_bitmap_font()->get_height(),
-		"Moves: " + std::to_string(current_actor->get_moves().first) + "/" + std::to_string(current_actor->get_moves().second)
-	);
+
 	if (pointers.size() > 0)
 		pointers[0]->render(mouse_x, mouse_y);
 

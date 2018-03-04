@@ -57,6 +57,11 @@ public:
 	uint8_t get_map_width() const { return map_width; }
 	uint8_t get_map_height() const { return map_height; }
 
+	Actor* get_actor(uint8_t xpos, uint8_t ypos) const;
+	bool get_wall(int8_t xpos, int8_t ypos, bool check_occupying = false) const;
+
+	void set_actor(uint8_t xpos, uint8_t ypos, Actor *actor);
+
 private:
 	void init_map_texture();
 	void refresh_map_texture(bool animated_only = false);

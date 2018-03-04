@@ -20,6 +20,7 @@
 
 #include <queue>
 
+class Level;
 class Texture;
 
 enum ActorType
@@ -36,7 +37,7 @@ enum ActionType
 };
 typedef struct
 {
-	ActionType action_type;
+	ActionType type;
 	uint8_t xpos, ypos;
 }
 Action;
@@ -50,7 +51,7 @@ public:
 	void free();
 	bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 
-	virtual void update();
+	virtual void update(Level *level);
 	virtual void render() const;
 
 	virtual void start_turn();
@@ -61,7 +62,7 @@ public:
 
 	void add_action(ActionType at, uint8_t xpos, uint8_t ypos);
 	void action_idle();
-	bool action_move();
+	bool action_move(Level *level);
 	bool action_attack();
 
 	void load_bubble(const std::string &bubble_name, uint8_t timer = 0);

@@ -32,7 +32,6 @@ void Hero::free()
 }
 void Hero::start_turn()
 {
-	std::cout << "hero start turn" << std::endl;
 	turn_done = false;
 	moves = std::make_pair(1, 1);
 }
@@ -48,12 +47,10 @@ bool Hero::take_turn()
 }
 void Hero::end_turn()
 {
-	std::cout << "hero end turn" << std::endl;
 	Actor::end_turn();
 }
 void Hero::input_keyboard_down(SDL_Keycode key)
 {
-	std::cout << "hero input" << std::endl;
 	int8_t offset_x = 0;
 	int8_t offset_y = 0;
 	switch (key)

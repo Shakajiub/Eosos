@@ -15,39 +15,29 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OVERWORLD_HPP
-#define OVERWORLD_HPP
+#ifndef ACTOR_MANAGER
+#define ACTOR_MANAGER
 
-#include "scene.hpp"
+#include "actor.hpp"
 
-class ActorManager;
 class Level;
-class Texture;
 
-class Overworld : public Scene
+class ActorManager
 {
 public:
-	Overworld();
-	~Overworld();
+	ActorManager();
+	~ActorManager();
 
-	virtual void free();
-	virtual void init();
+	void free();
+	void update(Level *level);
+	void render(Level *level);
+	void animate();
 
-	virtual bool update();
-	virtual void render() const;
+	bool spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
+	void input_keyboard_down(SDL_Keycode key);
 
 private:
-	uint8_t anim_timer;
-
-	ActorManager *actor_manager;
-	Level *current_level;
-
-	Texture *node_highlight;
-	std::vector<Texture*> pointers;
-
-	uint8_t frames;
-	uint8_t display_fps;
-	uint16_t frame_counter;
+	Actor *current_actor;
 };
 
-#endif // OVERWORLD_HPP
+#endif // ACTOR_MANAGER

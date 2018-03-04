@@ -111,6 +111,8 @@ void Level::create()
 	}
 	neighbor_rules.clear();
 	init_map_texture();
+
+	map_created = true;
 }
 void Level::render() const
 {
@@ -211,6 +213,29 @@ void Level::animate()
 	}
 	if (refresh_texture)
 		refresh_map_texture(true);
+}
+Actor* Level::get_actor(uint8_t xpos, uint8_t ypos) const
+{
+	if (!map_created || xpos < 0 || ypos < 0 || xpos >= map_width || ypos >= map_height)
+		return nullptr;
+	return map_data[ypos][xpos].occupying_actor;
+}
+bool Level::get_wall(int8_t xpos, int8_t ypos, bool check_occupying) const
+{
+	if (!map_created || xpos < 0 || ypos < 0 || xpos >= map_width || ypos >= map_height)
+		return true;
+	if (check_occupying)
+	{
+		if (map_data[ypos][xpos].occupying_actor != nullptr)
+			return true;
+	}
+	return map_data[ypos][xpos].wall_texture != nullptr;
+}
+void Level::set_actor(uint8_t xpos, uint8_t ypos, Actor *actor)
+{
+	if (!map_created || xpos < 0 || ypos < 0 || xpos >= map_width || ypos >= map_height)
+		return;
+	map_data[ypos][xpos].occupying_actor = actor;
 }
 void Level::init_map_texture()
 {

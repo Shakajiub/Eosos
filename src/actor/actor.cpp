@@ -17,6 +17,7 @@
 
 #include "engine.hpp"
 #include "actor.hpp"
+#include "level.hpp"
 #include "texture.hpp"
 
 #include "camera.hpp"
@@ -65,28 +66,28 @@ bool Actor::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &te
 
 	return true;
 }
-void Actor::update()
+void Actor::update(Level *level)
 {
 	if (camera.get_in_camera_grid(grid_x, grid_y))
 		in_camera = true;
 	else in_camera = false;
 
-	if (current_action.action_type == ACTION_NULL && !action_queue.empty())
+	if (current_action.type == ACTION_NULL && !action_queue.empty())
 	{
 		current_action = action_queue.front();
 		action_queue.pop();
 	}
-	if (current_action.action_type != ACTION_NULL)
+	if (current_action.type != ACTION_NULL)
 	{
 		bool clear_action = false;
-		switch (current_action.action_type)
+		switch (current_action.type)
 		{
-			case ACTION_MOVE: clear_action = action_move(); break;
+			case ACTION_MOVE: clear_action = action_move(level); break;
 			case ACTION_ATTACK: clear_action = action_attack(); break;
 			default: clear_action = true; break;
 		}
 		if (clear_action)
-			current_action.action_type = ACTION_NULL;
+			current_action.type = ACTION_NULL;
 	}
 }
 void Actor::render() const
@@ -136,11 +137,14 @@ void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos)
 }
 void Actor::action_idle()
 {
-	if (frame_rect.y == 0)
-		frame_rect.y = 16;
-	else frame_rect.y = 0;
+	if (current_action.type == ACTION_NULL)
+	{
+		if (frame_rect.y == 0)
+			frame_rect.y = 16;
+		else frame_rect.y = 0;
+	}
 }
-bool Actor::action_move()
+bool Actor::action_move(Level *level)
 {
 	anim_timer += engine.get_dt();
 	while (anim_timer > 18 || !in_camera)
@@ -153,10 +157,12 @@ bool Actor::action_move()
 			if (grid_x != current_action.xpos)
 				facing_right = (grid_x < current_action.xpos);
 
+			level->set_actor(grid_x, grid_y, nullptr);
 			prev_x = grid_x;
 			prev_y = grid_y;
 			grid_x = current_action.xpos;
 			grid_y = current_action.ypos;
+			level->set_actor(grid_x, grid_y, this);
 
 			if (!in_camera)
 			{
