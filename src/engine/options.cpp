@@ -136,8 +136,8 @@ void Options::apply()
 	else if (options_i["gameplay-turn_timer"] > 10000)
 		options_i["gameplay-turn_timer"] = 10000;
 
-	if (options_i["display-width"] < 1024) options_i["display-width"] = 1024;
-	if (options_i["display-height"] < 640) options_i["display-height"] = 640;
+	if (options_i["display-width"] < 640) options_i["display-width"] = 640;
+	if (options_i["display-height"] < 360) options_i["display-height"] = 360;
 	if (options_i["display-fps_cap"] < 1) options_i["display-fps_cap"] = 1;
 
 	if (options_i["camera-scroll_speed"] < 1)

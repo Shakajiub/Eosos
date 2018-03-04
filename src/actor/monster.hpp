@@ -26,7 +26,9 @@ public:
 	Monster();
 	~Monster();
 
-	void free();
+	virtual void start_turn();
+	virtual bool take_turn(Level *level);
+	virtual void end_turn();
 };
 
 #endif // MONSTER_HPP

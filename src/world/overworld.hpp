@@ -36,8 +36,11 @@ public:
 	virtual bool update();
 	virtual void render() const;
 
+	void next_turn();
+
 private:
 	uint8_t anim_timer;
+	uint16_t current_turn;
 
 	ActorManager *actor_manager;
 	Level *current_level;

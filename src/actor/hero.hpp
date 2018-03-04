@@ -20,18 +20,14 @@
 
 #include "actor.hpp"
 
-class Level;
-
 class Hero : public Actor
 {
 public:
 	Hero();
 	~Hero();
 
-	void free();
-
 	virtual void start_turn();
-	virtual bool take_turn();
+	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);

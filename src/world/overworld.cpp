@@ -30,7 +30,7 @@
 #include "ui.hpp"
 
 Overworld::Overworld() :
-	anim_timer(0), actor_manager(nullptr), current_level(nullptr),
+	anim_timer(0), current_turn(0), actor_manager(nullptr), current_level(nullptr),
 	node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
 {
 
@@ -63,12 +63,14 @@ void Overworld::free()
 }
 void Overworld::init()
 {
+	ui.init_background();
+
 	current_level = new Level;
 	current_level->create();
 
 	actor_manager = new ActorManager;
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, 2, 5, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/barbarian.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, 2, 5, "core/texture/actor/player/orc/mage.png");
 
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
@@ -134,8 +136,11 @@ bool Overworld::update()
 		}
 	}
 	if (actor_manager != nullptr)
+	{
 		actor_manager->update(current_level);
-
+		if (actor_manager->get_next_turn())
+			next_turn();
+	}
 	// Idle / map animations
 	anim_timer += engine.get_dt();
 	while (anim_timer > 100)
@@ -186,6 +191,7 @@ void Overworld::render() const
 	}
 	ui.render();
 	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
+	ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));
 
 	if (pointers.size() > 0)
 		pointers[0]->render(mouse_x, mouse_y);
@@ -200,4 +206,16 @@ void Overworld::render() const
 		camera.move_camera(8, current_level->get_map_width(), current_level->get_map_height());
 
 	SDL_RenderPresent(engine.get_renderer());
+}
+void Overworld::next_turn()
+{
+	current_turn += 1;
+
+	if (/*current_turn % 2 == 0 &&*/ actor_manager != nullptr && current_level != nullptr)
+	{
+		const uint8_t xpos = current_level->get_map_width() - 1;
+		const uint8_t ypos = engine.get_rng() % current_level->get_map_height();
+
+		actor_manager->spawn_actor(current_level, ACTOR_MONSTER, xpos, ypos, "core/texture/actor/player/dwarf/dwarf_7.png");
+	}
 }

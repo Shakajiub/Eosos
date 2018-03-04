@@ -38,7 +38,10 @@ public:
 	bool spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 
+	bool get_next_turn();
+
 private:
+	bool next_turn;
 	Actor *current_actor;
 	std::vector<Actor*> actors;
 };

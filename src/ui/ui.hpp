@@ -30,6 +30,7 @@ public:
 
 	void free();
 
+	void init_background();
 	bool init_bitmap_font();
 	void init_message_log();
 

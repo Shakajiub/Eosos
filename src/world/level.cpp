@@ -22,6 +22,7 @@
 
 #include "camera.hpp"
 #include "texture_manager.hpp"
+#include "ui.hpp"
 
 #include <fstream> // for std::ifstream
 
@@ -62,12 +63,14 @@ void Level::create()
 {
 	std::unordered_map<char, SubNode> nodes;
 
-	std::string floors[3] = {
+	const std::string floors[3] = {
 		"core/texture/level/floor/dark2_base.png",
 		"core/texture/level/floor/dark2_grass.png",
 		"core/texture/level/floor/dark2_hill.png"
 	};
-	char ids[3] = { 'b', 'g', 'h' };
+	const char ids[3] = { 'b', 'g', 'h' };
+	Texture *forest = engine.get_texture_manager()->load_texture("core/texture/level/tree/oak_dead.png");
+	textures.push_back(forest);
 
 	for (uint8_t i = 0; i < 3; i++)
 	{
@@ -80,8 +83,8 @@ void Level::create()
 		}
 		nodes[ids[i]] = temp;
 	}
-	map_width = 30;
-	map_height = 20;
+	map_width = 15;
+	map_height = 10;
 
 	for (uint8_t y = 0; y < map_height; y++)
 	{
@@ -91,8 +94,17 @@ void Level::create()
 			MapNode temp_node = { nullptr, nullptr, nullptr, 0, 0, NT_NONE, false, false };
 			const uint8_t i = engine.get_rng() % 3;
 			temp_node.floor_texture = nodes[ids[i]].sub_texture;
-			temp_node.wall_type = nodes[ids[i]].sub_type;
-			temp_node.wall_animated = nodes[ids[i]].sub_animated;
+			if (engine.get_rng() % 10 == 0)
+			{
+				temp_node.wall_texture = forest;
+				temp_node.wall_type = NT_TREE;
+				temp_node.wall_animated = false;
+			}
+			else
+			{
+				temp_node.wall_type = nodes[ids[i]].sub_type;
+				temp_node.wall_animated = nodes[ids[i]].sub_animated;
+			}
 			map_line.push_back(temp_node);
 		}
 		map_data.push_back(map_line);

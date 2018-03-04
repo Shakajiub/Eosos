@@ -54,6 +54,12 @@ void UI::free()
 		message_log = nullptr;
 	}
 }
+void UI::init_background()
+{
+	ui_background = engine.get_texture_manager()->load_texture(
+		"core/texture/ui/" + options.get_s("ui-image") + ".png"
+	);
+}
 bool UI::init_bitmap_font()
 {
 	main_font = new BitmapFont;
@@ -64,11 +70,8 @@ bool UI::init_bitmap_font()
 void UI::init_message_log()
 {
 	if (ui_background == nullptr)
-	{
-		ui_background = engine.get_texture_manager()->load_texture(
-			"core/texture/ui/" + options.get_s("ui-image") + ".png"
-		);
-	}
+		init_background();
+
 	message_log = new MessageLog;
 	message_log->set_position(0, camera.get_cam_h() - (options.get_i("ui-log_height") * 32));
 	message_log->set_size((uint8_t)options.get_i("ui-log_width"), (uint8_t)options.get_i("ui-log_height"));

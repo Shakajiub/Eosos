@@ -17,6 +17,7 @@
 
 #include "engine.hpp"
 #include "monster.hpp"
+#include "level.hpp"
 
 Monster::Monster()
 {
@@ -24,9 +25,34 @@ Monster::Monster()
 }
 Monster::~Monster()
 {
-	free();
-}
-void Monster::free()
-{
 
+}
+void Monster::start_turn()
+{
+	turn_done = false;
+	moves = std::make_pair(1, 1);
+}
+bool Monster::take_turn(Level *level)
+{
+	if (action_queue.empty() && moves.first > 0)
+	{
+		const int8_t offset_x = -1;
+		const int8_t offset_y = (engine.get_rng() % 3) - 1;
+
+		if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
+		{
+			moves.first -= 1;
+			add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
+		}
+	}
+	if (turn_done)
+	{
+		if (moves.first > 0)
+			turn_done = false;
+	}
+	return Actor::take_turn(level);
+}
+void Monster::end_turn()
+{
+	Actor::end_turn();
 }

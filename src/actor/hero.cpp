@@ -27,10 +27,6 @@ Hero::Hero()
 }
 Hero::~Hero()
 {
-	free();
-}
-void Hero::free()
-{
 
 }
 void Hero::start_turn()
@@ -38,14 +34,14 @@ void Hero::start_turn()
 	turn_done = false;
 	moves = std::make_pair(2, 2);
 }
-bool Hero::take_turn()
+bool Hero::take_turn(Level *level)
 {
 	if (turn_done)
 	{
 		if (moves.first > 0)
 			turn_done = false;
 	}
-	return Actor::take_turn();
+	return Actor::take_turn(level);
 }
 void Hero::end_turn()
 {
@@ -72,7 +68,13 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 	}
 	if (offset_x != 0 || offset_y != 0)
 	{
-		if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
+		Actor *temp_actor = level->get_actor(grid_x + offset_x, grid_y + offset_y);
+		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
+		{
+			moves.first = 0;
+			add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y);
+		}
+		else if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
 		{
 			moves.first -= 1;
 			add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);

@@ -55,13 +55,13 @@ public:
 	virtual void render() const;
 
 	virtual void start_turn();
-	virtual bool take_turn();
+	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
 	void add_action(ActionType at, uint8_t xpos, uint8_t ypos);
 	void action_idle();
 	bool action_move(Level *level);
-	bool action_attack();
+	bool action_attack(Level *level);
 
 	void load_bubble(const std::string &bubble_name, uint8_t timer = 0);
 	void render_bubble() const;
@@ -72,7 +72,11 @@ public:
 	uint8_t get_grid_y() const { return grid_y; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
 
+	bool get_delete() const { return delete_me; }
+	void set_delete(bool del) { delete_me = del; }
+
 protected:
+	bool delete_me;
 	bool in_camera;
 	bool turn_done;
 	bool facing_right;

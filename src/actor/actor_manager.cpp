@@ -20,9 +20,12 @@
 #include "level.hpp"
 
 #include "hero.hpp"
+#include "monster.hpp"
 #include "camera.hpp"
 
-ActorManager::ActorManager() : current_actor(nullptr)
+#include <algorithm> // for std::find
+
+ActorManager::ActorManager() : next_turn(false), current_actor(nullptr)
 {
 
 }
@@ -44,7 +47,7 @@ void ActorManager::update(Level *level)
 {
 	if (current_actor != nullptr)
 	{
-		while (current_actor->take_turn())
+		while (current_actor->take_turn(level))
 		{
 			current_actor->end_turn();
 
@@ -52,14 +55,33 @@ void ActorManager::update(Level *level)
 			Actor *temp_actor = nullptr;
 			Actor *first_actor = nullptr;
 
+			std::vector<Actor*> to_erase;
 			for (Actor *a : actors)
 			{
+				if (a->get_delete())
+				{
+					to_erase.push_back(a);
+					continue;
+				}
 				if (a->get_ID() > current_ID && (temp_actor == nullptr || a->get_ID() < temp_actor->get_ID()))
 					temp_actor = a;
 				if (first_actor == nullptr || a->get_ID() < first_actor->get_ID())
 					first_actor = a;
 			}
-			current_actor = (temp_actor == nullptr) ? first_actor : temp_actor;
+			if (to_erase.size() > 0) for (Actor *a : to_erase)
+			{
+				std::vector<Actor*>::iterator pos = std::find(actors.begin(), actors.end(), a);
+				if (pos != actors.end())
+					actors.erase(pos);
+				level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
+				delete a;
+			}
+			if (temp_actor == nullptr)
+			{
+				current_actor = first_actor;
+				next_turn = true;
+			}
+			else current_actor = temp_actor;
 			current_actor->start_turn();
 
 			if (current_actor->get_actor_type() == ACTOR_HERO)
@@ -84,11 +106,11 @@ void ActorManager::render(Level *level)
 }
 void ActorManager::animate()
 {
-	//for (Actor *a : actors)
-		//a->action_idle();
-
-	if (current_actor != nullptr)
-		current_actor->action_idle();
+	for (Actor *a : actors)
+	{
+		if (a->get_actor_type() != ACTOR_HERO || a == current_actor)
+			a->action_idle();
+	}
 }
 bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
@@ -98,6 +120,8 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 
 		if (at == ACTOR_HERO)
 			temp = new Hero;
+		else if (at == ACTOR_MONSTER)
+			temp = new Monster;
 
 		if (temp != nullptr)
 		{
@@ -119,4 +143,13 @@ void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
 		dynamic_cast<Hero*>(current_actor)->input_keyboard_down(key, level);
+}
+bool ActorManager::get_next_turn()
+{
+	if (next_turn)
+	{
+		next_turn = false;
+		return true;
+	}
+	return false;
 }

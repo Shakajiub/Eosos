@@ -26,7 +26,7 @@
 uint16_t Actor::ID = 0;
 
 Actor::Actor() :
-	actor_type(ACTOR_NULL), actor_ID(ID++), in_camera(false), turn_done(false),
+	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false),
 	anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), bubble_timer(0)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
@@ -83,7 +83,7 @@ void Actor::update(Level *level)
 		switch (current_action.type)
 		{
 			case ACTION_MOVE: clear_action = action_move(level); break;
-			case ACTION_ATTACK: clear_action = action_attack(); break;
+			case ACTION_ATTACK: clear_action = action_attack(level); break;
 			default: clear_action = true; break;
 		}
 		if (clear_action)
@@ -92,7 +92,7 @@ void Actor::update(Level *level)
 }
 void Actor::render() const
 {
-	if (texture != nullptr && in_camera)
+	if (texture != nullptr && in_camera && !delete_me)
 	{
 		texture->render(
 			x - camera.get_cam_x(),
@@ -107,7 +107,7 @@ void Actor::start_turn()
 	// Called when our turn to move begins.
 	turn_done = true;
 }
-bool Actor::take_turn()
+bool Actor::take_turn(Level *level)
 {
 	// Called continuously every frame when it's our turn.
 	// Return true once we're done with our turn.
@@ -196,7 +196,7 @@ bool Actor::action_move(Level *level)
 	}
 	return false;
 }
-bool Actor::action_attack()
+bool Actor::action_attack(Level *level)
 {
 	anim_timer += engine.get_dt();
 	while (anim_timer > 18 || !in_camera)
@@ -210,7 +210,10 @@ bool Actor::action_attack()
 		else if (anim_frames == 6)
 		{
 			turn_done = true;
-			// TODO - Deal damage to whatever we're attacking
+
+			Actor *temp_actor = level->get_actor(current_action.xpos, current_action.ypos);
+			if (temp_actor != nullptr)
+				temp_actor->set_delete(true);
 		}
 		if (anim_frames % 2 == 0)
 		{
