@@ -17,6 +17,9 @@
 
 #include "engine.hpp"
 #include "hero.hpp"
+#include "level.hpp"
+
+#include "camera.hpp"
 
 Hero::Hero()
 {
@@ -33,13 +36,12 @@ void Hero::free()
 void Hero::start_turn()
 {
 	turn_done = false;
-	moves = std::make_pair(1, 1);
+	moves = std::make_pair(2, 2);
 }
 bool Hero::take_turn()
 {
 	if (turn_done)
 	{
-		moves.first -= 1;
 		if (moves.first > 0)
 			turn_done = false;
 	}
@@ -49,10 +51,12 @@ void Hero::end_turn()
 {
 	Actor::end_turn();
 }
-void Hero::input_keyboard_down(SDL_Keycode key)
+void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 {
-	int8_t offset_x = 0;
-	int8_t offset_y = 0;
+	if (!action_queue.empty() || moves.first <= 0)
+		return;
+
+	int8_t offset_x = 0, offset_y = 0;
 	switch (key)
 	{
 		case SDLK_UP: case SDLK_KP_8: case SDLK_k: offset_y = -1; break;
@@ -63,9 +67,18 @@ void Hero::input_keyboard_down(SDL_Keycode key)
 		case SDLK_KP_9: case SDLK_u: offset_x = 1; offset_y = -1; break;
 		case SDLK_KP_1: case SDLK_b: offset_x = -1; offset_y = 1; break;
 		case SDLK_KP_3: case SDLK_n: offset_x = 1; offset_y = 1; break;
-		case SDLK_KP_5: case SDLK_SPACE: turn_done = true; break;
+		case SDLK_KP_5: case SDLK_SPACE: turn_done = true; moves.first = 0; break;
 		default: break;
 	}
 	if (offset_x != 0 || offset_y != 0)
-		add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
+	{
+		if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
+		{
+			moves.first -= 1;
+			add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
+
+			if (moves.first > 0)
+				camera.update_position((grid_x + offset_x) * 32, (grid_y + offset_y) * 32);
+		}
+	}
 }

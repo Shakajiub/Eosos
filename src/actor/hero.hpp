@@ -20,6 +20,8 @@
 
 #include "actor.hpp"
 
+class Level;
+
 class Hero : public Actor
 {
 public:
@@ -32,7 +34,7 @@ public:
 	virtual bool take_turn();
 	virtual void end_turn();
 
-	virtual void input_keyboard_down(SDL_Keycode key);
+	void input_keyboard_down(SDL_Keycode key, Level *level);
 };
 
 #endif // HERO_HPP

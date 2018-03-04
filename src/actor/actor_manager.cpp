@@ -20,6 +20,7 @@
 #include "level.hpp"
 
 #include "hero.hpp"
+#include "camera.hpp"
 
 ActorManager::ActorManager() : current_actor(nullptr)
 {
@@ -31,11 +32,13 @@ ActorManager::~ActorManager()
 }
 void ActorManager::free()
 {
-	if (current_actor != nullptr)
+	for (uint8_t i = 0; i < actors.size(); i++)
 	{
-		delete current_actor;
-		current_actor = nullptr;
+		if (actors[i] != nullptr)
+			delete actors[i];
 	}
+	actors.clear();
+	current_actor = nullptr;
 }
 void ActorManager::update(Level *level)
 {
@@ -45,11 +48,25 @@ void ActorManager::update(Level *level)
 		{
 			current_actor->end_turn();
 
-			// TODO - Loop to the next actor
+			const uint16_t current_ID = current_actor->get_ID();
+			Actor *temp_actor = nullptr;
+			Actor *first_actor = nullptr;
 
+			for (Actor *a : actors)
+			{
+				if (a->get_ID() > current_ID && (temp_actor == nullptr || a->get_ID() < temp_actor->get_ID()))
+					temp_actor = a;
+				if (first_actor == nullptr || a->get_ID() < first_actor->get_ID())
+					first_actor = a;
+			}
+			current_actor = (temp_actor == nullptr) ? first_actor : temp_actor;
 			current_actor->start_turn();
+
+			if (current_actor->get_actor_type() == ACTOR_HERO)
+				camera.update_position(current_actor->get_grid_x() * 32, current_actor->get_grid_y() * 32);
 		}
-		current_actor->update(level);
+		for (Actor * a : actors)
+			a->update(level);
 	}
 }
 void ActorManager::render(Level *level)
@@ -67,28 +84,39 @@ void ActorManager::render(Level *level)
 }
 void ActorManager::animate()
 {
+	//for (Actor *a : actors)
+		//a->action_idle();
+
 	if (current_actor != nullptr)
 		current_actor->action_idle();
 }
 bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
-	std::cout << "1" << std::endl;
 	if (level != nullptr && !level->get_wall(xpos, ypos, true))
 	{
-		std::cout << "2" << std::endl;
-		current_actor = new Hero;
-		if (!current_actor->init(at, xpos, ypos, texture_name))
+		Actor *temp = nullptr;
+
+		if (at == ACTOR_HERO)
+			temp = new Hero;
+
+		if (temp != nullptr)
 		{
-			std::cout << "333" << std::endl;
-			delete current_actor;
-			current_actor = nullptr;
+			if (temp->init(at, xpos, ypos, texture_name))
+			{
+				actors.push_back(temp);
+				if (current_actor == nullptr)
+				{
+					current_actor = temp;
+					current_actor->start_turn();
+				}
+				level->set_actor(xpos, ypos, temp);
+			}
+			else delete temp;
 		}
-		else level->set_actor(xpos, ypos, current_actor);
-		std::cout << "4" << std::endl;
 	}
 }
-void ActorManager::input_keyboard_down(SDL_Keycode key)
+void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {
-	if (current_actor != nullptr)
-		current_actor->input_keyboard_down(key);
+	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
+		dynamic_cast<Hero*>(current_actor)->input_keyboard_down(key, level);
 }

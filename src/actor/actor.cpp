@@ -126,10 +126,6 @@ void Actor::end_turn()
 		}
 	}
 }
-void Actor::input_keyboard_down(SDL_Keycode key)
-{
-
-}
 void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos)
 {
 	Action a = { at, xpos, ypos };

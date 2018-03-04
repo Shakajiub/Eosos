@@ -58,8 +58,6 @@ public:
 	virtual bool take_turn();
 	virtual void end_turn();
 
-	virtual void input_keyboard_down(SDL_Keycode key);
-
 	void add_action(ActionType at, uint8_t xpos, uint8_t ypos);
 	void action_idle();
 	bool action_move(Level *level);
@@ -70,6 +68,8 @@ public:
 
 	ActorType get_actor_type() const { return actor_type; }
 	uint16_t get_ID() const { return actor_ID; }
+	uint8_t get_grid_x() const { return grid_x; }
+	uint8_t get_grid_y() const { return grid_y; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
 
 protected:

@@ -20,6 +20,8 @@
 
 #include "actor.hpp"
 
+#include <vector>
+
 class Level;
 
 class ActorManager
@@ -34,10 +36,11 @@ public:
 	void animate();
 
 	bool spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
-	void input_keyboard_down(SDL_Keycode key);
+	void input_keyboard_down(SDL_Keycode key, Level *level);
 
 private:
 	Actor *current_actor;
+	std::vector<Actor*> actors;
 };
 
 #endif // ACTOR_MANAGER

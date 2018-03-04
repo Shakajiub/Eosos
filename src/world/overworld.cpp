@@ -68,6 +68,7 @@ void Overworld::init()
 
 	actor_manager = new ActorManager;
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, 2, 5, "core/texture/actor/player/orc/peon.png");
 
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
@@ -127,7 +128,7 @@ bool Overworld::update()
 					break;
 				default:
 					if (actor_manager != nullptr)
-						actor_manager->input_keyboard_down(event.key.keysym.sym);
+						actor_manager->input_keyboard_down(event.key.keysym.sym, current_level);
 					break;
 			}
 		}
