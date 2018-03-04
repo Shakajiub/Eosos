@@ -73,8 +73,8 @@ void UI::init_message_log()
 		init_background();
 
 	message_log = new MessageLog;
-	message_log->set_position(0, camera.get_cam_h() - (options.get_i("ui-log_height") * 32));
-	message_log->set_size((uint8_t)options.get_i("ui-log_width"), (uint8_t)options.get_i("ui-log_height"));
+	message_log->set_position(0, camera.get_cam_h() - 128);
+	message_log->set_size(15, 4);
 	message_log->init();
 	message_log->add_message("Welcome to HELL.", COLOR_BERRY);
 }

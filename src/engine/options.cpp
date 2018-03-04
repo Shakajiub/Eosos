@@ -46,34 +46,21 @@ void Options::init()
 	options_i.clear();
 	options_s.clear();
 
-	options_s["debug-level"] = "none";
-	options_s["debug-generator"] = "none";
-	options_b["debug-render_dijkstra"] = false;
-
-	options_i["gameplay-turn_timer"] = 0;
-	options_b["gameplay-snap_movement"] = false;
-
-	options_b["controller-enabled"] = false;
-
 	options_b["display-fullscreen"] = false;
 	options_b["display-borderless"] = false;
 	options_i["display-width"] = 1024;
 	options_i["display-height"] = 640;
-	options_b["display-vsync"] = true;
 	options_i["display-fps_cap"] = 60;
+	options_b["display-vsync"] = true;
 
 	options_i["camera-scroll_speed"] = 40;
 	options_i["camera-follow_speed"] = 20;
 	options_b["camera-apply_shake"] = true;
 
-	options_i["ui-log_width"] = 15;
-	options_i["ui-log_height"] = 4;
-	options_s["ui-image"] = "bg_red";
-	options_b["ui-highlight"] = false;
-	options_s["ui-font"] = "font";
-	options_i["ui-font_scale"] = 1;
-
 	options_i["sound-music_volume"] = 80;
+
+	options_s["ui-image"] = "bg_red";
+	options_s["ui-font"] = "font";
 }
 void Options::load()
 {
@@ -130,12 +117,6 @@ void Options::apply()
 {
 	// Make sure the options are reasonable
 
-	options_i["gameplay-turn_timer"] *= 10;
-	if (options_i["gameplay-turn_timer"] < 0)
-		options_i["gameplay-turn_timer"] = 0;
-	else if (options_i["gameplay-turn_timer"] > 10000)
-		options_i["gameplay-turn_timer"] = 10000;
-
 	if (options_i["display-width"] < 640) options_i["display-width"] = 640;
 	if (options_i["display-height"] < 360) options_i["display-height"] = 360;
 	if (options_i["display-fps_cap"] < 1) options_i["display-fps_cap"] = 1;
@@ -150,13 +131,8 @@ void Options::apply()
 	else if (options_i["camera-follow_speed"] > 99)
 		options_i["camera-follow_speed"] = 99;
 
-	if (options_i["ui-log_width"] < 8) options_i["ui-log_width"] = 8;
-	if (options_i["ui-log_height"] < 2) options_i["ui-log_height"] = 2;
-
-	if (options_i["sound-music_volume"] > 100) options_i["sound-music_volume"] = 100;
-	//else if (options_i["sound-music_volume"] < 0) options_i["sound-music_volume"] = 0;
-
-	// Apply any visible changes immediately
+	if (options_i["sound-music_volume"] > 100)
+		options_i["sound-music_volume"] = 100;
 
 	if (options_b["display-borderless"])
 		SDL_SetWindowBordered(engine.get_window(), SDL_FALSE);
@@ -167,14 +143,6 @@ void Options::apply()
 	camera.set_window_size(options_i["display-width"], options_i["display-height"]);
 	camera.set_window_fullscreen(options_b["display-fullscreen"]);
 
-	// As long as a game_scene exists, the ui elements below should exist as well
-	if (engine.get_scene_manager() != nullptr && engine.get_scene_manager()->get_scene("test") != nullptr)
-	{
-		ui.get_bitmap_font()->set_scale(options_i["display-font_scale"]);
-		ui.get_message_log()->set_position(0, camera.get_cam_h());
-		ui.get_message_log()->set_size((uint8_t)options_i["ui-log_width"], (uint8_t)options_i["ui-log_height"]);
-		ui.get_message_log()->clear_log();
-	}
 	if (engine.get_sound_manager() != nullptr)
 		engine.get_sound_manager()->set_music_volume(options_i["sound-music_volume"]);
 }

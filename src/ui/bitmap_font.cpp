@@ -79,13 +79,6 @@ bool BitmapFont::build(const std::string &texture_name)
 	font_bitmap->unlock_texture();
 	font_bitmap->set_color(COLOR_PEPPERMINT);
 
-	const int16_t new_scale = options.get_i("ui-font_scale");
-	if (new_scale > 1)
-	{
-		font_scale = (uint8_t)new_scale;
-		font_width *= new_scale;
-		font_height *= new_scale;
-	}
 	std::cout << "font loaded, size: " << std::to_string(font_width) << ", " << std::to_string(font_height) << std::endl;
 	return true;
 }
