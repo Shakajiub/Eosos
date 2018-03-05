@@ -50,7 +50,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	const int8_t offset_x[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
 	const int8_t offset_y[8] = { -1, 1, 0, 0, -1, -1, 1, 1 };
 
-	width = 21; height = 15;
+	width = 25; height = 15;
 	uint8_t map_data[width * height];
 	base_pos = std::make_pair(5, 7);
 	base_pos.second += (engine.get_rng() % 5) - 2;
@@ -66,16 +66,20 @@ const std::string GeneratorForest::generate(uint8_t depth)
 		uint8_t ypos = base_pos.second;
 		map_data[ypos * width + xpos] = 0;
 
-		while (floor_num < 155)
+		while (floor_num < 180)
 		{
 			if (xpos == width - 1)
 			{
 				spawn_positions.push_back(std::make_pair(xpos, ypos));
-				map_fine = true; xpos = base_pos.first;
+				xpos = base_pos.first;
+				ypos = base_pos.second;
+				map_fine = true;
 			}
-			else if (xpos == 0) xpos = base_pos.first;
-			if (ypos == 0 || ypos == height - 1) ypos = base_pos.second;
-
+			else if (xpos == 0 || ypos == 0 || ypos == height - 1)
+			{
+				xpos = base_pos.first;
+				ypos = base_pos.second;
+			}
 			const uint8_t dir = engine.get_rng() % 4;
 			xpos += offset_x[dir];
 			ypos += offset_y[dir];

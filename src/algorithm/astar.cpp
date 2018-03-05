@@ -48,7 +48,9 @@ void AStar::free()
 void AStar::init()
 {
 	if (path_marker == nullptr)
-		path_marker = engine.get_texture_manager()->load_texture("core/texture/ui/path.png");
+		path_marker = engine.get_texture_manager()->load_texture("core/texture/ui/path.png", true);
+	if (path_marker != nullptr)
+		path_marker->set_color(COLOR_BERRY);
 }
 bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, bool diagonal)
 {
@@ -215,14 +217,21 @@ void AStar::step()
 		goto_x = n->x; goto_y = n->y;
 	}
 }
-void AStar::render() const
+void AStar::render(uint8_t good_length) const
 {
 	if (!path_found || path.size() == 0)
 		return;
 	if (path_marker != nullptr)
 	{
+		path_marker->set_color(COLOR_BERRY);
+		uint8_t length = path.size();
+
 		for (std::shared_ptr<ASNode> n : path)
 		{
+			length -= 1;
+			if (length < good_length)
+				path_marker->set_color(COLOR_LEAF);
+
 			if (camera.get_in_camera_grid(n->x, n->y))
 				path_marker->render(
 					n->x * 32 - camera.get_cam_x(),

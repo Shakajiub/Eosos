@@ -8,5 +8,5 @@ COMPILER  := -w -O0 -g -std=c++14
 LINKER    := -lSDL2 -lSDL2_image -lSDL2_mixer $(INCLUDES)
 OUT       := build/eosos
 
-all : $(SRC)
+linux : $(SRC)
 	$(CC) $(SRC) $(COMPILER) $(LINKER) -o $(OUT)

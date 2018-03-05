@@ -43,9 +43,10 @@ public:
 	void clear_path();
 
 	void step();
-	void render() const;
+	void render(uint8_t good_length = 0) const;
 
 	bool get_path_found() const { return path_found; }
+	uint8_t get_length() const { return path.size(); }
 	uint8_t get_goto_x() const { return goto_x; }
 	uint8_t get_goto_y() const { return goto_y; }
 	uint8_t get_last_x() const;

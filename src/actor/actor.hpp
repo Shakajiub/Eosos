@@ -73,15 +73,17 @@ public:
 	uint8_t get_grid_x() const { return grid_x; }
 	uint8_t get_grid_y() const { return grid_y; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
-
 	bool get_delete() const { return delete_me; }
+
 	void set_delete(bool del) { delete_me = del; }
+	void set_hovered(bool h) { hovered = h; }
 
 protected:
 	bool delete_me;
 	bool in_camera;
 	bool turn_done;
 	bool facing_right;
+	bool hovered;
 
 	ActorType actor_type;
 	uint16_t actor_ID;

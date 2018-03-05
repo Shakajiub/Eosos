@@ -21,6 +21,7 @@
 #include "scene.hpp"
 
 class ActorManager;
+class Actor;
 class Level;
 class Texture;
 
@@ -44,6 +45,7 @@ private:
 	uint16_t current_turn;
 
 	ActorManager *actor_manager;
+	Actor *hovered_actor;
 	Level *current_level;
 
 	Texture *node_highlight;
@@ -52,6 +54,8 @@ private:
 	uint8_t frames;
 	uint8_t display_fps;
 	uint16_t frame_counter;
+
+	int mouse_x, mouse_y; // for SDL_GetMouseState()
 };
 
 #endif // OVERWORLD_HPP

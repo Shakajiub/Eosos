@@ -27,7 +27,7 @@ uint16_t Actor::ID = 0;
 
 Actor::Actor() :
 	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false),
-	anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), bubble_timer(0)
+	hovered(false), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), bubble_timer(0)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0 };

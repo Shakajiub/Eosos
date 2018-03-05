@@ -42,9 +42,12 @@ public:
 	void input_mouse_button_down(SDL_Event eve, Level *level);
 
 	AStar* get_pathfinder() const { return pathfinder; }
+	bool get_auto_move() const;
 
 private:
 	bool auto_move_path;
+	bool command_this_turn;
+
 	AStar *pathfinder;
 };
 

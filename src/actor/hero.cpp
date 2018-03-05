@@ -22,7 +22,7 @@
 
 #include "camera.hpp"
 
-Hero::Hero() : auto_move_path(false), pathfinder(nullptr)
+Hero::Hero() : auto_move_path(false), command_this_turn(false), pathfinder(nullptr)
 {
 
 }
@@ -42,8 +42,8 @@ void Hero::render() const
 {
 	Actor::render();
 
-	if (pathfinder != nullptr)
-		pathfinder->render();
+	if (pathfinder != nullptr && hovered)
+		pathfinder->render(moves.first);
 }
 void Hero::start_turn()
 {
@@ -52,6 +52,7 @@ void Hero::start_turn()
 }
 bool Hero::take_turn(Level *level)
 {
+	hovered = true;
 	if (turn_done)
 	{
 		if (pathfinder != nullptr && pathfinder->get_path_found())
@@ -60,6 +61,7 @@ bool Hero::take_turn(Level *level)
 				pathfinder->step();
 			else pathfinder->clear_path();
 		}
+		command_this_turn = false;
 		if (moves.first > 0)
 			turn_done = false;
 	}
@@ -77,6 +79,7 @@ bool Hero::take_turn(Level *level)
 void Hero::end_turn()
 {
 	Actor::end_turn();
+	hovered = false;
 }
 void Hero::init_pathfinder()
 {
@@ -100,7 +103,7 @@ void Hero::step_pathfinder(Level *level)
 		moves.first -= 1;
 		add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
 
-		if (moves.first > 0)
+		if (command_this_turn && !get_auto_move())
 			camera.update_position(pathfinder->get_goto_x() * 32, pathfinder->get_goto_y() * 32);
 	}
 }
@@ -135,9 +138,7 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 		{
 			moves.first -= 1;
 			add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
-
-			if (moves.first > 0)
-				camera.update_position((grid_x + offset_x) * 32, (grid_y + offset_y) * 32);
+			camera.update_position((grid_x + offset_x) * 32, (grid_y + offset_y) * 32);
 		}
 	}
 }
@@ -165,10 +166,22 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 					pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
 				auto_move_path = false;
 			}
-			// If we click the end of a path, start moving there automatically
-			else auto_move_path = true;
+			else // If we click the end of a path, start moving there automatically
+			{
+				command_this_turn = true;
+				auto_move_path = true;
+			}
 		}
 		// Otherwise just calculate the new path
 		else pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
 	}
+}
+bool Hero::get_auto_move() const
+{
+	if (auto_move_path)
+	{
+		if (pathfinder->get_path_found())
+			return pathfinder->get_length() > 1;
+	}
+	return false;
 }

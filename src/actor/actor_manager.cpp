@@ -84,7 +84,7 @@ void ActorManager::update(Level *level)
 			else current_actor = temp_actor;
 			current_actor->start_turn();
 
-			if (current_actor->get_actor_type() == ACTOR_HERO)
+			if (current_actor->get_actor_type() == ACTOR_HERO && !dynamic_cast<Hero*>(current_actor)->get_auto_move())
 				camera.update_position(current_actor->get_grid_x() * 32, current_actor->get_grid_y() * 32);
 		}
 		for (Actor * a : actors)
