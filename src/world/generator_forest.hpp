@@ -20,6 +20,8 @@
 
 #include "generator.hpp"
 
+class AStar;
+
 class GeneratorForest : public Generator
 {
 public:
@@ -30,7 +32,12 @@ public:
 	virtual void init();
 
 	virtual const std::string generate(uint8_t depth);
+	virtual void post_process(uint8_t depth, Level *level);
 	virtual void next_turn(uint16_t turn, ActorManager *am);
+
+private:
+	uint8_t width, height;
+	AStar *pathfinder;
 };
 
 #endif // GENERATOR_FOREST_HPP

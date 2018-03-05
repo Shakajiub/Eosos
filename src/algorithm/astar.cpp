@@ -50,7 +50,7 @@ void AStar::init()
 	if (path_marker == nullptr)
 		path_marker = engine.get_texture_manager()->load_texture("core/texture/ui/path.png");
 }
-bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y)
+bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, bool diagonal)
 {
 	// Make sure we're not trying to path into a wall
 	if (level == nullptr || level->get_wall(end_x, end_y) || (end_x == start_x && end_y == start_y))
@@ -86,7 +86,8 @@ bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x
 		open_list.erase(std::find(open_list.begin(), open_list.end(), q));
 
 		// Loop through the neighbouring nodes
-		for (uint8_t i = 0; i < 8; i++)
+		const uint8_t max = (diagonal) ? 8 : 4;
+		for (uint8_t i = 0; i < max; i++)
 		{
 			const int8_t new_x = q->x + offset_x[i];
 			const int8_t new_y = q->y + offset_y[i];

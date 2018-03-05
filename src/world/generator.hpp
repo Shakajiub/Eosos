@@ -19,6 +19,7 @@
 #define GENERATOR_HPP
 
 class ActorManager;
+class Level;
 
 class Generator
 {
@@ -27,6 +28,7 @@ public:
 	virtual void init() = 0;
 
 	virtual const std::string generate(uint8_t depth) = 0;
+	virtual void post_process(uint8_t depth, Level *level) = 0;
 	virtual void next_turn(uint16_t turn, ActorManager *am) = 0;
 };
 

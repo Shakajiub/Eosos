@@ -45,6 +45,14 @@ typedef struct
 }
 MapNode;
 
+typedef struct
+{
+	Texture *sub_texture;
+	NodeType sub_type;
+	bool sub_animated;
+}
+SubNode;
+
 class Level
 {
 public:
@@ -59,11 +67,15 @@ public:
 
 	uint8_t get_map_width() const { return map_width; }
 	uint8_t get_map_height() const { return map_height; }
+	auto get_sub_nodes() const { return sub_nodes; }
 
-	Actor* get_actor(uint8_t xpos, uint8_t ypos) const;
 	bool get_wall(int8_t xpos, int8_t ypos, bool check_occupying = false) const;
 
+	Actor* get_actor(uint8_t xpos, uint8_t ypos) const;
+	MapNode get_node(uint8_t xpos, uint8_t ypos) const;
+
 	void set_actor(uint8_t xpos, uint8_t ypos, Actor *actor);
+	void set_node(uint8_t xpos, uint8_t ypos, MapNode node);
 
 private:
 	void init_map_texture();
@@ -81,6 +93,7 @@ private:
 
 	std::vector< std::vector<MapNode> > map_data;
 	std::unordered_map<std::string, uint8_t> neighbor_rules;
+	std::unordered_map<char, SubNode> sub_nodes;
 	std::vector<Texture*> textures;
 
 	SDL_Texture *map_texture;

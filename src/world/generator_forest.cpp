@@ -18,8 +18,12 @@
 #include "engine.hpp"
 #include "generator_forest.hpp"
 #include "actor_manager.hpp"
+#include "level.hpp"
+#include "astar.hpp"
 
-GeneratorForest::GeneratorForest()
+#include <unordered_map>
+
+GeneratorForest::GeneratorForest() : pathfinder(nullptr)
 {
 
 }
@@ -29,19 +33,23 @@ GeneratorForest::~GeneratorForest()
 }
 void GeneratorForest::free()
 {
-
+	if (pathfinder != nullptr)
+	{
+		delete pathfinder;
+		pathfinder = nullptr;
+	}
 }
 void GeneratorForest::init()
 {
-
+	pathfinder = new AStar;
+	pathfinder->init();
 }
 const std::string GeneratorForest::generate(uint8_t depth)
 {
 	const int8_t offset_x[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
 	const int8_t offset_y[8] = { -1, 1, 0, 0, -1, -1, 1, 1 };
 
-	const uint8_t width = 21;
-	const uint8_t height = 15;
+	width = 21; height = 15;
 	uint8_t map_data[width * height];
 
 	bool map_fine = false;
@@ -71,13 +79,6 @@ const std::string GeneratorForest::generate(uint8_t depth)
 		if (!map_fine)
 			std::cout << "map discarded, no access to edge ..." << std::endl;
 	}
-	/*for (uint8_t y = 0; y < height; y++)
-	{
-		for (uint8_t x = 0; x < width; x++)
-		{
-
-		}
-	}*/
 	std::string level =
 		"l-0-core/texture/level/floor/dark2_base.png\n"
 		"l-1-core/texture/level/floor/dark2_grass.png\n"
@@ -99,6 +100,45 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	}
 	std::cout << level << std::endl;
 	return level;
+}
+void GeneratorForest::post_process(uint8_t depth, Level *level)
+{
+	if (pathfinder == nullptr)
+	{
+		pathfinder = new AStar;
+		pathfinder->init();
+	}
+	else pathfinder->clear_path();
+
+	bool path_built = false;
+	for (uint8_t y = 0; y < height; y++)
+	{
+		for (uint8_t x = 0; x < width; x++)
+		{
+			if ((x == 0 || x == width - 1 || y == 0 || y == height - 1) && !level->get_wall(x, y))
+			{
+				auto sub_nodes = level->get_sub_nodes();
+				MapNode new_node = { nullptr, nullptr, nullptr, 0, 0, NT_NONE, false, false };
+
+				new_node.floor_texture = sub_nodes['0'].sub_texture;
+				new_node.wall_texture = sub_nodes['#'].sub_texture;
+				new_node.wall_animated = sub_nodes['#'].sub_animated;
+				new_node.wall_type = sub_nodes['#'].sub_type;
+
+				level->set_node(x, y, new_node);
+
+				pathfinder->find_path(level, x, y, 10, 7, false);
+				while (pathfinder->get_path_found())
+				{
+					level->set_node(pathfinder->get_goto_x(), pathfinder->get_goto_y(), new_node);
+					pathfinder->step();
+				}
+				path_built = true;
+			}
+			if (path_built) break;
+		}
+		if (path_built) break;
+	}
 }
 void GeneratorForest::next_turn(uint16_t turn, ActorManager *am)
 {
