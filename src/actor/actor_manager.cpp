@@ -146,7 +146,10 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 				level->set_actor(xpos, ypos, temp);
 
 				if (temp->get_actor_type() == ACTOR_HERO)
+				{
+					dynamic_cast<Hero*>(temp)->init_pathfinder();
 					camera.update_position(temp->get_grid_x() * 32, temp->get_grid_y() * 32);
+				}
 			}
 			else delete temp;
 		}
@@ -156,6 +159,11 @@ void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
 		dynamic_cast<Hero*>(current_actor)->input_keyboard_down(key, level);
+}
+void ActorManager::input_mouse_button_down(SDL_Event eve, Level *level)
+{
+	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
+		dynamic_cast<Hero*>(current_actor)->input_mouse_button_down(eve, level);
 }
 bool ActorManager::get_next_turn()
 {

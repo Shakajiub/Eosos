@@ -15,37 +15,48 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HERO_HPP
-#define HERO_HPP
+#ifndef ASTAR_HPP
+#define ASTAR_HPP
 
-#include "actor.hpp"
+#include <vector>
+#include <memory> // for std::shared_ptr
 
-class AStar;
+class Level;
+class Texture;
 
-class Hero : public Actor
+struct ASNode
+{
+	std::shared_ptr<ASNode> parent;
+	uint8_t x, y;
+	float f, g, h;
+};
+class AStar
 {
 public:
-	Hero();
-	~Hero();
+	AStar();
+	~AStar();
 
 	void free();
+	void init();
 
-	virtual void render() const;
-	virtual void start_turn();
-	virtual bool take_turn(Level *level);
-	virtual void end_turn();
+	bool find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y);
+	void clear_path();
 
-	void init_pathfinder();
-	void step_pathfinder(Level *level);
+	void step();
+	void render() const;
 
-	void input_keyboard_down(SDL_Keycode key, Level *level);
-	void input_mouse_button_down(SDL_Event eve, Level *level);
-
-	AStar* get_pathfinder() const { return pathfinder; }
+	bool get_path_found() const { return path_found; }
+	uint8_t get_goto_x() const { return goto_x; }
+	uint8_t get_goto_y() const { return goto_y; }
+	uint8_t get_last_x() const;
+	uint8_t get_last_y() const;
 
 private:
-	bool auto_move_path;
-	AStar *pathfinder;
+	bool path_found;
+	uint8_t goto_x, goto_y;
+
+	std::vector<std::shared_ptr<ASNode> > path;
+	Texture *path_marker;
 };
 
-#endif // HERO_HPP
+#endif // ASTAR_HPP

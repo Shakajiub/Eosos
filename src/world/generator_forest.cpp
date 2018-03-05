@@ -81,16 +81,19 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	std::string level =
 		"l-0-core/texture/level/floor/dark2_base.png\n"
 		"l-1-core/texture/level/floor/dark2_grass.png\n"
-		"l-T-core/texture/level/tree/oak_dead.png\n";
+		"l-T-core/texture/level/tree/oak_dead.png\n"
+		"l-#-core/texture/level/map/road_dark2.png\n";
 	for (uint8_t y = 0; y < height; y++)
 	{
 		for (uint8_t x = 0; x < width; x++)
 		{
 			const uint8_t node = map_data[y * width + x];
 			level += (engine.get_rng() % 2 == 0) ? '0' : '1';
-			if (node == 0)
-				level += '_';
-			else level += 'T';
+			if (node == 1)
+				level += 'T';
+			else if (node == 2)
+				level += '#';
+			else level += '_';
 		}
 		level += '\n';
 	}

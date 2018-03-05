@@ -144,6 +144,14 @@ bool Overworld::update()
 					break;
 			}
 		}
+		else if (event.type == SDL_MOUSEBUTTONDOWN)
+		{
+			if (!ui.get_click(event.button.x, event.button.y))
+			{
+				if (actor_manager != nullptr)
+					actor_manager->input_mouse_button_down(event, current_level);
+			}
+		}
 	}
 	if (actor_manager != nullptr)
 	{
@@ -186,12 +194,13 @@ void Overworld::render() const
 	int mouse_x, mouse_y;
 	SDL_GetMouseState(&mouse_x, &mouse_y);
 
-	if (node_highlight != nullptr)
+	if (node_highlight != nullptr && current_level != nullptr)
 	{
 		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
 		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
 
-		if (!ui.get_overlap(mouse_x, mouse_y))
+		if (!ui.get_overlap(mouse_x, mouse_y) && map_x >= 0 && map_y >= 0 &&
+			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
 		{
 			node_highlight->render(
 				(map_x < 0 ? map_x - 1 : map_x) * 32 - camera.get_cam_x(),

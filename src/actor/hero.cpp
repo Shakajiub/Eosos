@@ -18,16 +18,32 @@
 #include "engine.hpp"
 #include "hero.hpp"
 #include "level.hpp"
+#include "astar.hpp"
 
 #include "camera.hpp"
 
-Hero::Hero()
+Hero::Hero() : auto_move_path(false), pathfinder(nullptr)
 {
 
 }
 Hero::~Hero()
 {
+	free();
+}
+void Hero::free()
+{
+	if (pathfinder != nullptr)
+	{
+		delete pathfinder;
+		pathfinder = nullptr;
+	}
+}
+void Hero::render() const
+{
+	Actor::render();
 
+	if (pathfinder != nullptr)
+		pathfinder->render();
 }
 void Hero::start_turn()
 {
@@ -38,8 +54,23 @@ bool Hero::take_turn(Level *level)
 {
 	if (turn_done)
 	{
+		if (pathfinder != nullptr && pathfinder->get_path_found())
+		{
+			if (grid_x == pathfinder->get_goto_x() && grid_y == pathfinder->get_goto_y())
+				pathfinder->step();
+			else pathfinder->clear_path();
+		}
 		if (moves.first > 0)
 			turn_done = false;
+	}
+	if (actions_empty() && moves.first > 0)
+	{
+		if (auto_move_path && pathfinder != nullptr)
+		{
+			step_pathfinder(level);
+			if (!pathfinder->get_path_found())
+				auto_move_path = false;
+		}
 	}
 	return Actor::take_turn(level);
 }
@@ -47,9 +78,32 @@ void Hero::end_turn()
 {
 	Actor::end_turn();
 }
+void Hero::init_pathfinder()
+{
+	pathfinder = new AStar;
+	pathfinder->init();
+}
+void Hero::step_pathfinder(Level *level)
+{
+	const Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
+	if (temp_actor != nullptr)
+	{
+		if (grid_x == pathfinder->get_goto_x() && grid_y == pathfinder->get_goto_y())
+			return;
+
+		moves.first = 0;
+		add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+		pathfinder->clear_path();
+	}
+	else
+	{
+		moves.first -= 1;
+		add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+	}
+}
 void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 {
-	if (!action_queue.empty() || moves.first <= 0)
+	if (!actions_empty() || moves.first <= 0)
 		return;
 
 	int8_t offset_x = 0, offset_y = 0;
@@ -82,5 +136,36 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 			if (moves.first > 0)
 				camera.update_position((grid_x + offset_x) * 32, (grid_y + offset_y) * 32);
 		}
+	}
+}
+void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
+{
+	if (pathfinder != nullptr)
+	{
+		const int16_t map_x = (eve.button.x + camera.get_cam_x()) / 32;
+		const int16_t map_y = (eve.button.y + camera.get_cam_y()) / 32;
+
+		if (map_x == grid_x && map_y == grid_y)
+		{
+			if (auto_move_path)
+				auto_move_path = false;
+			else turn_done = true;
+			return;
+		}
+		if (pathfinder->get_path_found())
+		{
+			// If we don't click the end of the path, recalculate it (if we're not moving)
+			if (map_x != pathfinder->get_last_x() || map_y != pathfinder->get_last_y())
+			{
+				pathfinder->clear_path();
+				if (!auto_move_path)
+					pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
+				auto_move_path = false;
+			}
+			// If we click the end of a path, start moving there automatically
+			else auto_move_path = true;
+		}
+		// Otherwise just calculate the new path
+		else pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
 	}
 }

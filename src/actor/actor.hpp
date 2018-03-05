@@ -59,6 +59,8 @@ public:
 	virtual void end_turn();
 
 	void add_action(ActionType at, uint8_t xpos, uint8_t ypos);
+	bool actions_empty() const;
+
 	void action_idle();
 	bool action_move(Level *level);
 	bool action_attack(Level *level);

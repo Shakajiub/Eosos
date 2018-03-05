@@ -131,6 +131,10 @@ void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos)
 	Action a = { at, xpos, ypos };
 	action_queue.push(a);
 }
+bool Actor::actions_empty() const
+{
+	return (action_queue.empty() && current_action.type == ACTION_NULL);
+}
 void Actor::action_idle()
 {
 	if (current_action.type == ACTION_NULL)
