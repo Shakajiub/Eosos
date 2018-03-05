@@ -255,7 +255,7 @@ bool Level::get_wall(int8_t xpos, int8_t ypos, bool check_occupying) const
 		if (map_data[ypos][xpos].occupying_actor != nullptr)
 			return true;
 	}
-	if (map_data[ypos][xpos].wall_type == NT_ROAD)
+	if (map_data[ypos][xpos].wall_type == NT_ROAD || map_data[ypos][xpos].wall_type == NT_BASE)
 		return false;
 	return map_data[ypos][xpos].wall_texture != nullptr;
 }
@@ -270,6 +270,18 @@ MapNode Level::get_node(uint8_t xpos, uint8_t ypos) const
 	if (!map_created || xpos >= map_width || ypos >= map_height)
 		return { nullptr, nullptr, nullptr, 0, 0, NT_NONE, false, false };
 	return map_data[ypos][xpos];
+}
+std::pair<uint8_t, uint8_t> Level::get_base_pos() const
+{
+	if (map_generator != nullptr)
+		return map_generator->get_base_pos();
+	return std::make_pair(0, 0);
+}
+std::pair<uint8_t, uint8_t> Level::get_spawn_pos() const
+{
+	if (map_generator != nullptr)
+		return map_generator->get_spawn_pos();
+	return std::make_pair(0, 0);
 }
 void Level::set_actor(uint8_t xpos, uint8_t ypos, Actor *actor)
 {
@@ -353,6 +365,11 @@ void Level::correct_frame(uint8_t xpos, uint8_t ypos, NodeType node_type)
 {
 	if (node_type == NT_INVISIBLE)
 		return;
+	if (node_type == NT_BASE)
+	{
+		map_data[ypos][xpos].wall_rect = { 0, 0, 16, 16 };
+		return;
+	}
 	const std::string surroundings = get_surroundings(xpos, ypos, (node_type == NT_FLOOR ? true : false));
 
 	std::string prefix;
@@ -455,7 +472,9 @@ NodeType Level::get_node_type(const std::string &texture_name) const
 	else if (texture_name.find("/wood/") != std::string::npos) return NT_WOOD;
 	else if (texture_name.find("/map/") != std::string::npos)
 	{
-		if (texture_name.find("road_") != std::string::npos)
+		if (texture_name.find("base_") != std::string::npos)
+			return NT_BASE;
+		else if (texture_name.find("road_") != std::string::npos)
 			return NT_ROAD;
 		else if (texture_name.find("river_") != std::string::npos)
 			return NT_RIVER;
@@ -519,6 +538,9 @@ std::string Level::get_surroundings(uint8_t xpos, uint8_t ypos, bool check_floor
 			ypos + offset_y[i] < 0 || ypos + offset_y[i] >= map_height)
 			result += '1';
 		else if (map_data[ypos + offset_y[i]][xpos + offset_x[i]].wall_texture == map_data[ypos][xpos].wall_texture)
+			result += '1';
+		else if (map_data[ypos][xpos].wall_type == NT_ROAD &&
+			map_data[ypos + offset_y[i]][xpos + offset_x[i]].wall_type == NT_BASE)
 			result += '1';
 		else result += '0';
 	}

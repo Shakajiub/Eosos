@@ -99,6 +99,9 @@ void Hero::step_pathfinder(Level *level)
 	{
 		moves.first -= 1;
 		add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+
+		if (moves.first > 0)
+			camera.update_position(pathfinder->get_goto_x() * 32, pathfinder->get_goto_y() * 32);
 	}
 }
 void Hero::input_keyboard_down(SDL_Keycode key, Level *level)

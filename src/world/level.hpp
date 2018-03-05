@@ -30,7 +30,7 @@ enum NodeType
 {
 	NT_NONE, NT_FLOOR, NT_HILL, NT_HOLE,
 	NT_TREE, NT_WALL, NT_WOOD, NT_ROAD,
-	NT_RIVER, NT_INVISIBLE
+	NT_RIVER, NT_BASE, NT_INVISIBLE
 };
 typedef struct
 {
@@ -73,6 +73,9 @@ public:
 
 	Actor* get_actor(uint8_t xpos, uint8_t ypos) const;
 	MapNode get_node(uint8_t xpos, uint8_t ypos) const;
+
+	std::pair<uint8_t, uint8_t> get_base_pos() const;
+	std::pair<uint8_t, uint8_t> get_spawn_pos() const;
 
 	void set_actor(uint8_t xpos, uint8_t ypos, Actor *actor);
 	void set_node(uint8_t xpos, uint8_t ypos, MapNode node);
