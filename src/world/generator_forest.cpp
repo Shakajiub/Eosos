@@ -37,25 +37,64 @@ void GeneratorForest::init()
 }
 const std::string GeneratorForest::generate(uint8_t depth)
 {
-	const std::string level =
+	const int8_t offset_x[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
+	const int8_t offset_y[8] = { -1, 1, 0, 0, -1, -1, 1, 1 };
+
+	const uint8_t width = 21;
+	const uint8_t height = 15;
+	uint8_t map_data[width * height];
+
+	bool map_fine = false;
+	while (!map_fine)
+	{
+		std::fill(map_data, map_data + (width * height), 1);
+
+		uint8_t floor_num = 1;
+		uint8_t xpos = 10, ypos = 7;
+		map_data[ypos * width + xpos] = 0;
+
+		while (floor_num < 155)
+		{
+			if (xpos == 0 || xpos == width - 1) { map_fine = true; xpos = 10; }
+			if (ypos == 0 || ypos == height - 1) { map_fine = true; ypos = 7; }
+
+			const uint8_t dir = engine.get_rng() % 4;
+			xpos += offset_x[dir];
+			ypos += offset_y[dir];
+
+			if (map_data[ypos * width + xpos] == 1)
+			{
+				map_data[ypos * width + xpos] = 0;
+				floor_num += 1;
+			}
+		}
+		if (!map_fine)
+			std::cout << "map discarded, no access to edge ..." << std::endl;
+	}
+	/*for (uint8_t y = 0; y < height; y++)
+	{
+		for (uint8_t x = 0; x < width; x++)
+		{
+
+		}
+	}*/
+	std::string level =
 		"l-0-core/texture/level/floor/dark2_base.png\n"
 		"l-1-core/texture/level/floor/dark2_grass.png\n"
-		"l-T-core/texture/level/tree/oak_dead.png\n"
-		"1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T\n"
-		"1T0_0_1_1_1_1_0_0_1_0_1_1_1_0_0_0_0_1_1T\n"
-		"1T1_0_0_1_1_0_0_1_0_1_1_0_1_1_0_0_1_1_1T\n"
-		"1T1_1_1_1_0_1_0_0_0_1_0_1_1_0_1_1_1_0_1T\n"
-		"1T0_1_1_0_0_0_1_0_0_0_1_1_0_1_1_1_0_1_1T\n"
-		"1T0_0_1_1_1_1_0_0_1_0_1_1_1_0_0_0_0_1_1T\n"
-		"1T1_0_0_1_1_0_0_1_0_1_1_0_1_1_0_0_1_1_1T\n"
-		"1T1_1_1_1_0_1_0_0_0_1_0_1_1_0_1_1_1_0_1T\n"
-		"1T0_1_1_0_0_0_1_0_0_0_1_1_0_1_1_1_0_1_1T\n"
-		"1T1_1_1_1_0_1_0_0_0_1_0_1_1_0_1_1_1_0_1T\n"
-		"1T0_0_1_1_1_1_0_0_1_0_1_1_1_0_0_0_0_1_1T\n"
-		"1T1_0_0_1_1_0_0_1_0_1_1_0_1_1_0_0_1_1_1T\n"
-		"1T1_1_1_1_0_1_0_0_0_1_0_1_1_0_1_1_1_0_1T\n"
-		"1T0_1_1_0_0_0_1_0_0_0_1_1_0_1_1_1_0_1_1T\n"
-		"1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T1T";
+		"l-T-core/texture/level/tree/oak_dead.png\n";
+	for (uint8_t y = 0; y < height; y++)
+	{
+		for (uint8_t x = 0; x < width; x++)
+		{
+			const uint8_t node = map_data[y * width + x];
+			level += (engine.get_rng() % 2 == 0) ? '0' : '1';
+			if (node == 0)
+				level += '_';
+			else level += 'T';
+		}
+		level += '\n';
+	}
+	std::cout << level << std::endl;
 	return level;
 }
 void GeneratorForest::next_turn(uint16_t turn, ActorManager *am)

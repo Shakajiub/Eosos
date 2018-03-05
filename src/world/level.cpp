@@ -69,8 +69,9 @@ void Level::free()
 }
 void Level::create(uint8_t depth)
 {
-	if (map_generator == nullptr)
-		map_generator = new GeneratorForest;
+	free();
+
+	map_generator = new GeneratorForest;
 
 	bool floor_layer = true;
 	uint8_t map_x = 0, map_y = 0;
@@ -507,7 +508,7 @@ std::string Level::get_surroundings(uint8_t xpos, uint8_t ypos, bool check_floor
 	{
 		if (xpos + offset_x[i] < 0 || xpos + offset_x[i] >= map_width ||
 			ypos + offset_y[i] < 0 || ypos + offset_y[i] >= map_height)
-			result += '0';
+			result += '1';
 		else if (map_data[ypos + offset_y[i]][xpos + offset_x[i]].wall_texture == map_data[ypos][xpos].wall_texture)
 			result += '1';
 		else result += '0';

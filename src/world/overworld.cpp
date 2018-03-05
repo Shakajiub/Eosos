@@ -69,7 +69,7 @@ void Overworld::init()
 	current_level->create(current_depth);
 
 	actor_manager = new ActorManager;
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/barbarian.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, 10, 7, "core/texture/actor/player/orc/peon.png");
 	//actor_manager->spawn_actor(current_level, ACTOR_HERO, 2, 5, "core/texture/actor/player/orc/mage.png");
 
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
@@ -127,6 +127,16 @@ bool Overworld::update()
 				case SDLK_d:
 					if (SDL_GetModState() & KMOD_CTRL)
 						options.load();
+					break;
+				case SDLK_g:
+					if (current_level != nullptr)
+					{
+						current_turn = 0;
+						current_depth += 1;
+						current_level->create(current_depth);
+						actor_manager->clear_actors();
+						actor_manager->spawn_actor(current_level, ACTOR_HERO, 10, 7, "core/texture/actor/player/orc/peon.png");
+					}
 					break;
 				default:
 					if (actor_manager != nullptr)

@@ -112,6 +112,16 @@ void ActorManager::animate()
 			a->action_idle();
 	}
 }
+void ActorManager::clear_actors()
+{
+	for (uint8_t i = 0; i < actors.size(); i++)
+	{
+		if (actors[i] != nullptr)
+			delete actors[i];
+	}
+	actors.clear();
+	current_actor = nullptr;
+}
 bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
 	if (level != nullptr && !level->get_wall(xpos, ypos, true))
@@ -134,6 +144,9 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 					current_actor->start_turn();
 				}
 				level->set_actor(xpos, ypos, temp);
+
+				if (temp->get_actor_type() == ACTOR_HERO)
+					camera.update_position(temp->get_grid_x() * 32, temp->get_grid_y() * 32);
 			}
 			else delete temp;
 		}
