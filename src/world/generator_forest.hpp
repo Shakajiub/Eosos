@@ -15,43 +15,22 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OVERWORLD_HPP
-#define OVERWORLD_HPP
+#ifndef GENERATOR_FOREST_HPP
+#define GENERATOR_FOREST_HPP
 
-#include "scene.hpp"
+#include "generator.hpp"
 
-class ActorManager;
-class Level;
-class Texture;
-
-class Overworld : public Scene
+class GeneratorForest : public Generator
 {
 public:
-	Overworld();
-	~Overworld();
+	GeneratorForest();
+	~GeneratorForest();
 
 	virtual void free();
 	virtual void init();
 
-	virtual bool update();
-	virtual void render() const;
-
-	void next_turn();
-
-private:
-	uint8_t anim_timer;
-	uint8_t current_depth;
-	uint16_t current_turn;
-
-	ActorManager *actor_manager;
-	Level *current_level;
-
-	Texture *node_highlight;
-	std::vector<Texture*> pointers;
-
-	uint8_t frames;
-	uint8_t display_fps;
-	uint16_t frame_counter;
+	virtual const std::string generate(uint8_t depth);
+	virtual void next_turn(uint16_t turn, ActorManager *am);
 };
 
-#endif // OVERWORLD_HPP
+#endif // GENERATOR_FOREST_HPP

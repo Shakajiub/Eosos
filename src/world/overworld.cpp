@@ -30,8 +30,8 @@
 #include "ui.hpp"
 
 Overworld::Overworld() :
-	anim_timer(0), current_turn(0), actor_manager(nullptr), current_level(nullptr),
-	node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
+	anim_timer(0), current_depth(0), current_turn(0), actor_manager(nullptr),
+	current_level(nullptr), node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
 {
 
 }
@@ -66,11 +66,11 @@ void Overworld::init()
 	ui.init_background();
 
 	current_level = new Level;
-	current_level->create();
+	current_level->create(current_depth);
 
 	actor_manager = new ActorManager;
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, 4, 4, "core/texture/actor/player/orc/barbarian.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, 2, 5, "core/texture/actor/player/orc/mage.png");
+	//actor_manager->spawn_actor(current_level, ACTOR_HERO, 2, 5, "core/texture/actor/player/orc/mage.png");
 
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
@@ -210,12 +210,6 @@ void Overworld::render() const
 void Overworld::next_turn()
 {
 	current_turn += 1;
-
-	if (/*current_turn % 2 == 0 &&*/ actor_manager != nullptr && current_level != nullptr)
-	{
-		const uint8_t xpos = current_level->get_map_width() - 1;
-		const uint8_t ypos = engine.get_rng() % current_level->get_map_height();
-
-		actor_manager->spawn_actor(current_level, ACTOR_MONSTER, xpos, ypos, "core/texture/actor/player/dwarf/dwarf_7.png");
-	}
+	if (current_level != nullptr)
+		current_level->next_turn(current_turn, actor_manager);
 }

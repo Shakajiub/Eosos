@@ -100,7 +100,7 @@ bool Engine::init()
 	//Mix_ReserveChannels(4);
 
 	// Initialize randomization features
-	generator.seed(std::mt19937::default_seed);
+	generator.seed(std::random_device{}());
 
 	// Create the main engine managers
 	scene_manager = new SceneManager;

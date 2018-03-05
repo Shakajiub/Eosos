@@ -21,8 +21,10 @@
 #include <vector>
 #include <unordered_map>
 
+class ActorManager;
 class Actor;
 class Texture;
+class Generator;
 
 enum NodeType
 {
@@ -50,9 +52,10 @@ public:
 	~Level();
 
 	void free();
-	void create();
+	void create(uint8_t depth);
 	void render() const;
 	void animate();
+	void next_turn(uint16_t turn, ActorManager *am);
 
 	uint8_t get_map_width() const { return map_width; }
 	uint8_t get_map_height() const { return map_height; }
@@ -81,6 +84,7 @@ private:
 	std::vector<Texture*> textures;
 
 	SDL_Texture *map_texture;
+	Generator *map_generator;
 };
 
 #endif // LEVEL_HPP

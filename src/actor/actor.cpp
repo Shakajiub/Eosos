@@ -214,6 +214,7 @@ bool Actor::action_attack(Level *level)
 			Actor *temp_actor = level->get_actor(current_action.xpos, current_action.ypos);
 			if (temp_actor != nullptr)
 				temp_actor->set_delete(true);
+			//level->set_actor(current_action.xpos, current_action.ypos, nullptr);
 		}
 		if (anim_frames % 2 == 0)
 		{

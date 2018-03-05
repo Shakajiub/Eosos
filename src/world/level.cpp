@@ -17,14 +17,17 @@
 
 #include "engine.hpp"
 #include "level.hpp"
+#include "actor_manager.hpp"
 #include "actor.hpp"
 #include "texture.hpp"
+#include "generator_forest.hpp"
 
 #include "camera.hpp"
 #include "texture_manager.hpp"
 #include "ui.hpp"
 
 #include <fstream> // for std::ifstream
+#include <sstream> // for std::istringstream
 
 typedef struct
 {
@@ -34,7 +37,7 @@ typedef struct
 }
 SubNode;
 
-Level::Level() : map_created(false), map_texture(nullptr)
+Level::Level() : map_created(false), map_texture(nullptr), map_generator(nullptr)
 {
 
 }
@@ -54,61 +57,76 @@ void Level::free()
 		SDL_DestroyTexture(map_texture);
 		map_texture = nullptr;
 	}
+	if (map_generator != nullptr)
+	{
+		delete map_generator;
+		map_generator = nullptr;
+	}
 	for (Texture *t : textures)
 		engine.get_texture_manager()->free_texture(t->get_name());
 
 	textures.clear();
 }
-void Level::create()
+void Level::create(uint8_t depth)
 {
+	if (map_generator == nullptr)
+		map_generator = new GeneratorForest;
+
+	bool floor_layer = true;
+	uint8_t map_x = 0, map_y = 0;
 	std::unordered_map<char, SubNode> nodes;
+	std::string line;
 
-	const std::string floors[3] = {
-		"core/texture/level/floor/dark2_base.png",
-		"core/texture/level/floor/dark2_grass.png",
-		"core/texture/level/floor/dark2_hill.png"
-	};
-	const char ids[3] = { 'b', 'g', 'h' };
-	Texture *forest = engine.get_texture_manager()->load_texture("core/texture/level/tree/oak_dead.png");
-	textures.push_back(forest);
-
-	for (uint8_t i = 0; i < 3; i++)
+	std::istringstream level(map_generator->generate(depth));
+	while (std::getline(level, line))
 	{
-		SubNode temp = { engine.get_texture_manager()->load_texture(floors[i]) };
-		if (temp.sub_texture != nullptr)
+		if (line[0] == 'l') // Lines starting with an 'l' (for "level") declare our nodes
 		{
-			textures.push_back(temp.sub_texture);
-			temp.sub_type = get_node_type(temp.sub_texture->get_name());
-			temp.sub_animated = get_node_animated(temp.sub_texture);
+			// If a node with the given key (third character of the line) does not exist, we need to create it
+			auto it = nodes.find(line[2]);
+			if (it == nodes.end())
+			{
+				SubNode temp = { engine.get_texture_manager()->load_texture(line.substr(4, line.length() - 4)) };
+				if (temp.sub_texture != nullptr)
+				{
+					textures.push_back(temp.sub_texture);
+					temp.sub_type = get_node_type(temp.sub_texture->get_name());
+					temp.sub_animated = get_node_animated(temp.sub_texture);
+					nodes[line[2]] = temp;
+				}
+			}
 		}
-		nodes[ids[i]] = temp;
+		else if (line[0] != '\n') // Other lines define the map itself
+		{
+			std::vector<MapNode> map_line;
+			MapNode temp_map_node = { nullptr, nullptr, nullptr, 0, 0, NT_NONE, false, false };
+			for (char c : line)
+			{
+				if (nodes.find(c) != nodes.end()) // If the character is defined as a node, update temp_map_node
+				{
+					if (!floor_layer)
+					{
+						temp_map_node.wall_texture = nodes[c].sub_texture;
+						temp_map_node.wall_type = nodes[c].sub_type;
+						temp_map_node.wall_animated = nodes[c].sub_animated;
+					}
+					else temp_map_node.floor_texture = nodes[c].sub_texture;
+				}
+				if (!floor_layer) // Every other character ends a node definition
+				{
+					map_line.push_back(temp_map_node);
+					temp_map_node = { nullptr, nullptr, nullptr, 0, 0, NT_NONE, false, false };
+					map_x += 1;
+				}
+				floor_layer = !floor_layer;
+			}
+			map_data.push_back(map_line);
+			map_y += 1; map_x = 0;
+		}
 	}
-	map_width = 15;
-	map_height = 10;
+	map_width = (uint8_t)map_data[0].size();
+	map_height = (uint8_t)map_data.size();
 
-	for (uint8_t y = 0; y < map_height; y++)
-	{
-		std::vector<MapNode> map_line;
-		for (uint8_t x = 0; x < map_width; x++)
-		{
-			MapNode temp_node = { nullptr, nullptr, nullptr, 0, 0, NT_NONE, false, false };
-			const uint8_t i = engine.get_rng() % 3;
-			temp_node.floor_texture = nodes[ids[i]].sub_texture;
-			if (engine.get_rng() % 10 == 0)
-			{
-				temp_node.wall_texture = forest;
-				temp_node.wall_type = NT_TREE;
-				temp_node.wall_animated = false;
-			}
-			else
-			{
-				temp_node.wall_type = nodes[ids[i]].sub_type;
-				temp_node.wall_animated = nodes[ids[i]].sub_animated;
-			}
-			map_line.push_back(temp_node);
-		}
-		map_data.push_back(map_line);
-	}
 	// Correct the frames for all map nodes (so that tiles connect to eachother nicely)
 	load_neighbor_rules();
 	for (uint8_t y = 0; y < map_height; y++)
@@ -125,6 +143,7 @@ void Level::create()
 	init_map_texture();
 
 	map_created = true;
+	std::cout << "map created, size: " << (int)(map_width) << ", " << (int)(map_height) << std::endl;
 }
 void Level::render() const
 {
@@ -225,6 +244,11 @@ void Level::animate()
 	}
 	if (refresh_texture)
 		refresh_map_texture(true);
+}
+void Level::next_turn(uint16_t turn, ActorManager *am)
+{
+	if (map_generator != nullptr)
+		map_generator->next_turn(turn, am);
 }
 Actor* Level::get_actor(uint8_t xpos, uint8_t ypos) const
 {
@@ -329,7 +353,8 @@ void Level::correct_frame(uint8_t xpos, uint8_t ypos, NodeType node_type)
 		case NT_TREE: prefix = "tree"; break;
 		case NT_WALL: prefix = "wall"; break;
 		case NT_WOOD: prefix = "wood"; break;
-		case NT_ROAD: case NT_RIVER: prefix = "map"; break;
+		case NT_ROAD: prefix = "map"; break;
+		case NT_RIVER: prefix = "map"; break;
 		default: prefix = "floor"; break;
 	}
 	bool got_pair;
@@ -410,18 +435,14 @@ void Level::correct_frame(uint8_t xpos, uint8_t ypos, NodeType node_type)
 }
 NodeType Level::get_node_type(const std::string &texture_name) const
 {
-	// This is terrible, but at least it's only called once for each node definition
+	// This is terrible, but at least it's only called once per each node definition
 
-	if (texture_name.find("/tree/") != std::string::npos)
-		return NT_TREE;
-	else if (texture_name.find("/hill/") != std::string::npos)
-		return NT_HILL;
-	else if (texture_name.find("/hole/") != std::string::npos)
-		return NT_HOLE;
-	else if (texture_name.find("/wall/") != std::string::npos)
-		return NT_WALL;
-	else if (texture_name.find("/wood/") != std::string::npos)
-		return NT_WOOD;
+	if (texture_name.find("invis") != std::string::npos) return NT_INVISIBLE;
+	else if (texture_name.find("/tree/") != std::string::npos) return NT_TREE;
+	else if (texture_name.find("/hill/") != std::string::npos) return NT_HILL;
+	else if (texture_name.find("/hole/") != std::string::npos) return NT_HOLE;
+	else if (texture_name.find("/wall/") != std::string::npos) return NT_WALL;
+	else if (texture_name.find("/wood/") != std::string::npos) return NT_WOOD;
 	else if (texture_name.find("/map/") != std::string::npos)
 	{
 		if (texture_name.find("road_") != std::string::npos)
@@ -430,10 +451,7 @@ NodeType Level::get_node_type(const std::string &texture_name) const
 			return NT_RIVER;
 		else if (texture_name.find("wall_") != std::string::npos)
 			return NT_WALL;
-		else std::cout << "invalid map texture type '" << texture_name << "'!" << std::endl;
 	}
-	else if (texture_name.find("invis") != std::string::npos)
-		return NT_INVISIBLE;
 	return NT_FLOOR;
 }
 bool Level::get_node_animated(const Texture *node_texture) const
