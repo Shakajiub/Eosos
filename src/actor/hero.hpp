@@ -22,6 +22,11 @@
 
 class AStar;
 
+enum HeroClass
+{
+	HC_BARBARIAN, HC_CLERIC, HC_MAGE, HC_MONK,
+	HC_PEON, HC_PIRATE, HC_SWORDMASTER, HC_TANK
+};
 class Hero : public Actor
 {
 public:
@@ -40,6 +45,7 @@ public:
 
 	bool init_ui_texture();
 	bool init_pathfinder();
+	bool init_class(HeroClass hc);
 
 	void render_ui_texture(uint16_t xpos, uint16_t ypos) const;
 	void step_pathfinder(Level *level);
@@ -53,6 +59,8 @@ public:
 private:
 	bool auto_move_path;
 	bool command_this_turn;
+
+	HeroClass hero_class;
 
 	uint8_t hp_shake;
 	int8_t prev_health;

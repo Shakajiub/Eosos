@@ -17,6 +17,7 @@
 
 #include "engine.hpp"
 #include "ui.hpp"
+#include "actor_manager.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
 #include "message_log.hpp"
@@ -151,13 +152,13 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 		}
 	}
 }
-bool UI::get_overlap(int16_t xpos, int16_t ypos) const
+bool UI::get_overlap(ActorManager *at, int16_t xpos, int16_t ypos) const
 {
 	if (message_log != nullptr && message_log->get_overlap(xpos, ypos))
 		return true;
 	return false;
 }
-bool UI::get_click(int16_t xpos, int16_t ypos) const
+bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos) const
 {
 	return false;
 }

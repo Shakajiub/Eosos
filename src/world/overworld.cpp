@@ -30,6 +30,8 @@
 #include "bitmap_font.hpp"
 #include "ui.hpp"
 
+#include <cmath> // for std::floor
+
 Overworld::Overworld() :
 	anim_timer(0), current_depth(0), current_turn(0), actor_manager(nullptr), hovered_actor(nullptr),
 	current_level(nullptr), node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
@@ -72,10 +74,9 @@ void Overworld::init()
 	auto pos = current_level->get_base_pos();
 
 	actor_manager = new ActorManager;
-	//actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first - 1, pos.second - 1, "core/texture/actor/player/orc/peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first - 1, pos.second + 1, "core/texture/actor/player/orc/pirate.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second - 1, "core/texture/actor/player/orc/monk.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second + 1, "core/texture/actor/player/orc/barbarian.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first - 1, pos.second + 1, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second - 1, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second + 1, "core/texture/actor/player/orc/peon.png");
 
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
@@ -150,7 +151,7 @@ bool Overworld::update()
 		}
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
-			if (!ui.get_click(event.button.x, event.button.y))
+			if (!ui.get_click(actor_manager, event.button.x, event.button.y))
 			{
 				if (actor_manager != nullptr)
 					actor_manager->input_mouse_button_down(event, current_level);
@@ -163,7 +164,7 @@ bool Overworld::update()
 		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
 		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
 
-		if (map_x >= 0 && map_y >= 0 && !ui.get_overlap(mouse_x, mouse_y) &&
+		if (map_x >= 0 && map_y >= 0 && !ui.get_overlap(actor_manager, mouse_x, mouse_y) &&
 			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
 		{
 			Actor *temp_actor = current_level->get_actor(map_x, map_y);
@@ -220,16 +221,16 @@ void Overworld::render() const
 	}
 	if (node_highlight != nullptr && current_level != nullptr)
 	{
-		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
-		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
+		int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
+		int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
 
-		if (map_x >= 0 && map_y >= 0 && !ui.get_overlap(mouse_x, mouse_y) &&
-			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
+		if (std::floor(mouse_x + camera.get_cam_x()) < 0) map_x = -1;
+		if (std::floor(mouse_y + camera.get_cam_y()) < 0) map_y = -1;
+
+		if (map_x >= 0 && map_x < current_level->get_map_width() &&
+			map_y >= 0 && map_y < current_level->get_map_height())
 		{
-			node_highlight->render(
-				(map_x < 0 ? map_x - 1 : map_x) * 32 - camera.get_cam_x(),
-				(map_y < 0 ? map_y - 1 : map_y) * 32 - camera.get_cam_y()
-			);
+			node_highlight->render(map_x * 32 - camera.get_cam_x(), map_y * 32 - camera.get_cam_y());
 		}
 	}
 	if (actor_manager != nullptr)

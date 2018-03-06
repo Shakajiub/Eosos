@@ -26,7 +26,7 @@
 #include "ui.hpp"
 
 Hero::Hero() :
-	auto_move_path(false), command_this_turn(false), hp_shake(0),
+	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), hp_shake(0),
 	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr)
 {
 	health = std::make_pair(3, 3);
@@ -168,6 +168,29 @@ bool Hero::init_pathfinder()
 {
 	pathfinder = new AStar;
 	return pathfinder->init();
+}
+bool Hero::init_class(HeroClass hc)
+{
+	std::string class_texture = "core/texture/actor/player/orc/peon.png";
+	hero_class = hc;
+	switch (hc)
+	{
+		case HC_BARBARIAN: class_texture = "core/texture/actor/player/orc/peon.png"; break;
+		case HC_CLERIC: class_texture = "core/texture/actor/player/orc/cleric.png"; break;
+		case HC_MAGE: class_texture = "core/texture/actor/player/orc/mage.png"; break;
+		case HC_MONK: class_texture = "core/texture/actor/player/orc/monk.png"; break;
+		case HC_PIRATE: class_texture = "core/texture/actor/player/orc/pirate.png"; break;
+		case HC_SWORDMASTER: class_texture = "core/texture/actor/player/orc/swordmaster.png"; break;
+		case HC_TANK: class_texture = "core/texture/actor/player/orc/tank.png"; break;
+		default: hero_class = HC_PEON; break;
+	}
+	if (texture != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(texture->get_name());
+		texture = nullptr;
+	}
+	texture = engine.get_texture_manager()->load_texture(class_texture);
+	return texture != nullptr;
 }
 void Hero::render_ui_texture(uint16_t xpos, uint16_t ypos) const
 {
