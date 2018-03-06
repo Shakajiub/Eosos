@@ -35,6 +35,12 @@ enum ActionType
 	ACTION_MOVE,
 	ACTION_ATTACK
 };
+enum HoverType
+{
+	HOVER_NONE,
+	HOVER_MAP,
+	HOVER_UI
+};
 typedef struct
 {
 	ActionType type;
@@ -74,18 +80,19 @@ public:
 	uint16_t get_ID() const { return actor_ID; }
 	uint8_t get_grid_x() const { return grid_x; }
 	uint8_t get_grid_y() const { return grid_y; }
+	HoverType get_hovered() const { return hovered; }
 	ActorType get_actor_type() const { return actor_type; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
 
 	void set_delete(bool del) { delete_me = del; }
-	void set_hovered(bool h) { hovered = h; }
+	void set_hovered(HoverType ht) { hovered = ht; }
 
 protected:
 	bool delete_me;
 	bool in_camera;
 	bool turn_done;
 	bool facing_right;
-	bool hovered;
+	HoverType hovered;
 
 	ActorType actor_type;
 	uint16_t actor_ID;

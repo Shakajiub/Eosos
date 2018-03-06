@@ -233,3 +233,27 @@ bool ActorManager::get_next_turn()
 	}
 	return false;
 }
+bool ActorManager::get_overlap(int16_t xpos, int16_t ypos) const
+{
+	uint16_t y = 48;
+	for (Actor *a : heroes)
+	{
+		if (xpos < 48 && ypos > y && ypos < y + 48)
+			a->set_hovered(HOVER_UI);
+		else if (a->get_hovered() != HOVER_MAP)
+			a->set_hovered(HOVER_NONE);
+		y += 48;
+	}
+	return false;
+}
+bool ActorManager::get_click(int16_t xpos, int16_t ypos) const
+{
+	uint16_t y = 48;
+	for (Actor *a : heroes)
+	{
+		if (xpos < 48 && ypos > y && ypos < y + 48)
+			camera.update_position(a->get_grid_x() * 32, a->get_grid_y() * 32);
+		y += 48;
+	}
+	return false;
+}

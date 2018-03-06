@@ -45,6 +45,9 @@ public:
 
 	bool get_next_turn();
 
+	bool get_overlap(int16_t xpos, int16_t ypos) const;
+	bool get_click(int16_t xpos, int16_t ypos) const;
+
 private:
 	bool next_turn;
 	Actor *current_actor;

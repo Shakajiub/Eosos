@@ -40,7 +40,6 @@ public:
 	void add_message(const std::string &message, SDL_Color color = COLOR_PEPPERMINT);
 	void clear_log();
 
-	bool get_overlap(int16_t xpos, int16_t ypos) const;
 	void set_position(int16_t xpos, int16_t ypos) { x = xpos; y = ypos; }
 	void set_size(uint8_t new_width, uint8_t new_height);
 

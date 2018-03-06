@@ -154,11 +154,13 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 }
 bool UI::get_overlap(ActorManager *at, int16_t xpos, int16_t ypos) const
 {
-	if (message_log != nullptr && message_log->get_overlap(xpos, ypos))
+	if (at != nullptr && at->get_overlap(xpos, ypos))
 		return true;
 	return false;
 }
 bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos) const
 {
+	if (at != nullptr && at->get_click(xpos, ypos))
+		return true;
 	return false;
 }

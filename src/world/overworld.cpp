@@ -164,19 +164,19 @@ bool Overworld::update()
 		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
 		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
 
-		if (map_x >= 0 && map_y >= 0 && !ui.get_overlap(actor_manager, mouse_x, mouse_y) &&
+		if (!ui.get_overlap(actor_manager, mouse_x, mouse_y) && map_x >= 0 && map_y >= 0 &&
 			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
 		{
 			Actor *temp_actor = current_level->get_actor(map_x, map_y);
 			if (temp_actor != hovered_actor)
 			{
-				if (hovered_actor != nullptr)
-					hovered_actor->set_hovered(false);
+				if (hovered_actor != nullptr && hovered_actor->get_hovered() != HOVER_UI)
+					hovered_actor->set_hovered(HOVER_NONE);
 
 				hovered_actor = temp_actor;
 
 				if (hovered_actor != nullptr)
-					hovered_actor->set_hovered(true);
+					hovered_actor->set_hovered(HOVER_MAP);
 			}
 		}
 	}

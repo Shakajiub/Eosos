@@ -81,7 +81,7 @@ void Hero::render() const
 {
 	Actor::render();
 
-	if (pathfinder != nullptr && hovered)
+	if (pathfinder != nullptr && (hovered != HOVER_NONE))
 		pathfinder->render(moves.first);
 }
 void Hero::start_turn()
@@ -91,7 +91,7 @@ void Hero::start_turn()
 }
 bool Hero::take_turn(Level *level)
 {
-	hovered = true;
+	hovered = HOVER_MAP;
 	if (turn_done)
 	{
 		if (pathfinder != nullptr && pathfinder->get_path_found())
@@ -118,7 +118,7 @@ bool Hero::take_turn(Level *level)
 void Hero::end_turn()
 {
 	Actor::end_turn();
-	hovered = false;
+	hovered = HOVER_NONE;
 }
 bool Hero::init_ui_texture()
 {
@@ -201,7 +201,7 @@ void Hero::render_ui_texture(uint16_t xpos, uint16_t ypos) const
 {
 	if (ui_texture != nullptr)
 	{
-		const SDL_Rect rect = { hovered ? 48 : 0, 0, 48, 48 };
+		const SDL_Rect rect = { (hovered != HOVER_NONE) ? 48 : 0, 0, 48, 48 };
 		const SDL_Rect quad = { xpos, ypos, 48, 48 };
 
 		SDL_RenderCopyEx(engine.get_renderer(), ui_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);

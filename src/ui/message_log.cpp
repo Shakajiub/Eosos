@@ -117,12 +117,6 @@ void MessageLog::clear_log()
 	if (log_texture != nullptr)
 		refresh_texture();
 }
-bool MessageLog::get_overlap(int16_t xpos, int16_t ypos) const
-{
-	if (xpos > x && xpos < (x + width * 32) && ypos > y && ypos < (y + height * 32))
-		return true;
-	return false;
-}
 void MessageLog::set_size(uint8_t new_width, uint8_t new_height)
 {
 	width = new_width;
