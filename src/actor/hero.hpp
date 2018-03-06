@@ -29,13 +29,17 @@ public:
 	~Hero();
 
 	void free();
+	virtual bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 
 	virtual void render() const;
 	virtual void start_turn();
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
-	void init_pathfinder();
+	bool init_ui_texture();
+	bool init_pathfinder();
+
+	void render_ui_texture(uint16_t xpos, uint16_t ypos) const;
 	void step_pathfinder(Level *level);
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
@@ -49,6 +53,7 @@ private:
 	bool command_this_turn;
 
 	AStar *pathfinder;
+	SDL_Texture *ui_texture;
 };
 
 #endif // HERO_HPP

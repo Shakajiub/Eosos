@@ -71,7 +71,10 @@ void Overworld::init()
 	auto pos = current_level->get_base_pos();
 
 	actor_manager = new ActorManager;
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first - 1, pos.second - 1, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first - 1, pos.second + 1, "core/texture/actor/player/orc/archer.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second - 1, "core/texture/actor/player/orc/monk.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second + 1, "core/texture/actor/player/orc/barbarian.png");
 
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
@@ -137,8 +140,8 @@ bool Overworld::update()
 						current_level->create(current_depth);
 						auto pos = current_level->get_base_pos();
 
-						actor_manager->clear_actors();
-						actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
+						actor_manager->clear_actors(current_level);
+						//actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
 					}
 					break;
 				default:
@@ -231,6 +234,9 @@ void Overworld::render() const
 			);
 		}
 	}
+	if (actor_manager != nullptr)
+		actor_manager->render_ui();
+
 	ui.render();
 	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
 	ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));

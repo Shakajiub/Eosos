@@ -29,16 +29,20 @@ public:
 	~Monster();
 
 	void free();
+	virtual bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 
+	virtual void render() const;
 	virtual void start_turn();
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
-	void init_pathfinder();
+	bool init_healthbar();
+	bool init_pathfinder();
 	void step_pathfinder(Level *level);
 
 private:
 	AStar *pathfinder;
+	Texture *healthbar;
 };
 
 #endif // MONSTER_HPP

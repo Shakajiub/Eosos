@@ -19,10 +19,12 @@
 #include "hero.hpp"
 #include "level.hpp"
 #include "astar.hpp"
+#include "texture.hpp"
 
 #include "camera.hpp"
+#include "ui.hpp"
 
-Hero::Hero() : auto_move_path(false), command_this_turn(false), pathfinder(nullptr)
+Hero::Hero() : auto_move_path(false), command_this_turn(false), pathfinder(nullptr), ui_texture(nullptr)
 {
 
 }
@@ -37,6 +39,18 @@ void Hero::free()
 		delete pathfinder;
 		pathfinder = nullptr;
 	}
+	if (ui_texture != nullptr)
+	{
+		SDL_DestroyTexture(ui_texture);
+		ui_texture = nullptr;
+	}
+}
+bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
+{
+	if (!Actor::init(at, xpos, ypos, texture_name))
+		return false;
+
+	return (init_ui_texture() && init_pathfinder());
 }
 void Hero::render() const
 {
@@ -81,10 +95,65 @@ void Hero::end_turn()
 	Actor::end_turn();
 	hovered = false;
 }
-void Hero::init_pathfinder()
+bool Hero::init_ui_texture()
+{
+	ui_texture = SDL_CreateTexture(engine.get_renderer(),
+		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 96, 48
+	);
+	if (ui_texture == NULL)
+	{
+		ui_texture = nullptr;
+		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		return false;
+	}
+	if (ui.get_background() != nullptr)
+	{
+		SDL_SetRenderTarget(engine.get_renderer(), ui_texture);
+
+		SDL_Rect center = { 20, 20, 8, 8 };
+		SDL_Rect corners[4] =
+		{
+			{ 0, 0, 16, 8 }, // Top left
+			{ 40, 0, 8, 16 }, // Top right
+			{ 0, 32, 8, 16 }, // Bottom left
+			{ 32, 40, 16, 8 } // Bottom right
+		};
+		for (uint8_t i = 0; i < 2; i++)
+		{
+			if (i == 1)
+			{
+				for (uint8_t j = 0; j < 4; j++)
+					corners[j].x += 64;
+				center.x += 64;
+			}
+			ui.get_background()->render(i * 48 + 16, 16, &center);
+			ui.get_background()->render(i * 48, 0, &corners[0]);
+			ui.get_background()->render(i * 48 + 32, 0, &corners[1]);
+			ui.get_background()->render(i * 48, 16, &corners[2]);
+			ui.get_background()->render(i * 48 + 16, 32, &corners[3]);
+
+			if (texture != nullptr)
+				texture->render(i * 48 + 8, 8, &frame_rect, 2, SDL_FLIP_HORIZONTAL);
+		}
+		SDL_SetRenderTarget(engine.get_renderer(), NULL);
+		return true;
+	}
+	return false;
+}
+bool Hero::init_pathfinder()
 {
 	pathfinder = new AStar;
-	pathfinder->init();
+	return pathfinder->init();
+}
+void Hero::render_ui_texture(uint16_t xpos, uint16_t ypos) const
+{
+	if (ui_texture != nullptr)
+	{
+		const SDL_Rect rect = { hovered ? 48 : 0, 0, 48, 48 };
+		const SDL_Rect quad = { xpos, ypos, 48, 48 };
+
+		SDL_RenderCopyEx(engine.get_renderer(), ui_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);
+	}
 }
 void Hero::step_pathfinder(Level *level)
 {

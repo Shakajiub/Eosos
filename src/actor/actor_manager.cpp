@@ -41,6 +41,7 @@ void ActorManager::free()
 			delete actors[i];
 	}
 	actors.clear();
+	heroes.clear();
 	current_actor = nullptr;
 }
 bool ActorManager::update(Level *level)
@@ -71,10 +72,15 @@ bool ActorManager::update(Level *level)
 			}
 			if (to_erase.size() > 0) for (Actor *a : to_erase)
 			{
-				actors_deleted = true;
 				std::vector<Actor*>::iterator pos = std::find(actors.begin(), actors.end(), a);
 				if (pos != actors.end())
 					actors.erase(pos);
+
+				pos = std::find(heroes.begin(), heroes.end(), a);
+				if (pos != heroes.end())
+					heroes.erase(pos);
+
+				actors_deleted = true;
 				level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
 				delete a;
 			}
@@ -94,7 +100,7 @@ bool ActorManager::update(Level *level)
 	}
 	return actors_deleted;
 }
-void ActorManager::render(Level *level)
+void ActorManager::render(Level *level) const
 {
 	Actor *temp_actor = nullptr;
 	for (uint8_t y = 0; y < level->get_map_height(); y++)
@@ -115,15 +121,38 @@ void ActorManager::animate()
 			a->action_idle();
 	}
 }
-void ActorManager::clear_actors()
+void ActorManager::render_ui() const
 {
-	for (uint8_t i = 0; i < actors.size(); i++)
+	const uint16_t xpos = 0;
+	uint16_t ypos = 48;
+
+	for (Actor *a : heroes)
 	{
-		if (actors[i] != nullptr)
-			delete actors[i];
+		dynamic_cast<Hero*>(a)->render_ui_texture(xpos, ypos);
+		ypos += 48;
 	}
-	actors.clear();
-	current_actor = nullptr;
+}
+void ActorManager::clear_actors(Level *level, bool clear_heroes)
+{
+	std::vector<Actor*> to_erase;
+	for (Actor *a : actors)
+	{
+		if (clear_heroes || a->get_actor_type() != ACTOR_HERO)
+			to_erase.push_back(a);
+	}
+	for (Actor *a : to_erase)
+	{
+		std::vector<Actor*>::iterator pos = std::find(actors.begin(), actors.end(), a);
+		if (pos != actors.end())
+			actors.erase(pos);
+
+		pos = std::find(heroes.begin(), heroes.end(), a);
+		if (pos != heroes.end())
+			heroes.erase(pos);
+
+		level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
+		delete a;
+	}
 }
 bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
@@ -150,11 +179,9 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 
 				if (temp->get_actor_type() == ACTOR_HERO)
 				{
-					dynamic_cast<Hero*>(temp)->init_pathfinder();
+					heroes.push_back(temp);
 					camera.update_position(temp->get_grid_x() * 32, temp->get_grid_y() * 32);
 				}
-				else if (temp->get_actor_type() == ACTOR_MONSTER)
-					dynamic_cast<Monster*>(temp)->init_pathfinder();
 			}
 			else delete temp;
 		}

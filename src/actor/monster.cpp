@@ -20,7 +20,11 @@
 #include "level.hpp"
 #include "astar.hpp"
 
-Monster::Monster() : pathfinder(nullptr)
+#include "camera.hpp"
+#include "texture.hpp"
+#include "texture_manager.hpp"
+
+Monster::Monster() : pathfinder(nullptr), healthbar(nullptr)
 {
 
 }
@@ -34,6 +38,34 @@ void Monster::free()
 	{
 		delete pathfinder;
 		pathfinder = nullptr;
+	}
+	if (healthbar != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(healthbar->get_name());
+		healthbar = nullptr;
+	}
+}
+bool Monster::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
+{
+	if (!Actor::init(at, xpos, ypos, texture_name))
+		return false;
+
+	return (init_pathfinder() && init_healthbar());
+}
+void Monster::render() const
+{
+	Actor::render();
+
+	if (healthbar != nullptr && in_camera && (hovered || health.first < health.second))
+	{
+		const uint8_t hp_percent = (float)health.first / (float)health.second * 14;
+		const SDL_Rect temp_rect = { 28 - (hp_percent * 2), 0, 3, 16 };
+
+		healthbar->render(
+			x - camera.get_cam_x() + (facing_right ? 0 : 26),
+			y - camera.get_cam_y(),
+			&temp_rect, 2, SDL_FLIP_NONE, 0.0
+		);
 	}
 }
 void Monster::start_turn()
@@ -79,10 +111,15 @@ void Monster::end_turn()
 {
 	Actor::end_turn();
 }
-void Monster::init_pathfinder()
+bool Monster::init_healthbar()
+{
+	healthbar = engine.get_texture_manager()->load_texture("core/texture/ui/healthbar.png");
+	return healthbar != nullptr;
+}
+bool Monster::init_pathfinder()
 {
 	pathfinder = new AStar;
-	pathfinder->init();
+	return pathfinder->init();
 }
 void Monster::step_pathfinder(Level *level)
 {

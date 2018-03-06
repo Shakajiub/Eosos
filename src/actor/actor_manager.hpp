@@ -32,10 +32,12 @@ public:
 
 	void free();
 	bool update(Level *level);
-	void render(Level *level);
+	void render(Level *level) const;
 	void animate();
 
-	void clear_actors();
+	void render_ui() const;
+
+	void clear_actors(Level *level, bool clear_heroes = false);
 	bool spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
@@ -47,6 +49,7 @@ private:
 	bool next_turn;
 	Actor *current_actor;
 	std::vector<Actor*> actors;
+	std::vector<Actor*> heroes;
 };
 
 #endif // ACTOR_MANAGER

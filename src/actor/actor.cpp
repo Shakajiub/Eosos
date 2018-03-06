@@ -31,7 +31,9 @@ Actor::Actor() :
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0 };
+
 	moves = std::make_pair(0, 0);
+	health = std::make_pair(1, 1);
 }
 Actor::~Actor()
 {

@@ -49,7 +49,7 @@ public:
 	~Actor();
 
 	void free();
-	bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
+	virtual bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 
 	virtual void update(Level *level);
 	virtual void render() const;
@@ -97,6 +97,7 @@ protected:
 	Action current_action;
 	std::queue<Action> action_queue;
 	std::pair<int8_t, int8_t> moves;
+	std::pair<int8_t, int8_t> health;
 
 	uint8_t bubble_timer;
 	Texture *bubble;

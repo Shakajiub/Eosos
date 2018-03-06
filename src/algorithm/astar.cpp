@@ -45,12 +45,13 @@ void AStar::free()
 		path_marker = nullptr;
 	}
 }
-void AStar::init()
+bool AStar::init()
 {
 	if (path_marker == nullptr)
 		path_marker = engine.get_texture_manager()->load_texture("core/texture/ui/path.png", true);
 	if (path_marker != nullptr)
 		path_marker->set_color(COLOR_BERRY);
+	return path_marker != nullptr;
 }
 bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, bool diagonal)
 {
