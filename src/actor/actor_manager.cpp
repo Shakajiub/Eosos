@@ -156,7 +156,28 @@ void ActorManager::clear_actors(Level *level, bool clear_heroes)
 }
 bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
-	if (level != nullptr && !level->get_wall(xpos, ypos, true))
+	if (level == nullptr)
+		return false;
+
+	bool valid_spot = false;
+	if (level->get_wall(xpos, ypos, true))
+	{
+		for (int8_t x = -1; x < 2; x++)
+		{
+			for (int8_t y = -1; y < 2; y++)
+			{
+				if (!level->get_wall(xpos + x, ypos + y, true))
+				{
+					xpos += x; ypos += y;
+					valid_spot = true;
+				}
+				if (valid_spot) break;
+			}
+			if (valid_spot) break;
+		}
+	}
+	else valid_spot = true;
+	if (valid_spot)
 	{
 		Actor *temp = nullptr;
 
@@ -183,9 +204,15 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 					camera.update_position(temp->get_grid_x() * 32, temp->get_grid_y() * 32);
 				}
 			}
-			else delete temp;
+			else
+			{
+				delete temp;
+				temp = nullptr;
+			}
 		}
+		return temp != nullptr;
 	}
+	return false;
 }
 void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {

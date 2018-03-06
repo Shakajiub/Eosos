@@ -57,6 +57,11 @@ bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &tex
 	if (!Actor::init(at, xpos, ypos, texture_name))
 		return false;
 
+	if (actor_ID == 1)
+		init_class(HC_BARBARIAN);
+	else if (actor_ID == 2)
+		init_class(HC_MONK);
+
 	return (init_ui_texture() && init_pathfinder());
 }
 void Hero::update(Level *level)
@@ -175,7 +180,7 @@ bool Hero::init_class(HeroClass hc)
 	hero_class = hc;
 	switch (hc)
 	{
-		case HC_BARBARIAN: class_texture = "core/texture/actor/player/orc/peon.png"; break;
+		case HC_BARBARIAN: class_texture = "core/texture/actor/player/orc/barbarian.png"; break;
 		case HC_CLERIC: class_texture = "core/texture/actor/player/orc/cleric.png"; break;
 		case HC_MAGE: class_texture = "core/texture/actor/player/orc/mage.png"; break;
 		case HC_MONK: class_texture = "core/texture/actor/player/orc/monk.png"; break;
@@ -230,11 +235,15 @@ void Hero::step_pathfinder(Level *level)
 	const Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
 	if (temp_actor != nullptr)
 	{
-		if (grid_x == pathfinder->get_goto_x() && grid_y == pathfinder->get_goto_y())
-			return;
+		//if (grid_x == pathfinder->get_goto_x() && grid_y == pathfinder->get_goto_y())
+			//return;
 
-		moves.first = 0;
-		add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+		if (temp_actor->get_actor_type() != actor_type)
+		{
+			moves.first = 0;
+			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+		}
+		else camera.update_position(grid_x * 32, grid_y * 32);
 		pathfinder->clear_path();
 	}
 	else

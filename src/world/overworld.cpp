@@ -74,15 +74,15 @@ void Overworld::init()
 	auto pos = current_level->get_base_pos();
 
 	actor_manager = new ActorManager;
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first - 1, pos.second + 1, "core/texture/actor/player/orc/peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second - 1, "core/texture/actor/player/orc/peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second + 1, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
 
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
 		node_highlight->set_color(COLOR_BERRY);
 
-	const std::string pntrs[1] = { "pointer" };
+	const std::string pntrs[2] = { "pointer", "pointer_sword" };
 	for (auto pntr : pntrs)
 	{
 		Texture *temp_pntr = engine.get_texture_manager()->load_texture("core/texture/ui/" + pntr + ".png");
@@ -219,11 +219,11 @@ void Overworld::render() const
 		if (actor_manager != nullptr)
 			actor_manager->render(current_level);
 	}
+	int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
+	int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
+
 	if (node_highlight != nullptr && current_level != nullptr)
 	{
-		int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
-		int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
-
 		if (std::floor(mouse_x + camera.get_cam_x()) < 0) map_x = -1;
 		if (std::floor(mouse_y + camera.get_cam_y()) < 0) map_y = -1;
 
@@ -241,9 +241,16 @@ void Overworld::render() const
 	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
 	ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));
 
-	if (pointers.size() > 0)
-		pointers[0]->render(mouse_x, mouse_y);
+	if (pointers.size() > 1)
+	{
+		Actor *temp_actor = nullptr;
+		if (current_level != nullptr)
+			temp_actor = current_level->get_actor(map_x, map_y);
 
+		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
+			pointers[1]->render(mouse_x, mouse_y);
+		else pointers[0]->render(mouse_x, mouse_y);
+	}
 	if (mouse_y == 0)
 		camera.move_camera(1, current_level->get_map_width(), current_level->get_map_height());
 	else if (mouse_y >= camera.get_cam_h() - 1)
