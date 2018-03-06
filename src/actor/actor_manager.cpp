@@ -102,9 +102,6 @@ bool ActorManager::update(Level *level)
 			}
 			else current_actor = temp_actor;
 			current_actor->start_turn();
-
-			if (current_actor->get_actor_type() == ACTOR_HERO && !dynamic_cast<Hero*>(current_actor)->get_auto_move())
-				camera.update_position(current_actor->get_grid_x() * 32, current_actor->get_grid_y() * 32);
 		}
 		for (Actor * a : actors)
 			a->update(level);
@@ -272,7 +269,7 @@ bool ActorManager::get_click(int16_t mouse_x, int16_t mouse_y) const
 		if (mouse_x < 48 && mouse_y > ypos && mouse_y < ypos + 48)
 		{
 			camera.update_position(a->get_grid_x() * 32, a->get_grid_y() * 32);
-			//dynamic_cast<Hero*>(a)->set_sleep_timer(0);
+			dynamic_cast<Hero*>(a)->set_sleep_timer(0);
 			return true;
 		}
 		ypos += 48;
