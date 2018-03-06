@@ -54,7 +54,10 @@ public:
 	void input_mouse_button_down(SDL_Event eve, Level *level);
 
 	AStar* get_pathfinder() const { return pathfinder; }
+	bool get_has_ability(const std::string &ability) const;
 	bool get_auto_move() const;
+
+	void set_sleep_timer(uint8_t timer);
 
 private:
 	bool auto_move_path;
@@ -68,6 +71,8 @@ private:
 	AStar *pathfinder;
 	SDL_Texture *ui_texture;
 	Texture *health_texture;
+
+	uint8_t sleep_timer;
 };
 
 #endif // HERO_HPP

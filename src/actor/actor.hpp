@@ -74,7 +74,7 @@ public:
 	void attack(Actor *other);
 
 	void load_bubble(const std::string &bubble_name, uint8_t timer = 0);
-	void render_bubble() const;
+	void clear_bubble();
 
 	bool get_delete() const { return delete_me; }
 	uint16_t get_ID() const { return actor_ID; }

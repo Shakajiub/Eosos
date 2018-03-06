@@ -15,47 +15,29 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ACTOR_MANAGER
-#define ACTOR_MANAGER
-
-#include "actor.hpp"
+#ifndef ABILITY_MANAGER_HPP
+#define ABILITY_MANAGER_HPP
 
 #include <vector>
 
-class AbilityManager;
-class Level;
+class Ability;
+class Hero;
 
-class ActorManager
+class AbilityManager
 {
 public:
-	ActorManager();
-	~ActorManager();
+	AbilityManager();
+	~AbilityManager();
 
 	void free();
-	void init();
-	bool update(Level *level);
-	void render(Level *level) const;
-	void animate();
-
-	void render_ui() const;
-
-	void clear_actors(Level *level, bool clear_heroes = false);
-	bool spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
-
-	void input_keyboard_down(SDL_Keycode key, Level *level);
-	void input_mouse_button_down(SDL_Event eve, Level *level);
-
-	bool get_next_turn();
+	void render_ui(Hero *hero) const;
+	void load_ability(const std::string &name);
 
 	bool get_overlap(int16_t mouse_x, int16_t mouse_y) const;
-	bool get_click(int16_t mouse_x, int16_t mouse_y) const;
+	bool get_click(Hero *hero, int16_t mouse_x, int16_t mouse_y) const;
 
 private:
-	bool next_turn;
-	Actor *current_actor;
-	std::vector<Actor*> actors;
-	std::vector<Actor*> heroes;
-	AbilityManager *ability_manager;
+	std::vector<Ability*> abilities;
 };
 
-#endif // ACTOR_MANAGER
+#endif // ABILITY_MANAGER_HPP

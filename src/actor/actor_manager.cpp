@@ -17,6 +17,7 @@
 
 #include "engine.hpp"
 #include "actor_manager.hpp"
+#include "ability_manager.hpp"
 #include "level.hpp"
 
 #include "hero.hpp"
@@ -25,7 +26,7 @@
 
 #include <algorithm> // for std::find
 
-ActorManager::ActorManager() : next_turn(false), current_actor(nullptr)
+ActorManager::ActorManager() : next_turn(false), current_actor(nullptr), ability_manager(nullptr)
 {
 
 }
@@ -40,9 +41,19 @@ void ActorManager::free()
 		if (actors[i] != nullptr)
 			delete actors[i];
 	}
+	if (ability_manager != nullptr)
+	{
+		delete ability_manager;
+		ability_manager = nullptr;
+	}
 	actors.clear();
 	heroes.clear();
 	current_actor = nullptr;
+}
+void ActorManager::init()
+{
+	ability_manager = new AbilityManager;
+	ability_manager->load_ability("sleep");
 }
 bool ActorManager::update(Level *level)
 {
@@ -130,6 +141,9 @@ void ActorManager::render_ui() const
 	{
 		dynamic_cast<Hero*>(a)->render_ui_texture(xpos, ypos);
 		ypos += 48;
+
+		if (ability_manager != nullptr && a == current_actor)
+			ability_manager->render_ui(dynamic_cast<Hero*>(a));
 	}
 }
 void ActorManager::clear_actors(Level *level, bool clear_heroes)
@@ -199,10 +213,7 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 				level->set_actor(xpos, ypos, temp);
 
 				if (temp->get_actor_type() == ACTOR_HERO)
-				{
 					heroes.push_back(temp);
-					camera.update_position(temp->get_grid_x() * 32, temp->get_grid_y() * 32);
-				}
 			}
 			else
 			{
@@ -233,27 +244,40 @@ bool ActorManager::get_next_turn()
 	}
 	return false;
 }
-bool ActorManager::get_overlap(int16_t xpos, int16_t ypos) const
+bool ActorManager::get_overlap(int16_t mouse_x, int16_t mouse_y) const
 {
-	uint16_t y = 48;
+	uint16_t ypos = 48;
+	bool overlap = false;
+
 	for (Actor *a : heroes)
 	{
-		if (xpos < 48 && ypos > y && ypos < y + 48)
+		if (mouse_x < 48 && mouse_y > ypos && mouse_y < ypos + 48)
+		{
 			a->set_hovered(HOVER_UI);
+			overlap = true;
+		}
 		else if (a->get_hovered() != HOVER_MAP)
 			a->set_hovered(HOVER_NONE);
-		y += 48;
+		ypos += 48;
 	}
-	return false;
+	if (!overlap && ability_manager != nullptr)
+		return ability_manager->get_overlap(mouse_x, mouse_y);
+	return overlap;
 }
-bool ActorManager::get_click(int16_t xpos, int16_t ypos) const
+bool ActorManager::get_click(int16_t mouse_x, int16_t mouse_y) const
 {
-	uint16_t y = 48;
+	uint16_t ypos = 48;
 	for (Actor *a : heroes)
 	{
-		if (xpos < 48 && ypos > y && ypos < y + 48)
+		if (mouse_x < 48 && mouse_y > ypos && mouse_y < ypos + 48)
+		{
 			camera.update_position(a->get_grid_x() * 32, a->get_grid_y() * 32);
-		y += 48;
+			//dynamic_cast<Hero*>(a)->set_sleep_timer(0);
+			return true;
+		}
+		ypos += 48;
 	}
+	if (ability_manager != nullptr && current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
+		return ability_manager->get_click(dynamic_cast<Hero*>(current_actor), mouse_x, mouse_y);
 	return false;
 }

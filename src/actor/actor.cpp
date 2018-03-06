@@ -29,7 +29,7 @@
 uint16_t Actor::ID = 0;
 
 Actor::Actor() :
-	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false),
+	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false), name("???"),
 	hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), bubble_timer(0)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
@@ -37,7 +37,6 @@ Actor::Actor() :
 
 	moves = std::make_pair(0, 0);
 	health = std::make_pair(1, 1);
-	name = "???";
 }
 Actor::~Actor()
 {
@@ -105,7 +104,8 @@ void Actor::render() const
 			y - camera.get_cam_y(),
 			&frame_rect, 2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
 		);
-		render_bubble();
+		if (bubble != nullptr)
+			bubble->render(x - camera.get_cam_x(), y - camera.get_cam_y() - 32);
 	}
 }
 void Actor::start_turn()
@@ -287,8 +287,10 @@ void Actor::load_bubble(const std::string &bubble_name, uint8_t timer)
 	if (bubble != nullptr)
 		bubble_timer = timer;
 }
-void Actor::render_bubble() const
+void Actor::clear_bubble()
 {
 	if (bubble != nullptr)
-		bubble->render(x - camera.get_cam_x(), y - camera.get_cam_y() - 32);
+		engine.get_texture_manager()->free_texture(bubble->get_name());
+
+	bubble_timer = 0;
 }

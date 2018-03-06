@@ -74,6 +74,7 @@ void Overworld::init()
 	auto pos = current_level->get_base_pos();
 
 	actor_manager = new ActorManager;
+	actor_manager->init();
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");

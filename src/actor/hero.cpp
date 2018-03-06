@@ -27,7 +27,7 @@
 
 Hero::Hero() :
 	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), hp_shake(0),
-	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr)
+	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr), sleep_timer(0)
 {
 	health = std::make_pair(3, 3);
 	prev_health = health.first;
@@ -86,11 +86,22 @@ void Hero::render() const
 }
 void Hero::start_turn()
 {
-	turn_done = false;
-	moves = std::make_pair(2, 2);
+	if (sleep_timer == 0)
+	{
+		turn_done = false;
+		moves = std::make_pair(2, 2);
+
+		if (!get_auto_move())
+			camera.update_position(grid_x * 32, grid_y * 32);
+	}
 }
 bool Hero::take_turn(Level *level)
 {
+	if (sleep_timer > 0)
+	{
+		sleep_timer -= 1;
+		return true;
+	}
 	hovered = HOVER_MAP;
 	if (turn_done)
 	{
@@ -333,6 +344,10 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 		else pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
 	}
 }
+bool Hero::get_has_ability(const std::string &ability) const
+{
+	return true;
+}
 bool Hero::get_auto_move() const
 {
 	if (auto_move_path)
@@ -341,4 +356,12 @@ bool Hero::get_auto_move() const
 			return pathfinder->get_length() > 1;
 	}
 	return false;
+}
+void Hero::set_sleep_timer(uint8_t timer)
+{
+	sleep_timer = timer;
+
+	if (sleep_timer > 0)
+		load_bubble("zed", 5);
+	else clear_bubble();
 }
