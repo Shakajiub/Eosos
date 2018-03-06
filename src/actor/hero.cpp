@@ -239,7 +239,14 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 		case SDLK_KP_9: case SDLK_u: offset_x = 1; offset_y = -1; break;
 		case SDLK_KP_1: case SDLK_b: offset_x = -1; offset_y = 1; break;
 		case SDLK_KP_3: case SDLK_n: offset_x = 1; offset_y = 1; break;
-		case SDLK_KP_5: case SDLK_SPACE: turn_done = true; moves.first = 0; break;
+		case SDLK_KP_5: case SDLK_SPACE:
+
+			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
+				health.first += 1;
+
+			moves.first = 0;
+			turn_done = true;
+			break;
 		default: break;
 	}
 	if (offset_x != 0 || offset_y != 0)
@@ -267,9 +274,11 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 
 		if (map_x == grid_x && map_y == grid_y)
 		{
-			if (auto_move_path)
-				auto_move_path = false;
-			else turn_done = true;
+			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
+				health.first += 1;
+
+			moves.first = 0;
+			turn_done = true;
 			return;
 		}
 		if (pathfinder->get_path_found())
