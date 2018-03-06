@@ -26,7 +26,8 @@
 
 Monster::Monster() : pathfinder(nullptr), healthbar(nullptr)
 {
-
+	health = std::make_pair(2, 2);
+	name = "Dwarf";
 }
 Monster::~Monster()
 {
@@ -113,7 +114,7 @@ void Monster::end_turn()
 }
 bool Monster::init_healthbar()
 {
-	healthbar = engine.get_texture_manager()->load_texture("core/texture/ui/healthbar.png");
+	healthbar = engine.get_texture_manager()->load_texture("core/texture/ui/health_bar.png");
 	return healthbar != nullptr;
 }
 bool Monster::init_pathfinder()
@@ -129,6 +130,7 @@ void Monster::step_pathfinder(Level *level)
 		moves.first = 0;
 		if (temp_actor->get_actor_type() != actor_type)
 			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+		else turn_done = true;
 	}
 	else
 	{

@@ -21,7 +21,10 @@
 #include "texture.hpp"
 
 #include "camera.hpp"
+#include "particle_manager.hpp"
 #include "texture_manager.hpp"
+#include "message_log.hpp"
+#include "ui.hpp"
 
 uint16_t Actor::ID = 0;
 
@@ -34,6 +37,7 @@ Actor::Actor() :
 
 	moves = std::make_pair(0, 0);
 	health = std::make_pair(1, 1);
+	name = "???";
 }
 Actor::~Actor()
 {
@@ -219,8 +223,7 @@ bool Actor::action_attack(Level *level)
 
 			Actor *temp_actor = level->get_actor(current_action.xpos, current_action.ypos);
 			if (temp_actor != nullptr)
-				temp_actor->set_delete(true);
-			//level->set_actor(current_action.xpos, current_action.ypos, nullptr);
+				attack(temp_actor);
 		}
 		if (anim_frames % 2 == 0)
 		{
@@ -250,6 +253,30 @@ bool Actor::action_attack(Level *level)
 		return true;
 	}
 	return false;
+}
+void Actor::attack(Actor *other)
+{
+	if (other == nullptr || ui.get_message_log() == nullptr)
+		return;
+
+	MessageLog *ml = ui.get_message_log();
+
+	uint8_t damage = 1;
+	const bool crit = engine.get_rng() % 20 == 0;
+	if (crit) damage *= 2;
+
+	const int8_t result_health = other->health.first - damage;
+	other->health.first = result_health;
+
+	engine.get_particle_manager()->spawn_particle(
+		other->x + 16, other->y + 16, std::to_string(damage), COLOR_BERRY, crit ? 2 : 1
+	);
+	if (result_health < 1)
+	{
+		other->set_delete(true);
+		ml->add_message("The " + name + " kills the " + other->name + "! (%6" + std::to_string(damage) + "%F damage)");
+	}
+	else ml->add_message("The " + name + std::string(crit ? " %ECRITS%F the " : " strikes the ") + other->name + " for %6" + std::to_string(damage) + "%F damage!");
 }
 void Actor::load_bubble(const std::string &bubble_name, uint8_t timer)
 {

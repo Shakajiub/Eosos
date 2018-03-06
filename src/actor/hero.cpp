@@ -22,11 +22,16 @@
 #include "texture.hpp"
 
 #include "camera.hpp"
+#include "texture_manager.hpp"
 #include "ui.hpp"
 
-Hero::Hero() : auto_move_path(false), command_this_turn(false), pathfinder(nullptr), ui_texture(nullptr)
+Hero::Hero() :
+	auto_move_path(false), command_this_turn(false), hp_shake(0),
+	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr)
 {
-
+	health = std::make_pair(3, 3);
+	prev_health = health.first;
+	name = "Orc";
 }
 Hero::~Hero()
 {
@@ -44,6 +49,8 @@ void Hero::free()
 		SDL_DestroyTexture(ui_texture);
 		ui_texture = nullptr;
 	}
+	if (health_texture != nullptr)
+		engine.get_texture_manager()->free_texture(health_texture->get_name());
 }
 bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
@@ -51,6 +58,19 @@ bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &tex
 		return false;
 
 	return (init_ui_texture() && init_pathfinder());
+}
+void Hero::update(Level *level)
+{
+	Actor::update(level);
+
+	if (hp_shake > 0)
+		hp_shake -= 1;
+
+	if (prev_health != health.first)
+	{
+		prev_health = health.first;
+		hp_shake = 10;
+	}
 }
 void Hero::render() const
 {
@@ -97,6 +117,10 @@ void Hero::end_turn()
 }
 bool Hero::init_ui_texture()
 {
+	health_texture = engine.get_texture_manager()->load_texture("core/texture/ui/health_hearts.png");
+	if (health_texture == nullptr)
+		return false;
+
 	ui_texture = SDL_CreateTexture(engine.get_renderer(),
 		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 96, 48
 	);
@@ -153,6 +177,29 @@ void Hero::render_ui_texture(uint16_t xpos, uint16_t ypos) const
 		const SDL_Rect quad = { xpos, ypos, 48, 48 };
 
 		SDL_RenderCopyEx(engine.get_renderer(), ui_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);
+	}
+	if (health_texture != nullptr && health.second > 0)
+	{
+		SDL_Rect rect = { 0, 0, 16, 16 };
+		int8_t hearts = health.second / 3;
+		int8_t hp_left = health.first;
+		uint16_t render_x = xpos + 50;
+		uint16_t render_y = ypos + 8;
+
+		while (hearts > 0)
+		{
+			if (hp_left == 2) rect.x = 16;
+			else if (hp_left == 1) rect.x = 32;
+			else if (hp_left < 1) rect.x = 48;
+
+			if (hp_shake > 0)
+				health_texture->render(render_x, render_y + (engine.get_rng() % hp_shake), &rect);
+			else health_texture->render(render_x, render_y, &rect);
+
+			hearts -= 1;
+			hp_left -= 3;
+			render_x += 32;
+		}
 	}
 }
 void Hero::step_pathfinder(Level *level)

@@ -69,9 +69,6 @@ bool UI::init_bitmap_font()
 }
 void UI::init_message_log()
 {
-	if (ui_background == nullptr)
-		init_background();
-
 	message_log = new MessageLog;
 	message_log->set_position(0, camera.get_cam_h() - 128);
 	message_log->set_size(15, 4);

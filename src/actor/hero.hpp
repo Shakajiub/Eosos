@@ -31,7 +31,9 @@ public:
 	void free();
 	virtual bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 
+	virtual void update(Level *level);
 	virtual void render() const;
+
 	virtual void start_turn();
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
@@ -52,8 +54,12 @@ private:
 	bool auto_move_path;
 	bool command_this_turn;
 
+	uint8_t hp_shake;
+	int8_t prev_health;
+
 	AStar *pathfinder;
 	SDL_Texture *ui_texture;
+	Texture *health_texture;
 };
 
 #endif // HERO_HPP

@@ -65,15 +65,17 @@ public:
 	bool action_move(Level *level);
 	bool action_attack(Level *level);
 
+	void attack(Actor *other);
+
 	void load_bubble(const std::string &bubble_name, uint8_t timer = 0);
 	void render_bubble() const;
 
-	ActorType get_actor_type() const { return actor_type; }
+	bool get_delete() const { return delete_me; }
 	uint16_t get_ID() const { return actor_ID; }
 	uint8_t get_grid_x() const { return grid_x; }
 	uint8_t get_grid_y() const { return grid_y; }
+	ActorType get_actor_type() const { return actor_type; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
-	bool get_delete() const { return delete_me; }
 
 	void set_delete(bool del) { delete_me = del; }
 	void set_hovered(bool h) { hovered = h; }
@@ -98,6 +100,7 @@ protected:
 	std::queue<Action> action_queue;
 	std::pair<int8_t, int8_t> moves;
 	std::pair<int8_t, int8_t> health;
+	std::string name;
 
 	uint8_t bubble_timer;
 	Texture *bubble;
