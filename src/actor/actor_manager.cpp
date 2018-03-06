@@ -43,8 +43,9 @@ void ActorManager::free()
 	actors.clear();
 	current_actor = nullptr;
 }
-void ActorManager::update(Level *level)
+bool ActorManager::update(Level *level)
 {
+	bool actors_deleted = false;
 	if (current_actor != nullptr)
 	{
 		while (current_actor->take_turn(level))
@@ -70,6 +71,7 @@ void ActorManager::update(Level *level)
 			}
 			if (to_erase.size() > 0) for (Actor *a : to_erase)
 			{
+				actors_deleted = true;
 				std::vector<Actor*>::iterator pos = std::find(actors.begin(), actors.end(), a);
 				if (pos != actors.end())
 					actors.erase(pos);
@@ -90,6 +92,7 @@ void ActorManager::update(Level *level)
 		for (Actor * a : actors)
 			a->update(level);
 	}
+	return actors_deleted;
 }
 void ActorManager::render(Level *level)
 {
@@ -150,6 +153,8 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 					dynamic_cast<Hero*>(temp)->init_pathfinder();
 					camera.update_position(temp->get_grid_x() * 32, temp->get_grid_y() * 32);
 				}
+				else if (temp->get_actor_type() == ACTOR_MONSTER)
+					dynamic_cast<Monster*>(temp)->init_pathfinder();
 			}
 			else delete temp;
 		}

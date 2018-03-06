@@ -139,7 +139,6 @@ bool Overworld::update()
 
 						actor_manager->clear_actors();
 						actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/player/orc/peon.png");
-						actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first + 1, pos.second, "core/texture/actor/player/orc/peon.png");
 					}
 					break;
 				default:
@@ -157,9 +156,32 @@ bool Overworld::update()
 			}
 		}
 	}
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+	if (current_level != nullptr)
+	{
+		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
+		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
+
+		if (map_x >= 0 && map_y >= 0 && !ui.get_overlap(mouse_x, mouse_y) &&
+			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
+		{
+			Actor *temp_actor = current_level->get_actor(map_x, map_y);
+			if (temp_actor != hovered_actor)
+			{
+				if (hovered_actor != nullptr)
+					hovered_actor->set_hovered(false);
+
+				hovered_actor = temp_actor;
+
+				if (hovered_actor != nullptr)
+					hovered_actor->set_hovered(true);
+			}
+		}
+	}
 	if (actor_manager != nullptr)
 	{
-		actor_manager->update(current_level);
+		if (actor_manager->update(current_level))
+			hovered_actor = nullptr;
 		if (actor_manager->get_next_turn())
 			next_turn();
 	}
@@ -183,28 +205,6 @@ bool Overworld::update()
 	ui.update();
 	camera.update();
 
-	SDL_GetMouseState(&mouse_x, &mouse_y);
-	if (current_level != nullptr)
-	{
-		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
-		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
-
-		if (mouse_x >= 0 && mouse_y >= 0 && !ui.get_overlap(mouse_x, mouse_y) &&
-			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
-		{
-			Actor *temp_actor = current_level->get_actor(map_x, map_y);
-			if (temp_actor != hovered_actor)
-			{
-				if (hovered_actor != nullptr)
-					hovered_actor->set_hovered(false);
-
-				hovered_actor = temp_actor;
-
-				if (hovered_actor != nullptr)
-					hovered_actor->set_hovered(true);
-			}
-		}
-	}
 	return true;
 }
 void Overworld::render() const
@@ -222,7 +222,7 @@ void Overworld::render() const
 		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
 		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
 
-		if (mouse_x >= 0 && mouse_y >= 0 && !ui.get_overlap(mouse_x, mouse_y) &&
+		if (map_x >= 0 && map_y >= 0 && !ui.get_overlap(mouse_x, mouse_y) &&
 			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
 		{
 			node_highlight->render(

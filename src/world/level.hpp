@@ -70,6 +70,7 @@ public:
 	auto get_sub_nodes() const { return sub_nodes; }
 
 	bool get_wall(int8_t xpos, int8_t ypos, bool check_occupying = false) const;
+	NodeType get_wall_type(int8_t xpos, int8_t ypos) const;
 
 	Actor* get_actor(uint8_t xpos, uint8_t ypos) const;
 	MapNode get_node(uint8_t xpos, uint8_t ypos) const;

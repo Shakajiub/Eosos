@@ -31,7 +31,7 @@ public:
 	~ActorManager();
 
 	void free();
-	void update(Level *level);
+	bool update(Level *level);
 	void render(Level *level);
 	void animate();
 

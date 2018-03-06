@@ -244,7 +244,7 @@ void Level::animate()
 void Level::next_turn(uint16_t turn, ActorManager *am)
 {
 	if (map_generator != nullptr)
-		map_generator->next_turn(turn, am);
+		map_generator->next_turn(turn, am, this);
 }
 bool Level::get_wall(int8_t xpos, int8_t ypos, bool check_occupying) const
 {
@@ -258,6 +258,12 @@ bool Level::get_wall(int8_t xpos, int8_t ypos, bool check_occupying) const
 	if (map_data[ypos][xpos].wall_type == NT_ROAD || map_data[ypos][xpos].wall_type == NT_BASE)
 		return false;
 	return map_data[ypos][xpos].wall_texture != nullptr;
+}
+NodeType Level::get_wall_type(int8_t xpos, int8_t ypos) const
+{
+	if (!map_created || xpos < 0 || ypos < 0 || xpos >= map_width || ypos >= map_height)
+		return NT_NONE;
+	return map_data[ypos][xpos].wall_type;
 }
 Actor* Level::get_actor(uint8_t xpos, uint8_t ypos) const
 {

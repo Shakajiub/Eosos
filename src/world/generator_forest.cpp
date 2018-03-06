@@ -155,9 +155,14 @@ void GeneratorForest::post_process(uint8_t depth, Level *level)
 	level->set_node(start_x, start_y, new_node);
 	level->set_node(base_pos.first, base_pos.second, base_node);
 }
-void GeneratorForest::next_turn(uint16_t turn, ActorManager *am)
+void GeneratorForest::next_turn(uint16_t turn, ActorManager *am, Level *level)
 {
 	std::cout << "forest generator turn #" << (int)turn << std::endl;
+	if (am != nullptr && turn % 2 == 0)
+	{
+		auto pos = get_spawn_pos();
+		am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/player/dwarf/dwarf_7.png");
+	}
 }
 std::pair<uint8_t, uint8_t> GeneratorForest::get_spawn_pos() const
 {

@@ -20,15 +20,25 @@
 
 #include "actor.hpp"
 
+class AStar;
+
 class Monster : public Actor
 {
 public:
 	Monster();
 	~Monster();
 
+	void free();
+
 	virtual void start_turn();
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
+
+	void init_pathfinder();
+	void step_pathfinder(Level *level);
+
+private:
+	AStar *pathfinder;
 };
 
 #endif // MONSTER_HPP
