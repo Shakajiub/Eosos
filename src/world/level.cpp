@@ -145,73 +145,11 @@ void Level::render() const
 {
 	if (map_texture != nullptr)
 	{
-		const int16_t cam_x = camera.get_cam_x();
-		const int16_t cam_y = camera.get_cam_y();
-		const uint16_t cam_w = camera.get_cam_w();
-		const uint16_t cam_h = camera.get_cam_h();
-
-		// Only render the part of the texture that's visible on the screen
-		SDL_Rect clip = { 0, 0, map_width * 32, map_height * 32 };
-		SDL_Rect quad = { -cam_x, -cam_y, cam_w, cam_h };
-
-		// Special case for when the map width is less than the camera width
-		if (clip.w >= map_width * 32)
-		{
-			clip.w = map_width * 32; quad.w = clip.w;
-			if (quad.x < 0)
-			{
-				clip.x += std::abs(quad.x); quad.w += quad.x;
-				clip.w = quad.w; quad.x = 0;
-			}
-			else if (quad.x + map_width * 32 > cam_w)
-			{
-				clip.w -= (quad.x + map_width * 32) - cam_w; quad.w = clip.w;
-			}
-		}
-		// Camera moving right, move clip.x to the right
-		// When over the right map edge, decrease both clip & quad width
-		else if (quad.x < 0)
-		{
-			clip.x += std::abs(quad.x); quad.x = 0;
-			if (clip.x > clip.w)
-			{
-				clip.w -= (clip.x - clip.w); quad.w = clip.w;
-			}
-		}
-		// When over the left map edge, decrease both clip & quad width (clip.x stays at 0)
-		else if (quad.x > 0)
-		{
-			clip.w -= quad.x; quad.w = clip.w;
-		}
-		// Special case for when the map height is less than the camera height
-		if (clip.h >= map_height * 32)
-		{
-			clip.h = map_height * 32; quad.h = clip.h;
-			if (quad.y < 0)
-			{
-				clip.y += std::abs(quad.y); quad.h += quad.y;
-				clip.h = quad.h; quad.y = 0;
-			}
-			else if (quad.y + map_height * 32 > cam_h)
-			{
-				clip.h -= (quad.y + map_height * 32) - cam_h; quad.h = clip.h;
-			}
-		}
-		// Camera moving down, move clip.y down
-		// When over the bottom map edge, decrease both clip & quad height
-		else if (quad.y < 0)
-		{
-			clip.y += std::abs(quad.y); quad.y = 0;
-			if (clip.y > clip.h)
-			{
-				clip.h -= (clip.y - clip.h); quad.h = clip.h;
-			}
-		}
-		// When over the top map edge, decrease both clip & quad height (clip.y stays at 0)
-		else if (quad.y > 0)
-		{
-			clip.h -= quad.y; quad.h = clip.h;
-		}
+		const SDL_Rect clip = { 0, 0, (map_width + 1) * 32, (map_height + 1) * 32 };
+		const SDL_Rect quad = {
+			-camera.get_cam_x() - 16, -camera.get_cam_y() - 16,
+			(map_width + 1) * 32, (map_height + 1) * 32
+		};
 		SDL_RenderCopyEx(engine.get_renderer(), map_texture, &clip, &quad, 0.0, nullptr, SDL_FLIP_NONE);
 	}
 }
@@ -305,7 +243,7 @@ void Level::init_map_texture()
 {
 	map_texture = SDL_CreateTexture(engine.get_renderer(),
 		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-		map_width * 32, map_height * 32
+		(map_width + 1) * 32, (map_height + 1) * 32
 	);
 	if (map_texture == NULL)
 	{
@@ -313,6 +251,10 @@ void Level::init_map_texture()
 		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
 		return;
 	}
+	SDL_SetRenderTarget(engine.get_renderer(), map_texture);
+	ui.draw_box(0, 0, map_width + 1, map_height + 1, false);
+	SDL_SetRenderTarget(engine.get_renderer(), NULL);
+
 	refresh_map_texture();
 }
 void Level::refresh_map_texture(bool animated_only)
@@ -331,10 +273,10 @@ void Level::refresh_map_texture(bool animated_only)
 			map_data[y][x].node_rendered = true;
 
 			if (map_data[y][x].floor_texture != nullptr)
-				map_data[y][x].floor_texture->render(x * 32, y * 32, &map_data[y][x].floor_rect);
+				map_data[y][x].floor_texture->render(x * 32 + 16, y * 32 + 16, &map_data[y][x].floor_rect);
 
 			if (map_data[y][x].wall_texture != nullptr && map_data[y][x].wall_type != NT_INVISIBLE)
-				map_data[y][x].wall_texture->render(x * 32, y * 32, &map_data[y][x].wall_rect);
+				map_data[y][x].wall_texture->render(x * 32 + 16, y * 32 + 16, &map_data[y][x].wall_rect);
 		}
 	}
 	SDL_SetRenderTarget(engine.get_renderer(), NULL);

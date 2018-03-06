@@ -145,7 +145,7 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 			else if (y == height - 1)
 				temp_rect = { 16, 32, 16, 16 };
 
-			if (highlight || options.get_b("ui-highlight"))
+			if (highlight)// || options.get_b("ui-highlight"))
 				temp_rect.x += 64;
 			ui_background->render(xpos + (x * 32), ypos + (y * 32), &temp_rect);
 		}
