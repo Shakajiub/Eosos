@@ -57,7 +57,8 @@ void Monster::render() const
 {
 	Actor::render();
 
-	if (healthbar != nullptr && in_camera && ((hovered != HOVER_NONE) || health.first < health.second))
+	if (healthbar != nullptr && in_camera && health.first > 0 &&
+		((hovered != HOVER_NONE) || health.first < health.second))
 	{
 		const uint8_t hp_percent = (float)health.first / (float)health.second * 14;
 		const SDL_Rect temp_rect = { 28 - (hp_percent * 2), 0, 3, 16 };

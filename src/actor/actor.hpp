@@ -68,12 +68,13 @@ public:
 
 	virtual void update(Level *level);
 	virtual void render() const;
+	virtual void render_ui(uint16_t xpos, uint16_t ypos) const;
 
 	virtual void start_turn();
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
-	virtual uint8_t get_melee_damage() const;
+	virtual uint8_t get_damage() const;
 
 	void add_action(ActionType at, uint8_t xpos, uint8_t ypos, int8_t value = 0);
 	bool actions_empty() const;
@@ -106,6 +107,7 @@ public:
 
 	void set_delete(bool del) { delete_me = del; }
 	void set_hovered(HoverType ht) { hovered = ht; }
+	void set_moves(int8_t m) { moves.first = m; }
 
 protected:
 	bool delete_me;
@@ -141,7 +143,11 @@ protected:
 
 	SDL_Rect frame_rect;
 	Texture *texture;
+
+	double proj_angle;
+	uint16_t proj_x, proj_y;
 	Texture *projectile;
+	std::string proj_name;
 
 	static uint16_t ID;
 };

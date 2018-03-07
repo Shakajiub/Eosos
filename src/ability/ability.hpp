@@ -19,6 +19,7 @@
 #define ABILITY_HPP
 
 class Hero;
+class Level;
 
 class Ability
 {
@@ -30,8 +31,10 @@ public:
 
 	virtual bool init() = 0;
 	virtual void apply(Hero *hero) = 0;
+	virtual void render(uint16_t xpos, uint16_t ypos) const;
+	virtual bool get_click(uint16_t mouse_x, uint16_t mouse_y);
+	virtual void clear();
 
-	void render(uint16_t xpos, uint16_t ypos) const;
 	bool init_texture(const std::string &icon, SDL_Color color);
 
 	std::string get_ability_name() const { return ability_name; }
@@ -40,6 +43,7 @@ public:
 	void set_hovered(bool h) { hovered = h; }
 
 protected:
+	bool activated;
 	bool hovered;
 
 	SDL_Texture *ability_texture;

@@ -32,6 +32,7 @@ public:
 	void free();
 	void render_ui(Hero *hero) const;
 	void load_ability(const std::string &name);
+	void clear();
 
 	bool get_overlap(Hero *hero, int16_t mouse_x, int16_t mouse_y) const;
 	bool get_click(Hero *hero, int16_t mouse_x, int16_t mouse_y) const;

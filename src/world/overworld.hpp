@@ -39,6 +39,8 @@ public:
 
 	void next_turn();
 
+	Level* get_level() const { return current_level; }
+
 private:
 	uint8_t anim_timer;
 	uint8_t current_depth;

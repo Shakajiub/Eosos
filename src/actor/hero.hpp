@@ -24,8 +24,8 @@ class AStar;
 
 enum HeroClass
 {
-	HC_ARCHER, HC_BARBARIAN, HC_CLERIC, HC_MAGE,
-	HC_MONK,HC_PEON, HC_SWORDMASTER, HC_JUGGERNAUT
+	HC_PEON, HC_MAGE, HC_NINJA,
+	HC_BARBARIAN, HC_JUGGERNAUT
 };
 class Hero : public Actor
 {
@@ -38,19 +38,20 @@ public:
 
 	virtual void update(Level *level);
 	virtual void render() const;
+	virtual void render_ui(uint16_t xpos, uint16_t ypos) const;
 
 	virtual void start_turn();
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
-	virtual uint8_t get_melee_damage() const;
+	virtual uint8_t get_damage() const;
 
 	bool init_ui_texture();
 	bool init_pathfinder();
 	bool init_class(HeroClass hc);
 
-	void render_ui_texture(uint16_t xpos, uint16_t ypos) const;
 	void step_pathfinder(Level *level);
+	void clear_pathfinder();
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 	void input_mouse_button_down(SDL_Event eve, Level *level);

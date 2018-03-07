@@ -32,7 +32,7 @@ uint16_t Actor::ID = 0;
 Actor::Actor() :
 	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false), name("???"),
 	hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), status_icon(nullptr),
-	status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0), projectile(nullptr)
+	status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0), projectile(nullptr), proj_name("???")
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0, 0 };
@@ -118,15 +118,24 @@ void Actor::render() const
 	if (texture != nullptr && in_camera && !delete_me)
 	{
 		texture->render(
-			x - camera.get_cam_x(),
-			y - camera.get_cam_y(),
-			&frame_rect, 2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
+			x - camera.get_cam_x(), y - camera.get_cam_y(), &frame_rect,
+			2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
 		);
 		if (bubble != nullptr)
 			bubble->render(x - camera.get_cam_x(), y - camera.get_cam_y() - 32, &bubble_rect);
 
 		if (status_icon != nullptr)
 			status_icon->render(x - camera.get_cam_x(), y - camera.get_cam_y(), &bubble_rect);
+	}
+}
+void Actor::render_ui(uint16_t xpos, uint16_t ypos) const
+{
+	if (projectile != nullptr)
+	{
+		projectile->render(
+			proj_x - camera.get_cam_x(), proj_y - camera.get_cam_y(), nullptr, 2,
+			facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, proj_angle
+		);
 	}
 }
 void Actor::start_turn()
@@ -153,9 +162,9 @@ void Actor::end_turn()
 		}
 	}
 }
-uint8_t Actor::get_melee_damage() const
+uint8_t Actor::get_damage() const
 {
-	std::cout << "warning! Actor::get_melee_damage() has no override!" << std::endl;
+	std::cout << "warning! Actor::get_damage() has no override!" << std::endl;
 	return 1;
 }
 void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos, int8_t value)
@@ -278,7 +287,7 @@ bool Actor::action_attack(Level *level)
 		}
 		anim_frames += 1;
 	}
-	if (anim_frames >= 12)
+	if (anim_frames >= 16)
 	{
 		anim_timer = 0;
 		anim_frames = 0;
@@ -294,10 +303,54 @@ bool Actor::action_shoot(Level *level)
 	while (anim_timer > 18 || !in_camera)
 	{
 		anim_timer -= 18;
+		if (anim_frames == 0)
+		{
+			if (projectile == nullptr)
+				projectile = engine.get_texture_manager()->load_texture(proj_name);
+
+			if (grid_x != current_action.xpos)
+				facing_right = (grid_x < current_action.xpos);
+
+			proj_angle = facing_right ? 45.0 : -45.0;
+		}
+		if (anim_frames < 8)
+		{
+			if (grid_x < current_action.xpos) x += (anim_frames < 4) ? -2 : 2;
+			else if (grid_x > current_action.xpos) x += (anim_frames < 4) ? 2 : -2;
+			if (grid_y < current_action.ypos) y += (anim_frames < 4) ? -2 : 2;
+			else if (grid_y > current_action.ypos) y += (anim_frames < 4) ? 2 : -2;
+
+			proj_x = x;
+			proj_y = y;
+		}
+		else
+		{
+			if (anim_frames % 2 == 0)
+			{
+				if (anim_frames < 16)
+					proj_y -= 4;
+				else proj_y += 4;
+			}
+			if (grid_x < current_action.xpos) proj_x += ((current_action.xpos - grid_x) * 16) / 8;
+			else if (grid_x > current_action.xpos) proj_x -= ((grid_x - current_action.xpos) * 16) / 8;
+			if (grid_y < current_action.ypos) proj_y += ((current_action.ypos - grid_y) * 16) / 8;
+			else if (grid_y > current_action.ypos) proj_y -= ((grid_y - current_action.ypos) * 16) / 8;
+
+			proj_angle += facing_right ? 6.0 : -6.0;
+		}
 		anim_frames += 1;
 	}
-	if (anim_frames >= 16)
+	if (anim_frames >= 24)
 	{
+		if (projectile != nullptr)
+		{
+			engine.get_texture_manager()->free_texture(projectile->get_name());
+			projectile = nullptr;
+		}
+		Actor *temp_actor = level->get_actor(current_action.xpos, current_action.ypos);
+		if (temp_actor != nullptr)
+			attack(temp_actor);
+
 		turn_done = true;
 		anim_timer = 0;
 		anim_frames = 0;
@@ -355,7 +408,7 @@ void Actor::attack(Actor *other)
 
 	MessageLog *ml = ui.get_message_log();
 
-	uint8_t damage = get_melee_damage();
+	uint8_t damage = get_damage();
 	const bool crit = engine.get_rng() % 20 == 0;
 	if (crit) damage *= 2;
 

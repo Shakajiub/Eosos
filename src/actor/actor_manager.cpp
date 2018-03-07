@@ -66,6 +66,9 @@ bool ActorManager::update(Level *level)
 		{
 			current_actor->end_turn();
 
+			if (current_actor->get_actor_type() == ACTOR_HERO)
+				ability_manager->clear();
+
 			const uint16_t current_ID = current_actor->get_ID();
 			Actor *temp_actor = nullptr;
 			Actor *first_actor = nullptr;
@@ -135,7 +138,7 @@ void ActorManager::render_ui() const
 
 	for (Actor *a : heroes)
 	{
-		dynamic_cast<Hero*>(a)->render_ui_texture(xpos, ypos);
+		dynamic_cast<Hero*>(a)->render_ui(xpos, ypos);
 		ypos += 48;
 
 		if (ability_manager != nullptr && a == current_actor)

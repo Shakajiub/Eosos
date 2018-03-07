@@ -63,7 +63,7 @@ bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &tex
 	if (actor_ID == 1)
 		init_class(HC_JUGGERNAUT);
 	else if (actor_ID == 2)
-		init_class(HC_ARCHER);
+		init_class(HC_NINJA);
 
 	return (init_ui_texture() && init_pathfinder());
 }
@@ -93,6 +93,41 @@ void Hero::render() const
 
 	if (pathfinder != nullptr && (hovered != HOVER_NONE))
 		pathfinder->render(moves.first);
+}
+void Hero::render_ui(uint16_t xpos, uint16_t ypos) const
+{
+	Actor::render_ui(xpos, ypos);
+
+	if (ui_texture != nullptr)
+	{
+		const SDL_Rect rect = { (hovered != HOVER_NONE) ? 48 : 0, 0, 48, 48 };
+		const SDL_Rect quad = { xpos, ypos, 48, 48 };
+
+		SDL_RenderCopyEx(engine.get_renderer(), ui_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);
+	}
+	if (health_texture != nullptr && health.second > 0)
+	{
+		SDL_Rect rect = { (hb_timer < 100) ? 64 : 0, 0, 16, 16 };
+		int8_t hearts = health.second / 3;
+		int8_t hp_left = health.first;
+		uint16_t render_x = xpos + 50;
+		uint16_t render_y = ypos + 8;
+
+		while (hearts > 0)
+		{
+			if (hp_left == 2) rect.x = (hb_timer < 100) ? 80 : 16;
+			else if (hp_left == 1) rect.x = (hb_timer < 100) ? 96 : 32;
+			else if (hp_left < 1) rect.x = 48;
+
+			if (hp_shake > 0)
+				health_texture->render(render_x, render_y + (engine.get_rng() % hp_shake), &rect);
+			else health_texture->render(render_x, render_y, &rect);
+
+			hearts -= 1;
+			hp_left -= 3;
+			render_x += 32;
+		}
+	}
 }
 void Hero::start_turn()
 {
@@ -141,7 +176,7 @@ void Hero::end_turn()
 	Actor::end_turn();
 	hovered = HOVER_NONE;
 }
-uint8_t Hero::get_melee_damage() const
+uint8_t Hero::get_damage() const
 {
 	if (hero_class == HC_JUGGERNAUT)
 		return current_action.action_value;
@@ -210,32 +245,20 @@ bool Hero::init_class(HeroClass hc)
 
 	switch (hero_class)
 	{
-		case HC_ARCHER:
-			name = "Archer";
-			class_texture = "core/texture/actor/hero/archer.png";
-			abilities.push_back("shoot");
+		case HC_MAGE:
+			name = "Mage";
+			class_texture = "core/texture/actor/hero/mage.png";
+			break;
+		case HC_NINJA:
+			name = "Ninja";
+			class_texture = "core/texture/actor/hero/ninja.png";
+			proj_name = "core/texture/item/shuriken.png";
+			add_ability("shoot");
 			break;
 		case HC_BARBARIAN:
 			name = "Barbarian";
 			class_texture = "core/texture/actor/hero/barbarian.png";
 			health = std::make_pair(hp + 3, hp + 3);
-			break;
-		case HC_CLERIC:
-			name = "Cleric";
-			class_texture = "core/texture/actor/hero/cleric.png";
-			break;
-		case HC_MAGE:
-			name = "Mage";
-			class_texture = "core/texture/actor/hero/mage.png";
-			break;
-		case HC_MONK:
-			name = "Monk";
-			class_texture = "core/texture/actor/hero/monk.png";
-			max_moves = 3;
-			break;
-		case HC_SWORDMASTER:
-			name = "Swordmaster";
-			class_texture = "core/texture/actor/hero/swordmaster.png";
 			break;
 		case HC_JUGGERNAUT:
 			name = "Juggernaut";
@@ -250,39 +273,6 @@ bool Hero::init_class(HeroClass hc)
 	}
 	texture = engine.get_texture_manager()->load_texture(class_texture);
 	return texture != nullptr;
-}
-void Hero::render_ui_texture(uint16_t xpos, uint16_t ypos) const
-{
-	if (ui_texture != nullptr)
-	{
-		const SDL_Rect rect = { (hovered != HOVER_NONE) ? 48 : 0, 0, 48, 48 };
-		const SDL_Rect quad = { xpos, ypos, 48, 48 };
-
-		SDL_RenderCopyEx(engine.get_renderer(), ui_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);
-	}
-	if (health_texture != nullptr && health.second > 0)
-	{
-		SDL_Rect rect = { (hb_timer < 100) ? 64 : 0, 0, 16, 16 };
-		int8_t hearts = health.second / 3;
-		int8_t hp_left = health.first;
-		uint16_t render_x = xpos + 50;
-		uint16_t render_y = ypos + 8;
-
-		while (hearts > 0)
-		{
-			if (hp_left == 2) rect.x = (hb_timer < 100) ? 80 : 16;
-			else if (hp_left == 1) rect.x = (hb_timer < 100) ? 96 : 32;
-			else if (hp_left < 1) rect.x = 48;
-
-			if (hp_shake > 0)
-				health_texture->render(render_x, render_y + (engine.get_rng() % hp_shake), &rect);
-			else health_texture->render(render_x, render_y, &rect);
-
-			hearts -= 1;
-			hp_left -= 3;
-			render_x += 32;
-		}
-	}
 }
 void Hero::step_pathfinder(Level *level)
 {
@@ -314,6 +304,11 @@ void Hero::step_pathfinder(Level *level)
 		if (command_this_turn && !get_auto_move())
 			camera.update_position(pathfinder->get_goto_x() * 32, pathfinder->get_goto_y() * 32);
 	}
+}
+void Hero::clear_pathfinder()
+{
+	if (pathfinder->get_path_found())
+		pathfinder->clear_path();
 }
 void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 {

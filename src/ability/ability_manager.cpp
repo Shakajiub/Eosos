@@ -87,6 +87,11 @@ void AbilityManager::load_ability(const std::string &ability)
 		else delete new_ability;
 	}
 }
+void AbilityManager::clear()
+{
+	for (Ability *a : abilities)
+		a->clear();
+}
 bool AbilityManager::get_overlap(Hero *hero, int16_t mouse_x, int16_t mouse_y) const
 {
 	const uint16_t xpos = camera.get_cam_w() - 48;
@@ -123,6 +128,9 @@ bool AbilityManager::get_click(Hero *hero, int16_t mouse_x, int16_t mouse_y) con
 			a->apply(hero);
 			return true;
 		}
+		else if (a->get_click(mouse_x, mouse_y))
+			return true;
+
 		ypos += 48;
 	}
 	return false;

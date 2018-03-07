@@ -23,7 +23,7 @@
 #include "bitmap_font.hpp"
 #include "ui.hpp"
 
-Ability::Ability() : hovered(false), ability_texture(nullptr)
+Ability::Ability() : activated(false), hovered(false), ability_texture(nullptr)
 {
 	cooldown = std::make_pair(0, 0);
 }
@@ -43,7 +43,7 @@ void Ability::render(uint16_t xpos, uint16_t ypos) const
 {
 	if (ability_texture != nullptr)
 	{
-		const SDL_Rect rect = { hovered ? 48 : 0, 0, 48, 48 };
+		const SDL_Rect rect = { (hovered || activated) ? 48 : 0, 0, 48, 48 };
 		const SDL_Rect quad = { xpos, ypos, 48, 48 };
 
 		SDL_RenderCopyEx(engine.get_renderer(), ability_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);
@@ -58,6 +58,14 @@ void Ability::render(uint16_t xpos, uint16_t ypos) const
 		//else ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, hotkey_name[0]);
 		ui.get_bitmap_font()->set_scale(1);
 	}
+}
+bool Ability::get_click(uint16_t mouse_x, uint16_t mouse_y)
+{
+	return false;
+}
+void Ability::clear()
+{
+
 }
 bool Ability::init_texture(const std::string &icon, SDL_Color color)
 {

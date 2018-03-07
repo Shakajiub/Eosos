@@ -20,6 +20,10 @@
 
 #include "ability.hpp"
 
+#include <vector>
+
+class Texture;
+
 class AbilityShoot : public Ability
 {
 public:
@@ -30,6 +34,14 @@ public:
 
 	virtual bool init();
 	virtual void apply(Hero *hero);
+	virtual void render(uint16_t xpos, uint16_t ypos) const;
+	virtual bool get_click(uint16_t mouse_x, uint16_t mouse_y);
+	virtual void clear();
+
+private:
+	std::vector<std::pair<uint8_t, uint8_t> > valid_nodes;
+	Texture *target_texture;
+	Hero *temp_hero;
 };
 
 #endif // ABILITY_SHOOT_HPP
