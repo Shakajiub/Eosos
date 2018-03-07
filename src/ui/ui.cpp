@@ -20,6 +20,7 @@
 #include "actor_manager.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
+#include "message_box.hpp"
 #include "message_log.hpp"
 
 #include "camera.hpp"
@@ -29,7 +30,7 @@
 UI ui;
 
 UI::UI() :
-	ui_background(nullptr), main_font(nullptr), message_log(nullptr)
+	ui_background(nullptr), main_font(nullptr), message_log(nullptr), message_box(nullptr)
 {
 
 }
@@ -54,6 +55,18 @@ void UI::free()
 		delete message_log;
 		message_log = nullptr;
 	}
+	if (message_box != nullptr)
+	{
+		delete message_box;
+		message_box = nullptr;
+	}
+	while (!message_queue.empty())
+	{
+		MessageBox *mb = message_queue.front();
+		message_queue.pop();
+		delete mb;
+	}
+	//std::queue<MessageBox*>().swap(message_queue);
 }
 void UI::init_background()
 {
@@ -76,14 +89,34 @@ void UI::init_message_log()
 	message_log->init();
 	message_log->add_message("Welcome to HELL.", COLOR_BERRY);
 }
+bool UI::spawn_message_box(const std::string &title, const std::string &message, uint16_t xpos, uint16_t ypos)
+{
+	MessageBox *mb = new MessageBox;
+	if (mb->init(title, message, xpos, ypos))
+	{
+		if (message_box != nullptr)
+			message_queue.push(mb);
+		else message_box = mb;
+		return true;
+	}
+	delete mb;
+	return false;
+}
 void UI::update()
 {
-
+	if (message_box == nullptr && !message_queue.empty())
+	{
+		message_box = message_queue.front();
+		message_queue.pop();
+	}
 }
 void UI::render() const
 {
 	if (message_log != nullptr)
 		message_log->render();
+
+	if (message_box != nullptr)
+		message_box->render();
 }
 void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight) const
 {
@@ -154,12 +187,24 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 }
 bool UI::get_overlap(ActorManager *at, int16_t xpos, int16_t ypos) const
 {
+	if (message_box != nullptr)
+		return message_box->get_overlap(xpos, ypos);
 	if (at != nullptr && at->get_overlap(xpos, ypos))
 		return true;
 	return false;
 }
-bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos) const
+bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos)
 {
+	if (message_box != nullptr)
+	{
+		if (message_box->get_click(xpos, ypos))
+		{
+			delete message_box;
+			message_box = nullptr;
+			return true;
+		}
+		return false;
+	}
 	if (at != nullptr && at->get_click(xpos, ypos))
 		return true;
 	return false;

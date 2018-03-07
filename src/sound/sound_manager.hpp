@@ -51,6 +51,7 @@ public:
 	void remove_from_playlist(PlaylistType playlist, const std::string &sound_name);
 	void clear_playlist(PlaylistType playlist);
 
+	bool get_paused() const { return Mix_PausedMusic(); }
 	PlaylistType get_playlist() const { return current_playlist; }
 
 	void set_music_volume(uint8_t volume);

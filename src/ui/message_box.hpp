@@ -25,8 +25,16 @@ public:
 	~MessageBox();
 
 	void free();
+	bool init(const std::string &title, const std::string &message, uint16_t xpos, uint16_t ypos);
+	void render() const;
+
+	bool get_overlap(int16_t mouse_x, int16_t mouse_y) const;
+	bool get_click(int16_t mouse_x, int16_t mouse_y) const;
 
 private:
+	int16_t x, y;
+	uint8_t width, height;
+
 	std::string box_title;
 	std::string box_message;
 	SDL_Texture *box_background;

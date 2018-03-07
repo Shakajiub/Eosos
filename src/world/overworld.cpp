@@ -152,7 +152,21 @@ bool Overworld::update()
 					break;
 				case SDLK_c:
 					if (engine.get_sound_manager() != nullptr)
-						engine.get_sound_manager()->skip_song();
+					{
+						if (!engine.get_sound_manager()->get_paused())
+							engine.get_sound_manager()->skip_song();
+					}
+					break;
+				case SDLK_x:
+					if (engine.get_sound_manager() != nullptr)
+					{
+						if (engine.get_sound_manager()->get_paused())
+							engine.get_sound_manager()->resume_music();
+						else engine.get_sound_manager()->pause_music();
+					}
+					break;
+				case SDLK_w:
+					ui.spawn_message_box("title", "text");
 					break;
 				default:
 					if (actor_manager != nullptr)
