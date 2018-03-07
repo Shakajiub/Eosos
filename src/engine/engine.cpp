@@ -19,7 +19,6 @@
 #include "scene_manager.hpp"
 #include "sound_manager.hpp"
 #include "texture_manager.hpp"
-#include "particle_manager.hpp"
 
 #include "camera.hpp"
 #include "options.hpp"
@@ -27,7 +26,7 @@
 
 Engine::Engine() :
 	main_window(nullptr), main_renderer(nullptr), delta_time(0), current_time(0),
-	scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr), particle_manager(nullptr)
+	scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr)
 {
 
 }
@@ -106,7 +105,6 @@ bool Engine::init()
 	scene_manager = new SceneManager;
 	sound_manager = new SoundManager;
 	texture_manager = new TextureManager;
-	particle_manager = new ParticleManager;
 
 	camera.init();
 
@@ -125,8 +123,6 @@ void Engine::close()
 
 	if (sound_manager != nullptr)
 		delete sound_manager;
-	if (particle_manager != nullptr)
-		delete particle_manager;
 	if (scene_manager != nullptr)
 		delete scene_manager;
 	if (texture_manager != nullptr)

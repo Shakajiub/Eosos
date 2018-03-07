@@ -53,12 +53,7 @@ const SDL_Color COLOR_PEPPERMINT = { 222, 238, 214 };
 class SceneManager;
 class SoundManager;
 class TextureManager;
-class ParticleManager;
 
-constexpr uint64_t djb_hash(const char* str, int32_t h = 0)
-{
-	return !str[h] ? 5381 : (djb_hash(str, h + 1) * 33) ^ str[h];
-}
 class Engine
 {
 public:
@@ -77,7 +72,6 @@ public:
 	SceneManager* get_scene_manager() const { return scene_manager; }
 	SoundManager* get_sound_manager() const { return sound_manager; }
 	TextureManager* get_texture_manager() const { return texture_manager; }
-	ParticleManager* get_particle_manager() const { return particle_manager; }
 
 	std::string get_base_path() const { return base_path; }
 	uint64_t get_rng() { return generator(); }
@@ -91,7 +85,6 @@ private:
 	SceneManager *scene_manager;
 	SoundManager *sound_manager;
 	TextureManager *texture_manager;
-	ParticleManager *particle_manager;
 
 	std::string base_path;
 	std::mt19937 generator;

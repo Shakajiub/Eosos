@@ -33,7 +33,8 @@ enum ActionType
 {
 	ACTION_NULL,
 	ACTION_MOVE,
-	ACTION_ATTACK
+	ACTION_ATTACK,
+	ACTION_INTERACT
 };
 enum HoverType
 {
@@ -70,6 +71,7 @@ public:
 	void action_idle();
 	bool action_move(Level *level);
 	bool action_attack(Level *level);
+	bool action_interact();
 
 	void attack(Actor *other);
 

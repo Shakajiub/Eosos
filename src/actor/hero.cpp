@@ -23,6 +23,7 @@
 
 #include "camera.hpp"
 #include "texture_manager.hpp"
+#include "message_log.hpp"
 #include "ui.hpp"
 
 Hero::Hero() :
@@ -246,15 +247,21 @@ void Hero::step_pathfinder(Level *level)
 	const Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
 	if (temp_actor != nullptr)
 	{
-		//if (grid_x == pathfinder->get_goto_x() && grid_y == pathfinder->get_goto_y())
-			//return;
-
 		if (temp_actor->get_actor_type() != actor_type)
 		{
 			moves.first = 0;
 			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
 		}
-		else camera.update_position(grid_x * 32, grid_y * 32);
+		else
+		{
+			if (temp_actor != this)
+			{
+				load_bubble("failure", 1);
+				if (ui.get_message_log() != nullptr)
+					ui.get_message_log()->add_message(name + ": \"My path is blocked!\"");
+			}
+			camera.update_position(grid_x * 32, grid_y * 32);
+		}
 		pathfinder->clear_path();
 	}
 	else
@@ -285,10 +292,12 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 		case SDLK_KP_5: case SDLK_SPACE:
 
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
+			{
 				health.first += 1;
-
+				add_action(ACTION_INTERACT, grid_x, grid_y);
+			}
+			else turn_done = true;
 			moves.first = 0;
-			turn_done = true;
 			break;
 		default: break;
 	}
@@ -310,18 +319,25 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 }
 void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 {
-	if (pathfinder != nullptr)
+	if (pathfinder != nullptr && actions_empty() || moves.first > 0)
 	{
 		const int16_t map_x = (eve.button.x + camera.get_cam_x()) / 32;
 		const int16_t map_y = (eve.button.y + camera.get_cam_y()) / 32;
 
 		if (map_x == grid_x && map_y == grid_y)
 		{
+			if (bubble_timer > 0)
+			{
+				clear_bubble();
+				return;
+			}
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
+			{
 				health.first += 1;
-
+				add_action(ACTION_INTERACT, grid_x, grid_y);
+			}
+			else turn_done = true;
 			moves.first = 0;
-			turn_done = true;
 			return;
 		}
 		if (pathfinder->get_path_found())
@@ -359,9 +375,11 @@ bool Hero::get_auto_move() const
 }
 void Hero::set_sleep_timer(uint8_t timer)
 {
-	sleep_timer = timer;
+	if (sleep_timer > 0 && timer == 0)
+		load_bubble("question", 1);
+	else if (timer > 0)
+		load_bubble("sleep", 5);
 
-	if (sleep_timer > 0)
-		load_bubble("zed", 5);
 	else clear_bubble();
+	sleep_timer = timer;
 }

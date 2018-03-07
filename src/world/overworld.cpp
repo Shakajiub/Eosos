@@ -234,11 +234,12 @@ void Overworld::render() const
 			node_highlight->render(map_x * 32 - camera.get_cam_x(), map_y * 32 - camera.get_cam_y());
 		}
 	}
+	ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
+
 	if (actor_manager != nullptr)
 		actor_manager->render_ui();
 
 	ui.render();
-	ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
 	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
 	ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));
 

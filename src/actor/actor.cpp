@@ -21,7 +21,6 @@
 #include "texture.hpp"
 
 #include "camera.hpp"
-#include "particle_manager.hpp"
 #include "texture_manager.hpp"
 #include "message_log.hpp"
 #include "ui.hpp"
@@ -89,6 +88,7 @@ void Actor::update(Level *level)
 		{
 			case ACTION_MOVE: clear_action = action_move(level); break;
 			case ACTION_ATTACK: clear_action = action_attack(level); break;
+			case ACTION_INTERACT: clear_action = action_interact(); break;
 			default: clear_action = true; break;
 		}
 		if (clear_action)
@@ -254,6 +254,31 @@ bool Actor::action_attack(Level *level)
 	}
 	return false;
 }
+bool Actor::action_interact()
+{
+	anim_timer += engine.get_dt();
+	while (anim_timer > 18 || !in_camera)
+	{
+		anim_timer -= 18;
+		if (anim_frames % 2 == 0)
+		{
+			if (anim_frames < 6)
+				y -= 2;
+			else y += 2;
+		}
+		anim_frames += 1;
+	}
+	if (anim_frames >= 12)
+	{
+		turn_done = true;
+		anim_timer = 0;
+		anim_frames = 0;
+		x = grid_x * 32;
+		y = grid_y * 32;
+		return true;
+	}
+	return false;
+}
 void Actor::attack(Actor *other)
 {
 	if (other == nullptr || ui.get_message_log() == nullptr)
@@ -268,9 +293,6 @@ void Actor::attack(Actor *other)
 	const int8_t result_health = other->health.first - damage;
 	other->health.first = result_health;
 
-	engine.get_particle_manager()->spawn_particle(
-		other->x + 16, other->y + 16, std::to_string(damage), COLOR_BERRY, crit ? 2 : 1
-	);
 	if (result_health < 1)
 	{
 		other->set_delete(true);
