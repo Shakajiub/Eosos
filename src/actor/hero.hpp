@@ -25,7 +25,7 @@ class AStar;
 enum HeroClass
 {
 	HC_ARCHER, HC_BARBARIAN, HC_CLERIC, HC_MAGE,
-	HC_MONK,HC_PEON, HC_SWORDMASTER, HC_TANK
+	HC_MONK,HC_PEON, HC_SWORDMASTER, HC_JUGGERNAUT
 };
 class Hero : public Actor
 {
@@ -43,6 +43,8 @@ public:
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
+	virtual uint8_t get_melee_damage() const;
+
 	bool init_ui_texture();
 	bool init_pathfinder();
 	bool init_class(HeroClass hc);
@@ -54,7 +56,6 @@ public:
 	void input_mouse_button_down(SDL_Event eve, Level *level);
 
 	AStar* get_pathfinder() const { return pathfinder; }
-	bool get_has_ability(const std::string &ability) const;
 	bool get_auto_move() const;
 
 	void set_sleep_timer(uint8_t timer);

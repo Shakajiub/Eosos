@@ -55,11 +55,11 @@ void Ability::render(uint16_t xpos, uint16_t ypos) const
 			const uint8_t c = (cooldown.first > 4) ? 155 : 160 - cooldown.first;
 			ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, c);
 		}
-		else ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, hotkey_name[0]);
+		//else ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, hotkey_name[0]);
 		ui.get_bitmap_font()->set_scale(1);
 	}
 }
-bool Ability::init_texture(const std::string &icon, SDL_Color color, SDL_Keycode code)
+bool Ability::init_texture(const std::string &icon, SDL_Color color)
 {
 	if (ability_texture != nullptr)
 		SDL_DestroyTexture(ability_texture);
@@ -88,12 +88,6 @@ bool Ability::init_texture(const std::string &icon, SDL_Color color, SDL_Keycode
 		Texture *temp_texture = engine.get_texture_manager()->load_texture(icon, true);
 		if (temp_texture != nullptr)
 			temp_texture->set_color(color);
-
-		hotkey = code;
-		hotkey_name = " ";
-
-		if (hotkey != NULL)
-			hotkey_name = SDL_GetKeyName(hotkey);
 
 		for (uint8_t i = 0; i < 2; i++)
 		{

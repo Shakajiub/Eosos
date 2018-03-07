@@ -15,16 +15,16 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ABILITY_SLEEP_HPP
-#define ABILITY_SLEEP_HPP
+#ifndef ABILITY_SHOOT_HPP
+#define ABILITY_SHOOT_HPP
 
 #include "ability.hpp"
 
-class AbilitySleep : public Ability
+class AbilityShoot : public Ability
 {
 public:
-	AbilitySleep();
-	~AbilitySleep();
+	AbilityShoot();
+	~AbilityShoot();
 
 	void free();
 
@@ -32,4 +32,4 @@ public:
 	virtual void apply(Hero *hero);
 };
 
-#endif // ABILITY_SLEEP_HPP
+#endif // ABILITY_SHOOT_HPP

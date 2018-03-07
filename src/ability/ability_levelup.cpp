@@ -15,21 +15,32 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ABILITY_SLEEP_HPP
-#define ABILITY_SLEEP_HPP
+#include "engine.hpp"
+#include "ability_levelup.hpp"
+#include "hero.hpp"
 
-#include "ability.hpp"
-
-class AbilitySleep : public Ability
+AbilityLevelUp::AbilityLevelUp()
 {
-public:
-	AbilitySleep();
-	~AbilitySleep();
 
-	void free();
+}
+AbilityLevelUp::~AbilityLevelUp()
+{
+	free();
+}
+void AbilityLevelUp::free()
+{
 
-	virtual bool init();
-	virtual void apply(Hero *hero);
-};
-
-#endif // ABILITY_SLEEP_HPP
+}
+bool AbilityLevelUp::init()
+{
+	if (init_texture("core/texture/ui/icon/arrow_up.png", COLOR_SKY))
+		ability_name = "level-up";
+}
+void AbilityLevelUp::apply(Hero *hero)
+{
+	if (hero != nullptr)
+	{
+		hero->set_status(STATUS_NONE);
+		hero->remove_ability("level-up");
+	}
+}

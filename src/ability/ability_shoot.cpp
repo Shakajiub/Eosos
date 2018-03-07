@@ -15,21 +15,28 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ABILITY_SLEEP_HPP
-#define ABILITY_SLEEP_HPP
+#include "engine.hpp"
+#include "ability_shoot.hpp"
+#include "hero.hpp"
 
-#include "ability.hpp"
-
-class AbilitySleep : public Ability
+AbilityShoot::AbilityShoot()
 {
-public:
-	AbilitySleep();
-	~AbilitySleep();
 
-	void free();
+}
+AbilityShoot::~AbilityShoot()
+{
+	free();
+}
+void AbilityShoot::free()
+{
 
-	virtual bool init();
-	virtual void apply(Hero *hero);
-};
+}
+bool AbilityShoot::init()
+{
+	if (init_texture("core/texture/ui/icon/bow.png", COLOR_EARTH))
+		ability_name = "shoot";
+}
+void AbilityShoot::apply(Hero *hero)
+{
 
-#endif // ABILITY_SLEEP_HPP
+}

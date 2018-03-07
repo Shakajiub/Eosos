@@ -28,11 +28,11 @@ public:
 
 	void free();
 
-	virtual bool init(const std::string &name) = 0;
+	virtual bool init() = 0;
 	virtual void apply(Hero *hero) = 0;
 
 	void render(uint16_t xpos, uint16_t ypos) const;
-	bool init_texture(const std::string &icon, SDL_Color color, SDL_Keycode code);
+	bool init_texture(const std::string &icon, SDL_Color color);
 
 	std::string get_ability_name() const { return ability_name; }
 
@@ -43,9 +43,6 @@ protected:
 	bool hovered;
 
 	SDL_Texture *ability_texture;
-	SDL_Keycode hotkey;
-
-	std::string hotkey_name;
 	std::string ability_name;
 
 	std::pair<uint8_t, uint8_t> cooldown;

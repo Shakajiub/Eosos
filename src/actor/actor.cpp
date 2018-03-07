@@ -25,14 +25,17 @@
 #include "message_log.hpp"
 #include "ui.hpp"
 
+#include <algorithm> // Actor::remove_ability()
+
 uint16_t Actor::ID = 0;
 
 Actor::Actor() :
 	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false), name("???"),
-	hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), bubble_timer(0)
+	hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), status_icon(nullptr),
+	status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0), projectile(nullptr)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
-	current_action = { ACTION_NULL, 0, 0 };
+	current_action = { ACTION_NULL, 0, 0, 0 };
 
 	moves = std::make_pair(0, 0);
 	health = std::make_pair(1, 1);
@@ -48,10 +51,20 @@ void Actor::free()
 		engine.get_texture_manager()->free_texture(texture->get_name());
 		texture = nullptr;
 	}
+	if (projectile != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(projectile->get_name());
+		projectile = nullptr;
+	}
 	if (bubble != nullptr)
 	{
 		engine.get_texture_manager()->free_texture(bubble->get_name());
 		bubble = nullptr;
+	}
+	if (status_icon != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(status_icon->get_name());
+		status_icon = nullptr;
 	}
 	if (!action_queue.empty())
 		std::queue<Action>().swap(action_queue);
@@ -68,6 +81,9 @@ bool Actor::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &te
 	prev_x = xpos; prev_y = ypos;
 	frame_rect = { 0, 0, 16, 16 };
 	bubble_rect = { 0, 0, 16, 16 };
+
+	abilities.clear();
+	add_ability("sleep");
 
 	return true;
 }
@@ -89,6 +105,7 @@ void Actor::update(Level *level)
 		{
 			case ACTION_MOVE: clear_action = action_move(level); break;
 			case ACTION_ATTACK: clear_action = action_attack(level); break;
+			case ACTION_SHOOT: clear_action = action_shoot(level); break;
 			case ACTION_INTERACT: clear_action = action_interact(); break;
 			default: clear_action = true; break;
 		}
@@ -107,6 +124,9 @@ void Actor::render() const
 		);
 		if (bubble != nullptr)
 			bubble->render(x - camera.get_cam_x(), y - camera.get_cam_y() - 32, &bubble_rect);
+
+		if (status_icon != nullptr)
+			status_icon->render(x - camera.get_cam_x(), y - camera.get_cam_y(), &bubble_rect);
 	}
 }
 void Actor::start_turn()
@@ -133,9 +153,14 @@ void Actor::end_turn()
 		}
 	}
 }
-void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos)
+uint8_t Actor::get_melee_damage() const
 {
-	Action a = { at, xpos, ypos };
+	std::cout << "warning! Actor::get_melee_damage() has no override!" << std::endl;
+	return 1;
+}
+void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos, int8_t value)
+{
+	Action a = { at, xpos, ypos, value };
 	action_queue.push(a);
 }
 bool Actor::actions_empty() const
@@ -149,9 +174,9 @@ void Actor::action_idle()
 	else bubble_rect.y = 0;
 
 	if (actor_type == ACTOR_HERO && moves.first <= 0)
-		return;
+		frame_rect.y = 16;
 
-	if (current_action.type == ACTION_NULL)
+	else if (current_action.type == ACTION_NULL)
 	{
 		if (frame_rect.y == 0)
 			frame_rect.y = 16;
@@ -263,6 +288,23 @@ bool Actor::action_attack(Level *level)
 	}
 	return false;
 }
+bool Actor::action_shoot(Level *level)
+{
+	anim_timer += engine.get_dt();
+	while (anim_timer > 18 || !in_camera)
+	{
+		anim_timer -= 18;
+		anim_frames += 1;
+	}
+	if (anim_frames >= 16)
+	{
+		turn_done = true;
+		anim_timer = 0;
+		anim_frames = 0;
+		return true;
+	}
+	return false;
+}
 bool Actor::action_interact()
 {
 	anim_timer += engine.get_dt();
@@ -288,6 +330,24 @@ bool Actor::action_interact()
 	}
 	return false;
 }
+void Actor::add_ability(const std::string &ability)
+{
+	if (!has_ability(ability))
+		abilities.push_back(ability);
+}
+void Actor::remove_ability(const std::string &ability)
+{
+	abilities.erase(std::remove(abilities.begin(), abilities.end(), ability), abilities.end());
+}
+bool Actor::has_ability(const std::string &ability) const
+{
+	for (auto a : abilities)
+	{
+		if (a == ability)
+			return true;
+	}
+	return false;
+}
 void Actor::attack(Actor *other)
 {
 	if (other == nullptr || ui.get_message_log() == nullptr)
@@ -295,7 +355,7 @@ void Actor::attack(Actor *other)
 
 	MessageLog *ml = ui.get_message_log();
 
-	uint8_t damage = 1;
+	uint8_t damage = get_melee_damage();
 	const bool crit = engine.get_rng() % 20 == 0;
 	if (crit) damage *= 2;
 
@@ -306,6 +366,13 @@ void Actor::attack(Actor *other)
 	{
 		other->set_delete(true);
 		ml->add_message("The " + name + " kills the " + other->name + "! (%6" + std::to_string(damage) + "%F damage)");
+
+		experience += other->combat_level;
+		if (experience >= combat_level * 10)
+		{
+			set_status(STATUS_LEVELUP);
+			add_ability("level-up");
+		}
 	}
 	else ml->add_message("The " + name + std::string(crit ? " %ECRITS%F the " : " strikes the ") + other->name + " for %6" + std::to_string(damage) + "%F damage!");
 }
@@ -325,4 +392,17 @@ void Actor::clear_bubble()
 
 	bubble_timer = 0;
 	bubble = nullptr;
+}
+void Actor::set_status(StatusType st)
+{
+	if (status_icon != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(status_icon->get_name());
+		status_icon = nullptr;
+	}
+	if (st == STATUS_LEVELUP)
+		status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/level_up.png");
+
+	if (status_icon != nullptr)
+		status = st;
 }

@@ -54,6 +54,8 @@ void ActorManager::init()
 {
 	ability_manager = new AbilityManager;
 	ability_manager->load_ability("sleep");
+	ability_manager->load_ability("shoot");
+	ability_manager->load_ability("level-up");
 }
 bool ActorManager::update(Level *level)
 {
@@ -254,8 +256,8 @@ bool ActorManager::get_overlap(int16_t mouse_x, int16_t mouse_y) const
 			a->set_hovered(HOVER_NONE);
 		ypos += 48;
 	}
-	if (!overlap && ability_manager != nullptr)
-		return ability_manager->get_overlap(mouse_x, mouse_y);
+	if (!overlap && ability_manager != nullptr && current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
+		return ability_manager->get_overlap(dynamic_cast<Hero*>(current_actor), mouse_x, mouse_y);
 	return overlap;
 }
 bool ActorManager::get_click(int16_t mouse_x, int16_t mouse_y) const

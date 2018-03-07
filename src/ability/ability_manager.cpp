@@ -20,6 +20,8 @@
 #include "ability.hpp"
 #include "hero.hpp"
 
+#include "ability_levelup.hpp"
+#include "ability_shoot.hpp"
 #include "ability_sleep.hpp"
 #include "camera.hpp"
 #include "bitmap_font.hpp"
@@ -51,7 +53,7 @@ void AbilityManager::render_ui(Hero *hero) const
 
 		for (auto *a : abilities)
 		{
-			if (hero->get_has_ability(a->get_ability_name()))
+			if (hero->has_ability(a->get_ability_name()))
 			{
 				a->render(xpos, ypos);
 				ypos += 48;
@@ -70,17 +72,22 @@ void AbilityManager::load_ability(const std::string &ability)
 			return;
 	}
 	Ability *new_ability = nullptr;
+
 	if (ability == "sleep")
 		new_ability = new AbilitySleep;
+	else if (ability == "shoot")
+		new_ability = new AbilityShoot;
+	else if (ability == "level-up")
+		new_ability = new AbilityLevelUp;
 
 	if (new_ability != nullptr)
 	{
-		if (new_ability->init(ability))
+		if (new_ability->init())
 			abilities.push_back(new_ability);
 		else delete new_ability;
 	}
 }
-bool AbilityManager::get_overlap(int16_t mouse_x, int16_t mouse_y) const
+bool AbilityManager::get_overlap(Hero *hero, int16_t mouse_x, int16_t mouse_y) const
 {
 	const uint16_t xpos = camera.get_cam_w() - 48;
 	uint16_t ypos = 48;
@@ -88,6 +95,9 @@ bool AbilityManager::get_overlap(int16_t mouse_x, int16_t mouse_y) const
 
 	for (Ability *a : abilities)
 	{
+		if (!hero->has_ability(a->get_ability_name()))
+			continue;
+
 		if (mouse_x > xpos && mouse_y > ypos && mouse_y < ypos + 48)
 		{
 			a->set_hovered(true);
@@ -105,6 +115,9 @@ bool AbilityManager::get_click(Hero *hero, int16_t mouse_x, int16_t mouse_y) con
 
 	for (Ability *a : abilities)
 	{
+		if (!hero->has_ability(a->get_ability_name()))
+			continue;
+
 		if (mouse_x > xpos && mouse_y > ypos && mouse_y < ypos + 48)
 		{
 			a->apply(hero);

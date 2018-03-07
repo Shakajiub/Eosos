@@ -31,10 +31,10 @@ void AbilitySleep::free()
 {
 
 }
-bool AbilitySleep::init(const std::string &name)
+bool AbilitySleep::init()
 {
-	if (init_texture("core/texture/ui/icon/sleep.png", COLOR_MIDNIGHT, NULL))
-		ability_name = name;
+	if (init_texture("core/texture/ui/icon/sleep.png", COLOR_MIDNIGHT))
+		ability_name = "sleep";
 }
 void AbilitySleep::apply(Hero *hero)
 {

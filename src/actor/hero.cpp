@@ -32,7 +32,7 @@ Hero::Hero() :
 {
 	health = std::make_pair(3, 3);
 	prev_health = health.first;
-	name = "Orc";
+	name = "Peon";
 }
 Hero::~Hero()
 {
@@ -52,6 +52,8 @@ void Hero::free()
 	}
 	if (health_texture != nullptr)
 		engine.get_texture_manager()->free_texture(health_texture->get_name());
+
+	abilities.clear();
 }
 bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
@@ -59,9 +61,9 @@ bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &tex
 		return false;
 
 	if (actor_ID == 1)
-		init_class(HC_BARBARIAN);
+		init_class(HC_JUGGERNAUT);
 	else if (actor_ID == 2)
-		init_class(HC_MONK);
+		init_class(HC_ARCHER);
 
 	return (init_ui_texture() && init_pathfinder());
 }
@@ -139,6 +141,13 @@ void Hero::end_turn()
 	Actor::end_turn();
 	hovered = HOVER_NONE;
 }
+uint8_t Hero::get_melee_damage() const
+{
+	if (hero_class == HC_JUGGERNAUT)
+		return current_action.action_value;
+
+	return 1;
+}
 bool Hero::init_ui_texture()
 {
 	health_texture = engine.get_texture_manager()->load_texture("core/texture/ui/health_hearts.png");
@@ -195,23 +204,43 @@ bool Hero::init_pathfinder()
 }
 bool Hero::init_class(HeroClass hc)
 {
+	const uint8_t hp = health.second;
 	std::string class_texture = "core/texture/actor/hero/peon.png";
 	hero_class = hc;
-	switch (hc)
+
+	switch (hero_class)
 	{
-		case HC_ARCHER: class_texture = "core/texture/actor/hero/archer.png"; break;
-		case HC_BARBARIAN:
-			class_texture = "core/texture/actor/hero/barbarian.png";
-			health = std::make_pair(6, 6);
+		case HC_ARCHER:
+			name = "Archer";
+			class_texture = "core/texture/actor/hero/archer.png";
+			abilities.push_back("shoot");
 			break;
-		case HC_CLERIC: class_texture = "core/texture/actor/hero/cleric.png"; break;
-		case HC_MAGE: class_texture = "core/texture/actor/hero/mage.png"; break;
+		case HC_BARBARIAN:
+			name = "Barbarian";
+			class_texture = "core/texture/actor/hero/barbarian.png";
+			health = std::make_pair(hp + 3, hp + 3);
+			break;
+		case HC_CLERIC:
+			name = "Cleric";
+			class_texture = "core/texture/actor/hero/cleric.png";
+			break;
+		case HC_MAGE:
+			name = "Mage";
+			class_texture = "core/texture/actor/hero/mage.png";
+			break;
 		case HC_MONK:
+			name = "Monk";
 			class_texture = "core/texture/actor/hero/monk.png";
 			max_moves = 3;
 			break;
-		case HC_SWORDMASTER: class_texture = "core/texture/actor/hero/swordmaster.png"; break;
-		case HC_TANK: class_texture = "core/texture/actor/hero/tank.png"; break;
+		case HC_SWORDMASTER:
+			name = "Swordmaster";
+			class_texture = "core/texture/actor/hero/swordmaster.png";
+			break;
+		case HC_JUGGERNAUT:
+			name = "Juggernaut";
+			class_texture = "core/texture/actor/hero/juggernaut.png";
+			break;
 		default: hero_class = HC_PEON; break;
 	}
 	if (texture != nullptr)
@@ -262,8 +291,8 @@ void Hero::step_pathfinder(Level *level)
 	{
 		if (temp_actor->get_actor_type() != actor_type)
 		{
+			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y(), moves.first);
 			moves.first = 0;
-			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
 		}
 		else
 		{
@@ -319,8 +348,8 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 		Actor *temp_actor = level->get_actor(grid_x + offset_x, grid_y + offset_y);
 		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
 		{
+			add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y, moves.first);
 			moves.first = 0;
-			add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y);
 		}
 		else if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
 		{
@@ -373,10 +402,6 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 		else pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
 	}
 }
-bool Hero::get_has_ability(const std::string &ability) const
-{
-	return true;
-}
 bool Hero::get_auto_move() const
 {
 	if (auto_move_path)
@@ -390,6 +415,7 @@ void Hero::set_sleep_timer(uint8_t timer)
 {
 	if (sleep_timer > 0 && timer == 0)
 		load_bubble("question", 1);
+
 	else if (timer > 0)
 	{
 		load_bubble("sleep", 5);

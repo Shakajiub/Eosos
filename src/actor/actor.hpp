@@ -19,6 +19,7 @@
 #define ACTOR_HPP
 
 #include <queue>
+#include <vector>
 
 class Level;
 class Texture;
@@ -34,6 +35,7 @@ enum ActionType
 	ACTION_NULL,
 	ACTION_MOVE,
 	ACTION_ATTACK,
+	ACTION_SHOOT,
 	ACTION_INTERACT
 };
 enum HoverType
@@ -42,10 +44,16 @@ enum HoverType
 	HOVER_MAP,
 	HOVER_UI
 };
+enum StatusType
+{
+	STATUS_NONE,
+	STATUS_LEVELUP
+};
 typedef struct
 {
 	ActionType type;
 	uint8_t xpos, ypos;
+	int8_t action_value;
 }
 Action;
 
@@ -65,18 +73,28 @@ public:
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
-	void add_action(ActionType at, uint8_t xpos, uint8_t ypos);
+	virtual uint8_t get_melee_damage() const;
+
+	void add_action(ActionType at, uint8_t xpos, uint8_t ypos, int8_t value = 0);
 	bool actions_empty() const;
 
 	void action_idle();
 	bool action_move(Level *level);
 	bool action_attack(Level *level);
+	bool action_shoot(Level *level);
 	bool action_interact();
+
+	void add_ability(const std::string &ability);
+	void remove_ability(const std::string &ability);
+	bool has_ability(const std::string &ability) const;
 
 	void attack(Actor *other);
 
 	void load_bubble(const std::string &bubble_name, uint8_t timer = 0);
 	void clear_bubble();
+
+	StatusType get_status() const { return status; }
+	void set_status(StatusType st);
 
 	bool get_delete() const { return delete_me; }
 	uint16_t get_ID() const { return actor_ID; }
@@ -114,9 +132,16 @@ protected:
 	SDL_Rect bubble_rect;
 	uint8_t bubble_timer;
 	Texture *bubble;
+	Texture *status_icon;
+	StatusType status;
+
+	uint8_t combat_level;
+	uint8_t experience;
+	std::vector<std::string> abilities;
 
 	SDL_Rect frame_rect;
 	Texture *texture;
+	Texture *projectile;
 
 	static uint16_t ID;
 };
