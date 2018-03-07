@@ -79,6 +79,12 @@ void Overworld::init()
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/hero/peon.png");
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/hero/peon.png");
 
+	if (engine.get_sound_manager() != nullptr)
+	{
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_02.mid");
+		engine.get_sound_manager()->set_playlist(PT_BOSS);
+	}
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
 		node_highlight->set_color(COLOR_BERRY);
@@ -144,6 +150,10 @@ bool Overworld::update()
 						actor_manager->clear_actors(current_level);
 					}
 					break;
+				case SDLK_c:
+					if (engine.get_sound_manager() != nullptr)
+						engine.get_sound_manager()->skip_song();
+					break;
 				default:
 					if (actor_manager != nullptr)
 						actor_manager->input_keyboard_down(event.key.keysym.sym, current_level);
@@ -208,6 +218,7 @@ bool Overworld::update()
 	ui.update();
 	camera.update();
 
+	engine.get_sound_manager()->update();
 	return true;
 }
 void Overworld::render() const

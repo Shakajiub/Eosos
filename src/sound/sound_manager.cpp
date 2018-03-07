@@ -27,7 +27,7 @@
 
 SoundManager::SoundManager() :
 	next_song(0), silence_timer(1000), current_song(nullptr),
-	current_playlist(PT_AMBIANCE), previous_playlist(PT_AMBIANCE)
+	current_playlist(PT_MENU), previous_playlist(PT_MENU)
 {
 	set_music_volume(options.get_i("sound-music_volume"));
 }
@@ -37,8 +37,9 @@ SoundManager::~SoundManager()
 }
 void SoundManager::free()
 {
-	playlists[PT_AMBIANCE].clear();
-	playlists[PT_COMBAT].clear();
+	playlists[PT_MENU].clear();
+	playlists[PT_WORLD].clear();
+	playlists[PT_BOSS].clear();
 
 	sound_map.clear();
 	reference_count.clear();
@@ -47,8 +48,6 @@ void SoundManager::free()
 }
 void SoundManager::update()
 {
-	return; // Disable music for now
-
 	if (silence_timer > 0)
 		silence_timer -= engine.get_dt();
 
@@ -58,10 +57,6 @@ void SoundManager::update()
 		if (current_song != nullptr)
 			free_sound(current_song->get_name());
 
-		// PT_COMBAT gets automatically reset back to PT_AMBIANCE
-		if (previous_playlist == PT_COMBAT)
-			set_playlist(PT_AMBIANCE, false);
-
 		const std::string next = playlists[current_playlist][next_song];
 
 		current_song = load_sound(next, true);
@@ -69,7 +64,6 @@ void SoundManager::update()
 		{
 			Mix_VolumeMusic(volume_music);
 			current_song->fade_in(500);
-			//current_song->play();
 
 			MessageLog *ml = ui.get_message_log();
 			if (ml != nullptr)
@@ -152,7 +146,6 @@ void SoundManager::add_to_playlist(PlaylistType playlist, const std::string &sou
 }
 void SoundManager::remove_from_playlist(PlaylistType playlist, const std::string &sound_name)
 {
-	// This removes ALL instances of the given sound from the playlist
 	playlists[playlist].erase(
 		std::remove(playlists[playlist].begin(), playlists[playlist].end(), sound_name),
 		playlists[playlist].end()

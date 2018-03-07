@@ -26,8 +26,9 @@ class Sound;
 
 enum PlaylistType
 {
-	PT_AMBIANCE,
-	PT_COMBAT
+	PT_MENU,
+	PT_WORLD,
+	PT_BOSS
 };
 class SoundManager
 {
@@ -64,7 +65,7 @@ private:
 	PlaylistType current_playlist;
 	PlaylistType previous_playlist;
 
-	std::vector<std::string> playlists[2];
+	std::vector<std::string> playlists[3];
 	std::unordered_map<std::string, std::shared_ptr<Sound> > sound_map;
 	std::unordered_map<std::string, uint16_t> reference_count;
 };

@@ -5,10 +5,13 @@ Tower Defense Roguelike game (what) made with SDL2 for 7DRL 2018.
 
 ### Linux instructions (Debian/Ubuntu/Linux Mint)
 
-#### Install dependencies:
+#### Install build dependencies:
 - `sudo apt-get install g++ libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev`
 
 #### Build the game:
 - `make linux`
 
-The executable `eosos` will be found under `./build/`. If anyone builds this on a non-Debian based distro, I would love to get the list of dependencies added here, feel free to make a pull request adding to this readme.
+#### (Optional) Install runtime dependencies
+- `sudo apt-get install freepats`
+
+The game uses midi files for music, so you will most probably need `freepats` to play them. The game will run fine without it, just without music. The executable `eosos` will be found under `./build/`. If anyone builds this on a non-Debian based distro, I would love to get the list of dependencies added here, feel free to make a pull request adding to this readme.

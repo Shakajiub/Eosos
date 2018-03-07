@@ -258,7 +258,7 @@ void Hero::step_pathfinder(Level *level)
 			{
 				load_bubble("failure", 1);
 				if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message(name + ": \"My path is blocked!\"");
+					ui.get_message_log()->add_message(name + ": \"My path is blocked!\"", COLOR_LEAF);
 			}
 			camera.update_position(grid_x * 32, grid_y * 32);
 		}
