@@ -167,7 +167,7 @@ void GeneratorForest::next_turn(uint16_t turn, ActorManager *am, Level *level)
 	if (am != nullptr && turn % 2 == 0)
 	{
 		auto pos = get_spawn_pos();
-		am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/player/dwarf/dwarf_7.png");
+		am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/monster/dwarf/dwarf_7.png");
 	}
 }
 std::pair<uint8_t, uint8_t> GeneratorForest::get_spawn_pos() const

@@ -59,7 +59,7 @@ void Options::init()
 
 	options_i["sound-music_volume"] = 80;
 
-	options_s["ui-image"] = "bg_red";
+	options_s["ui-image"] = "background";
 	options_s["ui-font"] = "font";
 }
 void Options::load()

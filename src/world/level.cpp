@@ -415,7 +415,6 @@ NodeType Level::get_node_type(const std::string &texture_name) const
 	if (texture_name.find("invis") != std::string::npos) return NT_INVISIBLE;
 	else if (texture_name.find("/tree/") != std::string::npos) return NT_TREE;
 	else if (texture_name.find("/hill/") != std::string::npos) return NT_HILL;
-	else if (texture_name.find("/hole/") != std::string::npos) return NT_HOLE;
 	else if (texture_name.find("/wall/") != std::string::npos) return NT_WALL;
 	else if (texture_name.find("/wood/") != std::string::npos) return NT_WOOD;
 	else if (texture_name.find("/map/") != std::string::npos)
@@ -424,10 +423,6 @@ NodeType Level::get_node_type(const std::string &texture_name) const
 			return NT_BASE;
 		else if (texture_name.find("road_") != std::string::npos)
 			return NT_ROAD;
-		else if (texture_name.find("river_") != std::string::npos)
-			return NT_RIVER;
-		else if (texture_name.find("wall_") != std::string::npos)
-			return NT_WALL;
 	}
 	return NT_FLOOR;
 }

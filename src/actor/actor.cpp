@@ -293,4 +293,5 @@ void Actor::clear_bubble()
 		engine.get_texture_manager()->free_texture(bubble->get_name());
 
 	bubble_timer = 0;
+	bubble = nullptr;
 }

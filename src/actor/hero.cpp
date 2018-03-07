@@ -187,17 +187,17 @@ bool Hero::init_pathfinder()
 }
 bool Hero::init_class(HeroClass hc)
 {
-	std::string class_texture = "core/texture/actor/player/orc/peon.png";
+	std::string class_texture = "core/texture/actor/hero/peon.png";
 	hero_class = hc;
 	switch (hc)
 	{
-		case HC_BARBARIAN: class_texture = "core/texture/actor/player/orc/barbarian.png"; break;
-		case HC_CLERIC: class_texture = "core/texture/actor/player/orc/cleric.png"; break;
-		case HC_MAGE: class_texture = "core/texture/actor/player/orc/mage.png"; break;
-		case HC_MONK: class_texture = "core/texture/actor/player/orc/monk.png"; break;
-		case HC_PIRATE: class_texture = "core/texture/actor/player/orc/pirate.png"; break;
-		case HC_SWORDMASTER: class_texture = "core/texture/actor/player/orc/swordmaster.png"; break;
-		case HC_TANK: class_texture = "core/texture/actor/player/orc/tank.png"; break;
+		case HC_ARCHER: class_texture = "core/texture/actor/hero/archer.png"; break;
+		case HC_BARBARIAN: class_texture = "core/texture/actor/hero/barbarian.png"; break;
+		case HC_CLERIC: class_texture = "core/texture/actor/hero/cleric.png"; break;
+		case HC_MAGE: class_texture = "core/texture/actor/hero/mage.png"; break;
+		case HC_MONK: class_texture = "core/texture/actor/hero/monk.png"; break;
+		case HC_SWORDMASTER: class_texture = "core/texture/actor/hero/swordmaster.png"; break;
+		case HC_TANK: class_texture = "core/texture/actor/hero/tank.png"; break;
 		default: hero_class = HC_PEON; break;
 	}
 	if (texture != nullptr)
