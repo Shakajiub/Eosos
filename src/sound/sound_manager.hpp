@@ -40,8 +40,8 @@ public:
 	void update();
 
 	void skip_song(uint16_t ms = 500);
-	void pause_music();
-	void resume_music();
+	void pause_music(bool msg_log = false);
+	void resume_music(bool msg_log = false);
 	void stop_music();
 
 	Sound* load_sound(const std::string &sound_name, bool music = false);

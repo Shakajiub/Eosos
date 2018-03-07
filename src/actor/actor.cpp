@@ -67,6 +67,7 @@ bool Actor::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &te
 	grid_x = xpos; grid_y = ypos;
 	prev_x = xpos; prev_y = ypos;
 	frame_rect = { 0, 0, 16, 16 };
+	bubble_rect = { 0, 0, 16, 16 };
 
 	return true;
 }
@@ -105,7 +106,7 @@ void Actor::render() const
 			&frame_rect, 2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
 		);
 		if (bubble != nullptr)
-			bubble->render(x - camera.get_cam_x(), y - camera.get_cam_y() - 32);
+			bubble->render(x - camera.get_cam_x(), y - camera.get_cam_y() - 32, &bubble_rect);
 	}
 }
 void Actor::start_turn()
@@ -143,11 +144,19 @@ bool Actor::actions_empty() const
 }
 void Actor::action_idle()
 {
+	if (bubble_rect.y == 0)
+		bubble_rect.y = 16;
+	else bubble_rect.y = 0;
+
+	if (actor_type == ACTOR_HERO && moves.first <= 0)
+		return;
+
 	if (current_action.type == ACTION_NULL)
 	{
 		if (frame_rect.y == 0)
 			frame_rect.y = 16;
 		else frame_rect.y = 0;
+		bubble_rect = frame_rect;
 	}
 }
 bool Actor::action_move(Level *level)

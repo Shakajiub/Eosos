@@ -81,8 +81,28 @@ void Overworld::init()
 
 	if (engine.get_sound_manager() != nullptr)
 	{
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Intro_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_05.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Desert_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Desert_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Desert_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_05.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_04.mid");
 		engine.get_sound_manager()->set_playlist(PT_BOSS);
 	}
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
@@ -161,8 +181,8 @@ bool Overworld::update()
 					if (engine.get_sound_manager() != nullptr)
 					{
 						if (engine.get_sound_manager()->get_paused())
-							engine.get_sound_manager()->resume_music();
-						else engine.get_sound_manager()->pause_music();
+							engine.get_sound_manager()->resume_music(true);
+						else engine.get_sound_manager()->pause_music(true);
 					}
 					break;
 				case SDLK_w:

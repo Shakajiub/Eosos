@@ -93,13 +93,19 @@ void SoundManager::skip_song(uint16_t ms)
 	}
 	silence_timer = ms + 500;
 }
-void SoundManager::pause_music()
+void SoundManager::pause_music(bool msg_log)
 {
 	Mix_PauseMusic();
+
+	if (msg_log && ui.get_message_log() != nullptr)
+		ui.get_message_log()->add_message("Music paused", COLOR_CORNFLOWER);
 }
-void SoundManager::resume_music()
+void SoundManager::resume_music(bool msg_log)
 {
 	Mix_ResumeMusic();
+
+	if (msg_log && ui.get_message_log() != nullptr)
+		ui.get_message_log()->add_message("Music resumed", COLOR_CORNFLOWER);
 }
 void SoundManager::stop_music()
 {

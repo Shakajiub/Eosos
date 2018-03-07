@@ -111,6 +111,7 @@ protected:
 	std::pair<int8_t, int8_t> health;
 	std::string name;
 
+	SDL_Rect bubble_rect;
 	uint8_t bubble_timer;
 	Texture *bubble;
 

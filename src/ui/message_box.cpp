@@ -36,8 +36,6 @@ void MessageBox::free()
 	{
 		SDL_DestroyTexture(box_background);
 		box_background = nullptr;
-
-		std::cout << "message_box deleted" << std::endl;
 	}
 }
 bool MessageBox::init(const std::string &title, const std::string &message, uint16_t xpos, uint16_t ypos)

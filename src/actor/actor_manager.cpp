@@ -124,10 +124,7 @@ void ActorManager::render(Level *level) const
 void ActorManager::animate()
 {
 	for (Actor *a : actors)
-	{
-		if (a->get_actor_type() != ACTOR_HERO || a == current_actor)
-			a->action_idle();
-	}
+		a->action_idle();
 }
 void ActorManager::render_ui() const
 {

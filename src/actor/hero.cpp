@@ -27,8 +27,8 @@
 #include "ui.hpp"
 
 Hero::Hero() :
-	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), hp_shake(0),
-	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr), sleep_timer(0)
+	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), max_moves(2), hp_shake(0),
+	hb_timer(100), pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr), sleep_timer(0)
 {
 	health = std::make_pair(3, 3);
 	prev_health = health.first;
@@ -77,6 +77,13 @@ void Hero::update(Level *level)
 		prev_health = health.first;
 		hp_shake = 10;
 	}
+	if (health.first < health.second)
+	{
+		hb_timer += engine.get_dt();
+		if (hb_timer > health.first * 250)
+			hb_timer = 0;
+	}
+	else hb_timer = 100;
 }
 void Hero::render() const
 {
@@ -90,7 +97,7 @@ void Hero::start_turn()
 	if (sleep_timer == 0)
 	{
 		turn_done = false;
-		moves = std::make_pair(2, 2);
+		moves = std::make_pair(max_moves, max_moves);
 
 		if (!get_auto_move())
 			camera.update_position(grid_x * 32, grid_y * 32);
@@ -193,10 +200,16 @@ bool Hero::init_class(HeroClass hc)
 	switch (hc)
 	{
 		case HC_ARCHER: class_texture = "core/texture/actor/hero/archer.png"; break;
-		case HC_BARBARIAN: class_texture = "core/texture/actor/hero/barbarian.png"; break;
+		case HC_BARBARIAN:
+			class_texture = "core/texture/actor/hero/barbarian.png";
+			health = std::make_pair(6, 6);
+			break;
 		case HC_CLERIC: class_texture = "core/texture/actor/hero/cleric.png"; break;
 		case HC_MAGE: class_texture = "core/texture/actor/hero/mage.png"; break;
-		case HC_MONK: class_texture = "core/texture/actor/hero/monk.png"; break;
+		case HC_MONK:
+			class_texture = "core/texture/actor/hero/monk.png";
+			max_moves = 3;
+			break;
 		case HC_SWORDMASTER: class_texture = "core/texture/actor/hero/swordmaster.png"; break;
 		case HC_TANK: class_texture = "core/texture/actor/hero/tank.png"; break;
 		default: hero_class = HC_PEON; break;
@@ -220,7 +233,7 @@ void Hero::render_ui_texture(uint16_t xpos, uint16_t ypos) const
 	}
 	if (health_texture != nullptr && health.second > 0)
 	{
-		SDL_Rect rect = { 0, 0, 16, 16 };
+		SDL_Rect rect = { (hb_timer < 100) ? 64 : 0, 0, 16, 16 };
 		int8_t hearts = health.second / 3;
 		int8_t hp_left = health.first;
 		uint16_t render_x = xpos + 50;
@@ -228,8 +241,8 @@ void Hero::render_ui_texture(uint16_t xpos, uint16_t ypos) const
 
 		while (hearts > 0)
 		{
-			if (hp_left == 2) rect.x = 16;
-			else if (hp_left == 1) rect.x = 32;
+			if (hp_left == 2) rect.x = (hb_timer < 100) ? 80 : 16;
+			else if (hp_left == 1) rect.x = (hb_timer < 100) ? 96 : 32;
 			else if (hp_left < 1) rect.x = 48;
 
 			if (hp_shake > 0)
@@ -378,8 +391,10 @@ void Hero::set_sleep_timer(uint8_t timer)
 	if (sleep_timer > 0 && timer == 0)
 		load_bubble("question", 1);
 	else if (timer > 0)
+	{
 		load_bubble("sleep", 5);
-
+		moves = std::make_pair(0, 0);
+	}
 	else clear_bubble();
 	sleep_timer = timer;
 }

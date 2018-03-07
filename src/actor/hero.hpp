@@ -64,8 +64,10 @@ private:
 	bool command_this_turn;
 
 	HeroClass hero_class;
+	uint8_t max_moves;
 
 	uint8_t hp_shake;
+	uint16_t hb_timer;
 	int8_t prev_health;
 
 	AStar *pathfinder;
