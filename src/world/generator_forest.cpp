@@ -127,6 +127,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	level += "l-T-core/texture/level/tree/" + woods +  ".png\n";
 	level += "l-B-core/texture/level/map/" + ((depth < 5) ? bases[depth-1] : bases[3]) + ".png\n";
 
+	const uint8_t field_probability = (depth < 5) ? 11 - depth : 7;
 	for (uint8_t y = 0; y < height; y++)
 	{
 		for (uint8_t x = 0; x < width; x++)
@@ -136,7 +137,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 
 			if (node != 1 && x < 10 && x > 1 && y < 11 && y > 3)
 			{
-				level += (engine.get_rng() % 10 == 0) ? '3' : '0';
+				level += (engine.get_rng() % field_probability == 0) ? '3' : '0';
 				field = true;
 			}
 			else if (x < 15)
@@ -186,7 +187,7 @@ void GeneratorForest::post_process(ActorManager *am, Level *level, uint8_t depth
 	base_node.wall_animated = sub_nodes['B'].sub_animated;
 	base_node.wall_type = sub_nodes['B'].sub_type;
 
-	pathfinder->find_path(level, start_x, start_y, base_pos.first, base_pos.second, false);
+	pathfinder->find_path(level, start_x, start_y, base_pos.first, base_pos.second, 0);
 	while (pathfinder->get_path_found())
 	{
 		level->set_node(pathfinder->get_goto_x(), pathfinder->get_goto_y(), new_node);

@@ -40,7 +40,6 @@ public:
 	virtual bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 
 	virtual void update(Level *level);
-	virtual void render() const;
 	virtual void render_ui(uint16_t xpos, uint16_t ypos) const;
 
 	virtual void start_turn();

@@ -83,16 +83,12 @@ void Hero::update(Level *level)
 	}
 	else hb_timer = 100;
 }
-void Hero::render() const
-{
-	Actor::render();
-
-	if (pathfinder != nullptr && (hovered != HOVER_NONE))
-		pathfinder->render(moves.first);
-}
 void Hero::render_ui(uint16_t xpos, uint16_t ypos) const
 {
 	Actor::render_ui(xpos, ypos);
+
+	if (pathfinder != nullptr && (hovered != HOVER_NONE))
+		pathfinder->render(moves.first);
 
 	if (ui_texture != nullptr)
 	{
@@ -409,7 +405,7 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 			{
 				pathfinder->clear_path();
 				if (!auto_move_path)
-					pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
+					pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y, ACTOR_HERO);
 				auto_move_path = false;
 			}
 			else // If we click the end of a path, start moving there automatically
@@ -419,7 +415,7 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 			}
 		}
 		// Otherwise just calculate the new path
-		else pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y);
+		else pathfinder->find_path(level, grid_x, grid_y, (int8_t)map_x, (int8_t)map_y, ACTOR_HERO);
 	}
 }
 bool Hero::get_auto_move() const
