@@ -24,8 +24,11 @@ class AStar;
 
 enum HeroClass
 {
-	HC_PEON, HC_MAGE, HC_NINJA,
-	HC_BARBARIAN, HC_JUGGERNAUT
+	HC_PEON,
+	HC_MAGE,
+	HC_NINJA,
+	HC_BARBARIAN,
+	HC_JUGGERNAUT
 };
 class Hero : public Actor
 {

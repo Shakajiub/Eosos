@@ -24,6 +24,13 @@
 
 class AStar;
 
+enum WaveClass
+{
+	WAVE_NONE,
+	WAVE_DWARF,
+	WAVE_KOBOLD,
+	WAVE_UNDEAD
+};
 class GeneratorForest : public Generator
 {
 public:
@@ -49,6 +56,8 @@ private:
 	uint8_t current_wave;
 	uint16_t current_turn;
 
+	WaveClass wave_class;
+	std::vector<uint8_t> wave_monsters;
 	std::pair<uint8_t, uint8_t> base_pos;
 	std::vector< std::pair<uint8_t, uint8_t> > spawn_positions;
 };

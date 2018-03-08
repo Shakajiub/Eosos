@@ -76,14 +76,19 @@ bool ActorManager::update(Level *level)
 			Actor *temp_actor = nullptr;
 			Actor *first_actor = nullptr;
 
+			std::vector<Actor*> to_erase;
+			for (Actor *a : actors)
+			{
+				if (a->get_delete())
+					to_erase.push_back(a);
+			}
+			for (Actor *a : to_erase)
+			{
+				delete_actor(level, a);
+				actors_deleted = true;
+			}
 			for (uint8_t i = 0; i < actors.size(); i++) if (actors[i] != nullptr)
 			{
-				if (actors[i]->get_delete())
-				{
-					delete_actor(level, actors[i]);
-					actors_deleted = true;
-					continue;
-				}
 				if (actors[i]->get_ID() > current_ID && (temp_actor == nullptr || actors[i]->get_ID() < temp_actor->get_ID()))
 					temp_actor = actors[i];
 				if (first_actor == nullptr || actors[i]->get_ID() < first_actor->get_ID())
@@ -138,14 +143,17 @@ void ActorManager::render_ui() const
 }
 void ActorManager::clear_actors(Level *level, bool clear_heroes)
 {
-	for (uint8_t i = 0; i < actors.size(); i++) if (actors[i] != nullptr)
+	std::vector<Actor*> to_erase;
+	for (Actor *a : actors)
 	{
-		if (clear_heroes || actors[i]->get_actor_type() != ACTOR_HERO)
-			delete_actor(level, actors[i]);
-		else actors[i]->clear_mount();
+		if (clear_heroes || a->get_actor_type() != ACTOR_HERO)
+			to_erase.push_back(a);
+		else a->clear_mount();
 	}
+	for (Actor *a : to_erase)
+		delete_actor(level, a);
 }
-bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
+Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
 	if (level == nullptr)
 		return false;
@@ -188,9 +196,9 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 				temp = nullptr;
 			}
 		}
-		return temp != nullptr;
+		return temp;
 	}
-	return false;
+	return nullptr;
 }
 void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos)
 {

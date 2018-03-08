@@ -21,13 +21,14 @@
 #include "level.hpp"
 #include "astar.hpp"
 
+#include "monster.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
 #include "ui.hpp"
 
 #include <unordered_map>
 
-GeneratorForest::GeneratorForest() : pathfinder(nullptr), current_wave(0), current_turn(0)
+GeneratorForest::GeneratorForest() : pathfinder(nullptr), current_wave(0), current_turn(0), wave_class(WAVE_NONE)
 {
 
 }
@@ -64,6 +65,15 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	base_pos = std::make_pair(5, 7);
 	base_pos.second += (engine.get_rng() % 5) - 2;
 
+	wave_class = WAVE_DWARF;
+	wave_monsters.clear();
+	wave_monsters = {
+		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+		MONSTER_DWARF_BEASTMASTER, MONSTER_DWARF_BEASTMASTER,
+		MONSTER_DWARF_NECROMANCER,
+		MONSTER_DWARF_KING
+	};
 	bool map_fine = false;
 	while (!map_fine)
 	{
@@ -218,7 +228,13 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 	if (am != nullptr && current_turn % 2 == 0)
 	{
 		auto pos = get_spawn_pos();
-		am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/dwarf_warrior.png");
+		Actor *monster = am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/missing.png");
+
+		if (monster != nullptr && wave_monsters.size() > 1)
+		{
+			const uint8_t i = (engine.get_rng() % (wave_monsters.size() - 1));
+			dynamic_cast<Monster*>(monster)->init_class((MonsterClass)wave_monsters[i]);
+		}
 	}
 }
 std::pair<uint8_t, uint8_t> GeneratorForest::get_spawn_pos() const

@@ -40,7 +40,7 @@ public:
 	void render_ui() const;
 
 	void clear_actors(Level *level, bool clear_heroes = false);
-	bool spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
+	Actor* spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 	void place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos);
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);

@@ -25,10 +25,10 @@
 #include "texture.hpp"
 #include "texture_manager.hpp"
 
-Monster::Monster() : pathfinder(nullptr), healthbar(nullptr)
+Monster::Monster() : pathfinder(nullptr), healthbar(nullptr), monster_class(MONSTER_NONE)
 {
 	health = std::make_pair(2, 2);
-	name = "Dwarf";
+	name = "???";
 }
 Monster::~Monster()
 {
@@ -117,6 +117,87 @@ bool Monster::take_turn(Level *level)
 void Monster::end_turn()
 {
 	Actor::end_turn();
+}
+bool Monster::init_class(MonsterClass mc)
+{
+	std::string class_texture = "core/texture/actor/missing.png";
+	monster_class = mc;
+
+	// Ideally this stuff should be loaded from an external monster definion file,
+	// but I have no time. Will be re-done for the post-7DRL cleaned-up version.
+	// For now, enjoy this disgusting switch case.
+
+	switch (monster_class)
+	{
+		case MONSTER_MISC_LIVING_TREE:
+			name = "Living Tree";
+			class_texture = "core/texture/actor/living_oak.png";
+			break;
+		case MONSTER_DWARF_WARRIOR:
+			name = "Dwarven Warrior";
+			class_texture = "core/texture/actor/dwarf_warrior.png";
+			break;
+		case MONSTER_DWARF_NECROMANCER:
+			name = "Dwarven Necromancer";
+			class_texture = "core/texture/actor/dwarf_necromancer.png";
+			break;
+		case MONSTER_DWARF_BEASTMASTER:
+			name = "Dwarven Beastmaster";
+			class_texture = "core/texture/actor/dwarf_beastmaster.png";
+			proj_name = "core/texture/item/dart.png";
+			add_ability("shoot");
+			break;
+		case MONSTER_DWARF_KING:
+			name = "Dwarven King";
+			class_texture = "core/texture/actor/dwarf_king.png";
+			break;
+		case MONSTER_KOBOLD_WARRIOR:
+			name = "Kobold Warrior";
+			class_texture = "core/texture/actor/kobold_warrior.png";
+			break;
+		case MONSTER_KOBOLD_ARCHER:
+			name = "Kobold Archer";
+			class_texture = "core/texture/actor/kobold_archer.png";
+			proj_name = "core/texture/item/arrow.png";
+			add_ability("shoot");
+			break;
+		case MONSTER_KOBOLD_MAGE:
+			name = "Kobold Mage";
+			class_texture = "core/texture/actor/kobold_mage.png";
+			break;
+		case MONSTER_KOBOLD_DEMONIAC:
+			name = "Kobold Demoniac";
+			class_texture = "core/texture/actor/kobold_demoniac.png";
+			break;
+		case MONSTER_KOBOLD_TRUEFORM:
+			name = "Kobold Trueform";
+			class_texture = "core/texture/actor/kobold_trueform.png";
+			break;
+		case MONSTER_UNDEAD_ZOMBIE:
+			name = "Zombie";
+			class_texture = "core/texture/actor/zombie.png";
+			break;
+		case MONSTER_UNDEAD_VAMPIRE:
+			name = "Vampire";
+			class_texture = "core/texture/actor/vampire.png";
+			break;
+		case MONSTER_UNDEAD_GHOST:
+			name = "Ghost";
+			class_texture = "core/texture/actor/ghost.png";
+			break;
+		case MONSTER_UNDEAD_MUMMY:
+			name = "Mummy";
+			class_texture = "core/texture/actor/mummy.png";
+			break;
+		default: monster_class = MONSTER_NONE; break;
+	}
+	if (texture != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(texture->get_name());
+		texture = nullptr;
+	}
+	texture = engine.get_texture_manager()->load_texture(class_texture);
+	return texture != nullptr;
 }
 bool Monster::init_healthbar()
 {

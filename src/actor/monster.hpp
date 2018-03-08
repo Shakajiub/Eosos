@@ -22,6 +22,24 @@
 
 class AStar;
 
+enum MonsterClass
+{
+	MONSTER_NONE,
+	MONSTER_MISC_LIVING_TREE,
+	MONSTER_DWARF_WARRIOR,
+	MONSTER_DWARF_NECROMANCER,
+	MONSTER_DWARF_BEASTMASTER,
+	MONSTER_DWARF_KING,
+	MONSTER_KOBOLD_WARRIOR,
+	MONSTER_KOBOLD_ARCHER,
+	MONSTER_KOBOLD_MAGE,
+	MONSTER_KOBOLD_DEMONIAC,
+	MONSTER_KOBOLD_TRUEFORM,
+	MONSTER_UNDEAD_ZOMBIE,
+	MONSTER_UNDEAD_VAMPIRE,
+	MONSTER_UNDEAD_GHOST,
+	MONSTER_UNDEAD_MUMMY
+};
 class Monster : public Actor
 {
 public:
@@ -36,6 +54,7 @@ public:
 	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
+	bool init_class(MonsterClass mc);
 	bool init_healthbar();
 	bool init_pathfinder();
 	void step_pathfinder(Level *level);
@@ -43,6 +62,8 @@ public:
 private:
 	AStar *pathfinder;
 	Texture *healthbar;
+
+	MonsterClass monster_class;
 };
 
 #endif // MONSTER_HPP
