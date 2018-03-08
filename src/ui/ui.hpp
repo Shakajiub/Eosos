@@ -50,6 +50,7 @@ public:
 
 	Texture* get_background() const { return ui_background; }
 	BitmapFont* get_bitmap_font() const { return main_font; }
+	MessageBox* get_message_box() const { return message_box; }
 	MessageLog* get_message_log() const { return message_log; }
 
 private:

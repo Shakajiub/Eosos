@@ -15,50 +15,33 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OVERWORLD_HPP
-#define OVERWORLD_HPP
+#ifndef ABILITY_DISMOUNT_HPP
+#define ABILITY_DISMOUNT_HPP
 
-#include "scene.hpp"
+#include "ability.hpp"
 
-class ActorManager;
-class Actor;
-class Level;
+#include <vector>
+
 class Texture;
 
-class Overworld : public Scene
+class AbilityDismount : public Ability
 {
 public:
-	Overworld();
-	~Overworld();
+	AbilityDismount();
+	~AbilityDismount();
 
-	virtual void free();
-	virtual void init();
+	void free();
 
-	virtual bool update();
-	virtual void render() const;
-
-	void next_turn();
-
-	Level* get_level() const { return current_level; }
+	virtual bool init();
+	virtual void apply(Hero *hero);
+	virtual void render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const;
+	virtual bool get_click(uint16_t mouse_x, uint16_t mouse_y);
+	virtual void clear();
 
 private:
-	uint8_t anim_timer;
-	uint8_t current_depth;
-	uint8_t current_wave;
-	uint16_t current_turn;
-
-	ActorManager *actor_manager;
-	Actor *hovered_actor;
-	Level *current_level;
-
-	Texture *node_highlight;
-	std::vector<Texture*> pointers;
-
-	uint8_t frames;
-	uint8_t display_fps;
-	uint16_t frame_counter;
-
-	int mouse_x, mouse_y; // for SDL_GetMouseState() from update() to render()
+	std::vector<std::pair<uint8_t, uint8_t> > valid_nodes;
+	Texture *target_texture;
+	Hero *temp_hero;
 };
 
-#endif // OVERWORLD_HPP
+#endif // ABILITY_DISMOUNT_HPP

@@ -201,9 +201,8 @@ bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos)
 		{
 			delete message_box;
 			message_box = nullptr;
-			return true;
 		}
-		return false;
+		return true;
 	}
 	if (at != nullptr && at->get_click(xpos, ypos))
 		return true;

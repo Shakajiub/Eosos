@@ -20,9 +20,11 @@
 #include "ability.hpp"
 #include "hero.hpp"
 
+#include "ability_dismount.hpp"
 #include "ability_levelup.hpp"
 #include "ability_shoot.hpp"
 #include "ability_sleep.hpp"
+
 #include "camera.hpp"
 #include "bitmap_font.hpp"
 #include "ui.hpp"
@@ -82,6 +84,8 @@ void AbilityManager::load_ability(const std::string &ability)
 		new_ability = new AbilityShoot;
 	else if (ability == "level-up")
 		new_ability = new AbilityLevelUp;
+	else if (ability == "dismount")
+		new_ability = new AbilityDismount;
 
 	if (new_ability != nullptr)
 	{

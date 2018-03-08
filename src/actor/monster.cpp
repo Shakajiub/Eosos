@@ -20,6 +20,7 @@
 #include "level.hpp"
 #include "astar.hpp"
 
+#include "mount.hpp"
 #include "camera.hpp"
 #include "texture.hpp"
 #include "texture_manager.hpp"
@@ -73,7 +74,9 @@ void Monster::render() const
 void Monster::start_turn()
 {
 	turn_done = false;
-	moves = std::make_pair(1, 1);
+
+	const uint8_t temp_moves = (mount != nullptr) ? 2 : 1;
+	moves = std::make_pair(temp_moves, temp_moves);
 
 	if (pathfinder != nullptr)
 		pathfinder->clear_path();
@@ -125,13 +128,19 @@ bool Monster::init_pathfinder()
 }
 void Monster::step_pathfinder(Level *level)
 {
-	const Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
+	Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
 	if (temp_actor != nullptr)
 	{
-		moves.first = 0;
-		if (temp_actor->get_actor_type() != actor_type)
+		if (temp_actor->get_actor_type() == ACTOR_HERO)
 			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+
+		else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
+		{
+			add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+			set_mount(dynamic_cast<Mount*>(temp_actor));
+		}
 		else turn_done = true;
+		moves.first = 0;
 	}
 	else
 	{

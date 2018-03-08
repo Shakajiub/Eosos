@@ -22,6 +22,7 @@
 
 #include "hero.hpp"
 #include "monster.hpp"
+#include "mount.hpp"
 #include "camera.hpp"
 
 #include <algorithm> // for std::find
@@ -55,6 +56,7 @@ void ActorManager::init()
 	ability_manager = new AbilityManager;
 	ability_manager->load_ability("sleep");
 	ability_manager->load_ability("shoot");
+	ability_manager->load_ability("dismount");
 	ability_manager->load_ability("level-up");
 }
 bool ActorManager::update(Level *level)
@@ -97,7 +99,13 @@ bool ActorManager::update(Level *level)
 					heroes.erase(pos);
 
 				actors_deleted = true;
-				level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
+				Mount *temp_mount = a->get_mount();
+				if (temp_mount != nullptr)
+				{
+					temp_mount->set_rider(nullptr);
+					level->set_actor(a->get_grid_x(), a->get_grid_y(), temp_mount);
+				}
+				else level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
 				delete a;
 			}
 			if (temp_actor == nullptr)
@@ -198,6 +206,8 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 			temp = new Hero;
 		else if (at == ACTOR_MONSTER)
 			temp = new Monster;
+		else if (at == ACTOR_MOUNT)
+			temp = new Mount;
 
 		if (temp != nullptr)
 		{

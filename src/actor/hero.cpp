@@ -21,6 +21,7 @@
 #include "astar.hpp"
 #include "texture.hpp"
 
+#include "mount.hpp"
 #include "camera.hpp"
 #include "texture_manager.hpp"
 #include "message_log.hpp"
@@ -134,7 +135,9 @@ void Hero::start_turn()
 	if (sleep_timer == 0)
 	{
 		turn_done = false;
-		moves = std::make_pair(max_moves, max_moves);
+
+		const uint8_t temp_moves = (mount != nullptr) ? max_moves + 1 : max_moves;
+		moves = std::make_pair(temp_moves, temp_moves);
 
 		if (!get_auto_move())
 			camera.update_position(grid_x * 32, grid_y * 32);
@@ -240,29 +243,29 @@ bool Hero::init_pathfinder()
 bool Hero::init_class(HeroClass hc)
 {
 	const uint8_t hp = health.second;
-	std::string class_texture = "core/texture/actor/hero/peon.png";
+	std::string class_texture = "core/texture/actor/orc_peon.png";
 	hero_class = hc;
 
 	switch (hero_class)
 	{
 		case HC_MAGE:
 			name = "Mage";
-			class_texture = "core/texture/actor/hero/mage.png";
+			class_texture = "core/texture/actor/orc_mage.png";
 			break;
 		case HC_NINJA:
 			name = "Ninja";
-			class_texture = "core/texture/actor/hero/ninja.png";
+			class_texture = "core/texture/actor/orc_ninja.png";
 			proj_name = "core/texture/item/shuriken.png";
 			add_ability("shoot");
 			break;
 		case HC_BARBARIAN:
 			name = "Barbarian";
-			class_texture = "core/texture/actor/hero/barbarian.png";
+			class_texture = "core/texture/actor/orc_barbarian.png";
 			health = std::make_pair(hp + 3, hp + 3);
 			break;
 		case HC_JUGGERNAUT:
 			name = "Juggernaut";
-			class_texture = "core/texture/actor/hero/juggernaut.png";
+			class_texture = "core/texture/actor/orc_juggernaut.png";
 			break;
 		default: hero_class = HC_PEON; break;
 	}
@@ -276,12 +279,19 @@ bool Hero::init_class(HeroClass hc)
 }
 void Hero::step_pathfinder(Level *level)
 {
-	const Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
+	Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
 	if (temp_actor != nullptr)
 	{
-		if (temp_actor->get_actor_type() != actor_type)
+		if (temp_actor->get_actor_type() == ACTOR_MONSTER)
 		{
 			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y(), moves.first);
+			moves.first = 0;
+		}
+		else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
+		{
+			add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+			set_mount(dynamic_cast<Mount*>(temp_actor));
+			add_ability("dismount");
 			moves.first = 0;
 		}
 		else
@@ -341,10 +351,20 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 	if (offset_x != 0 || offset_y != 0)
 	{
 		Actor *temp_actor = level->get_actor(grid_x + offset_x, grid_y + offset_y);
-		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
+		if (temp_actor != nullptr)
 		{
-			add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y, moves.first);
-			moves.first = 0;
+			if (temp_actor->get_actor_type() == ACTOR_MONSTER)
+			{
+				add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y, moves.first);
+				moves.first = 0;
+			}
+			else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
+			{
+				add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
+				set_mount(dynamic_cast<Mount*>(temp_actor));
+				add_ability("dismount");
+				moves.first = 0;
+			}
 		}
 		else if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
 		{

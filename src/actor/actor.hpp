@@ -21,6 +21,7 @@
 #include <queue>
 #include <vector>
 
+class Mount;
 class Level;
 class Texture;
 
@@ -28,7 +29,8 @@ enum ActorType
 {
 	ACTOR_NULL,
 	ACTOR_HERO,
-	ACTOR_MONSTER
+	ACTOR_MONSTER,
+	ACTOR_MOUNT
 };
 enum ActionType
 {
@@ -98,25 +100,35 @@ public:
 	void set_status(StatusType st);
 
 	bool get_delete() const { return delete_me; }
-	uint16_t get_ID() const { return actor_ID; }
-	uint8_t get_grid_x() const { return grid_x; }
-	uint8_t get_grid_y() const { return grid_y; }
+	bool get_in_camera() const { return in_camera; }
+	bool get_facing_right() const { return facing_right; }
+
 	HoverType get_hovered() const { return hovered; }
 	ActorType get_actor_type() const { return actor_type; }
+	SDL_Rect get_frame_rect() const { return frame_rect; }
+
+	uint16_t get_ID() const { return actor_ID; }
+	uint16_t get_x() const { return x; }
+	uint16_t get_y() const { return y; }
+	uint8_t get_grid_x() const { return grid_x; }
+	uint8_t get_grid_y() const { return grid_y; }
+	Mount* get_mount() const { return mount; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
 
 	void set_delete(bool del) { delete_me = del; }
 	void set_hovered(HoverType ht) { hovered = ht; }
 	void set_moves(int8_t m) { moves.first = m; }
+	void set_mount(Mount *m);
 
 protected:
 	bool delete_me;
 	bool in_camera;
 	bool turn_done;
 	bool facing_right;
-	HoverType hovered;
 
+	HoverType hovered;
 	ActorType actor_type;
+
 	uint16_t actor_ID;
 	uint16_t x, y;
 	uint8_t grid_x, grid_y;
@@ -143,6 +155,8 @@ protected:
 
 	SDL_Rect frame_rect;
 	Texture *texture;
+
+	Mount *mount;
 
 	double proj_angle;
 	uint16_t proj_x, proj_y;

@@ -16,32 +16,48 @@
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
 #include "engine.hpp"
-#include "ability_levelup.hpp"
-#include "hero.hpp"
+#include "mount.hpp"
+#include "level.hpp"
 
-AbilityLevelUp::AbilityLevelUp()
+Mount::Mount() : rider(nullptr)
 {
 
 }
-AbilityLevelUp::~AbilityLevelUp()
+Mount::~Mount()
 {
 	free();
 }
-void AbilityLevelUp::free()
+void Mount::free()
 {
-
-}
-bool AbilityLevelUp::init()
-{
-	if (init_texture("core/texture/ui/icon/arrow_up.png", COLOR_SKY))
-		ability_name = "level-up";
-}
-void AbilityLevelUp::apply(Hero *hero)
-{
-	if (hero != nullptr)
+	if (rider != nullptr)
 	{
-		hero->set_status(STATUS_NONE);
-		hero->remove_ability("level-up");
-		hero->set_moves(0);
+		rider->set_mount(nullptr);
+		rider = nullptr;
+	}
+}
+void Mount::update(Level *level)
+{
+	Actor::update(level);
+
+	if (rider != nullptr)
+	{
+		if (x != rider->get_x() || y != rider->get_y())
+		{
+			facing_right = rider->get_facing_right();
+			x = rider->get_x(); y = rider->get_y();
+		}
+		frame_rect.y = rider->get_frame_rect().y;
+		in_camera = rider->get_in_camera();
+	}
+}
+void Mount::set_rider(Actor *new_rider)
+{
+	rider = new_rider;
+	if (rider != nullptr)
+	{
+		x = rider->get_x(); y = rider->get_y();
+		facing_right = rider->get_facing_right();
+		frame_rect.y = rider->get_frame_rect().y;
+		in_camera = rider->get_in_camera();
 	}
 }

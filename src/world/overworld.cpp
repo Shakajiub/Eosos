@@ -33,8 +33,9 @@
 #include <cmath> // for std::floor
 
 Overworld::Overworld() :
-	anim_timer(0), current_depth(0), current_turn(0), actor_manager(nullptr), hovered_actor(nullptr),
-	current_level(nullptr), node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
+	anim_timer(0), current_depth(0), current_wave(0), current_turn(0),
+	actor_manager(nullptr), hovered_actor(nullptr), current_level(nullptr),
+	node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
 {
 
 }
@@ -75,9 +76,10 @@ void Overworld::init()
 
 	actor_manager = new ActorManager;
 	actor_manager->init();
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/hero/peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/hero/peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/hero/peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
+	actor_manager->spawn_actor(current_level, ACTOR_MOUNT, pos.first, pos.second, "core/texture/actor/sheep_white.png");
 
 	if (engine.get_sound_manager() != nullptr)
 	{
@@ -189,7 +191,7 @@ bool Overworld::update()
 					ui.spawn_message_box("title", "text");
 					break;
 				default:
-					if (actor_manager != nullptr)
+					if (actor_manager != nullptr && ui.get_message_box() == nullptr)
 						actor_manager->input_keyboard_down(event.key.keysym.sym, current_level);
 					break;
 			}
@@ -225,13 +227,6 @@ bool Overworld::update()
 			}
 		}
 	}
-	if (actor_manager != nullptr)
-	{
-		if (actor_manager->update(current_level))
-			hovered_actor = nullptr;
-		if (actor_manager->get_next_turn())
-			next_turn();
-	}
 	// Idle / map animations
 	anim_timer += engine.get_dt();
 	while (anim_timer > 100)
@@ -248,6 +243,13 @@ bool Overworld::update()
 		}
 		if (actor_manager != nullptr)
 			actor_manager->animate();
+	}
+	if (actor_manager != nullptr)
+	{
+		if (actor_manager->update(current_level))
+			hovered_actor = nullptr;
+		if (actor_manager->get_next_turn())
+			next_turn();
 	}
 	ui.update();
 	camera.update();

@@ -17,6 +17,7 @@
 
 #include "engine.hpp"
 #include "actor.hpp"
+#include "mount.hpp"
 #include "level.hpp"
 #include "texture.hpp"
 
@@ -30,9 +31,10 @@
 uint16_t Actor::ID = 0;
 
 Actor::Actor() :
-	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false), name("???"),
-	hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr), status_icon(nullptr),
-	status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0), projectile(nullptr), proj_name("???")
+	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false),
+	name("???"), hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr),
+	status_icon(nullptr), status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0),
+	projectile(nullptr), proj_name("???"), mount(nullptr)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0, 0 };
@@ -65,6 +67,11 @@ void Actor::free()
 	{
 		engine.get_texture_manager()->free_texture(status_icon->get_name());
 		status_icon = nullptr;
+	}
+	if (mount != nullptr)
+	{
+		mount->set_rider(nullptr);
+		mount = nullptr;
 	}
 	if (!action_queue.empty())
 		std::queue<Action>().swap(action_queue);
@@ -117,10 +124,32 @@ void Actor::render() const
 {
 	if (texture != nullptr && in_camera && !delete_me)
 	{
-		texture->render(
-			x - camera.get_cam_x(), y - camera.get_cam_y(), &frame_rect,
-			2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
-		);
+		if (mount == nullptr) // No mount, just render normally
+		{
+			texture->render(
+				x - camera.get_cam_x(), y - camera.get_cam_y(), &frame_rect,
+				2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
+			);
+		}
+		else // When rendering a mount, we need to "split" our own texture into two
+		{
+			const uint8_t half_width = frame_rect.w / 2;
+			const SDL_Rect rect_left = { frame_rect.x, frame_rect.y, half_width, frame_rect.h };
+			const SDL_Rect rect_right = { frame_rect.x + half_width, frame_rect.y, half_width, frame_rect.h };
+
+			texture->render(
+				x - camera.get_cam_x() + (facing_right ? frame_rect.w : 0),
+				y - camera.get_cam_y() - frame_rect.h, // Raise ourselves half a tile to appear on "top" of the mount
+				&rect_left, 2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
+			);
+			mount->render(); // And render the mount in the middle, to create the illusion of sitting on top of it
+
+			texture->render(
+				x - camera.get_cam_x() + (half_width * 2) + (facing_right ? -frame_rect.w : 0),
+				y - camera.get_cam_y() - frame_rect.h, // Raise ourselves half a tile to appear on "top" of the mount
+				&rect_right, 2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, 0.0
+			);
+		}
 		if (bubble != nullptr)
 			bubble->render(x - camera.get_cam_x(), y - camera.get_cam_y() - 32, &bubble_rect);
 
@@ -206,11 +235,19 @@ bool Actor::action_move(Level *level)
 			if (grid_x != current_action.xpos)
 				facing_right = (grid_x < current_action.xpos);
 
-			level->set_actor(grid_x, grid_y, nullptr);
+			if (mount != nullptr && current_action.action_value == 1)
+			{
+				level->set_actor(grid_x, grid_y, mount);
+				mount->set_rider(nullptr);
+				set_mount(nullptr);
+			}
+			else level->set_actor(grid_x, grid_y, nullptr);
+
 			prev_x = grid_x;
 			prev_y = grid_y;
 			grid_x = current_action.xpos;
 			grid_y = current_action.ypos;
+
 			level->set_actor(grid_x, grid_y, this);
 
 			if (!in_camera)
@@ -403,7 +440,7 @@ bool Actor::has_ability(const std::string &ability) const
 }
 void Actor::attack(Actor *other)
 {
-	if (other == nullptr || ui.get_message_log() == nullptr)
+	if (other == nullptr || other->get_actor_type() == ACTOR_MOUNT, ui.get_message_log() == nullptr)
 		return;
 
 	MessageLog *ml = ui.get_message_log();
@@ -458,4 +495,11 @@ void Actor::set_status(StatusType st)
 
 	if (status_icon != nullptr)
 		status = st;
+}
+void Actor::set_mount(Mount *m)
+{
+	mount = m;
+
+	if (mount != nullptr)
+		mount->set_rider(this);
 }

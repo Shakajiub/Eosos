@@ -87,7 +87,7 @@ void MessageBox::render() const
 }
 bool MessageBox::get_overlap(int16_t mouse_x, int16_t mouse_y) const
 {
-	return (mouse_x > x && mouse_x < x + (width * 32) && mouse_y > y && mouse_y < y + (height * 32));
+	return true;// (mouse_x > x && mouse_x < x + (width * 32) && mouse_y > y && mouse_y < y + (height * 32));
 }
 bool MessageBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 {
