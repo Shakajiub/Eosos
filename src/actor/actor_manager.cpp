@@ -227,7 +227,19 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
-		dynamic_cast<Hero*>(current_actor)->input_keyboard_down(key, level);
+	{
+		switch (key)
+		{
+			case SDLK_1: case SDLK_2: case SDLK_3: case SDLK_4: case SDLK_5:
+			case SDLK_6: case SDLK_7: case SDLK_8: case SDLK_9: case SDLK_0:
+				if (ability_manager != nullptr)
+					ability_manager->input_keyboard_down(dynamic_cast<Hero*>(current_actor), key);
+				break;
+			default:
+				dynamic_cast<Hero*>(current_actor)->input_keyboard_down(key, level);
+				break;
+		}
+	}
 }
 void ActorManager::input_mouse_button_down(SDL_Event eve, Level *level)
 {

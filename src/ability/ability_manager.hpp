@@ -34,6 +34,8 @@ public:
 	void load_ability(const std::string &name);
 	void clear();
 
+	void input_keyboard_down(Hero *hero, SDL_Keycode key);
+
 	bool get_overlap(Hero *hero, int16_t mouse_x, int16_t mouse_y) const;
 	bool get_click(Hero *hero, int16_t mouse_x, int16_t mouse_y) const;
 

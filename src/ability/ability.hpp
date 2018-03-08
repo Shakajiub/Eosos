@@ -31,7 +31,7 @@ public:
 
 	virtual bool init() = 0;
 	virtual void apply(Hero *hero) = 0;
-	virtual void render(uint16_t xpos, uint16_t ypos) const;
+	virtual void render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const;
 	virtual bool get_click(uint16_t mouse_x, uint16_t mouse_y);
 	virtual void clear();
 

@@ -39,12 +39,16 @@ void Ability::free()
 		ability_texture = nullptr;
 	}
 }
-void Ability::render(uint16_t xpos, uint16_t ypos) const
+void Ability::render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const
 {
 	if (ability_texture != nullptr)
 	{
 		const SDL_Rect rect = { (hovered || activated) ? 48 : 0, 0, 48, 48 };
 		const SDL_Rect quad = { xpos, ypos, 48, 48 };
+
+		std::string hotkey_name = " ";
+		if (key != NULL)
+			hotkey_name = SDL_GetKeyName(key);
 
 		SDL_RenderCopyEx(engine.get_renderer(), ability_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);
 
@@ -55,7 +59,7 @@ void Ability::render(uint16_t xpos, uint16_t ypos) const
 			const uint8_t c = (cooldown.first > 4) ? 155 : 160 - cooldown.first;
 			ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, c);
 		}
-		//else ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, hotkey_name[0]);
+		else ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, hotkey_name[0]);
 		ui.get_bitmap_font()->set_scale(1);
 	}
 }

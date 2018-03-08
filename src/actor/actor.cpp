@@ -287,7 +287,7 @@ bool Actor::action_attack(Level *level)
 		}
 		anim_frames += 1;
 	}
-	if (anim_frames >= 16)
+	if (anim_frames >= 12)
 	{
 		anim_timer = 0;
 		anim_frames = 0;

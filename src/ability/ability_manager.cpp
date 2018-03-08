@@ -48,6 +48,9 @@ void AbilityManager::render_ui(Hero *hero) const
 {
 	if (hero != nullptr)
 	{
+		const SDL_Keycode hotkeys[10] = {
+			SDLK_1, SDLK_2, SDLK_3, SDLK_4, SDLK_5, SDLK_6, SDLK_7, SDLK_8, SDLK_9, SDLK_0
+		};
 		const uint16_t xpos = camera.get_cam_w() - 48;
 		uint16_t ypos = 48;
 
@@ -55,7 +58,7 @@ void AbilityManager::render_ui(Hero *hero) const
 		{
 			if (hero->has_ability(a->get_ability_name()))
 			{
-				a->render(xpos, ypos);
+				a->render(xpos, ypos, hotkeys[ypos / 48 - 1]);
 				ypos += 48;
 			}
 		}
@@ -91,6 +94,25 @@ void AbilityManager::clear()
 {
 	for (Ability *a : abilities)
 		a->clear();
+}
+void AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
+{
+	const SDL_Keycode hotkeys[10] = {
+		SDLK_1, SDLK_2, SDLK_3, SDLK_4, SDLK_5, SDLK_6, SDLK_7, SDLK_8, SDLK_9, SDLK_0
+	};
+	uint8_t i = 0;
+	for (auto *a : abilities)
+	{
+		if (hero->has_ability(a->get_ability_name()))
+		{
+			if (key == hotkeys[i])
+			{
+				a->apply(hero);
+				return;
+			}
+			i += 1;
+		}
+	}
 }
 bool AbilityManager::get_overlap(Hero *hero, int16_t mouse_x, int16_t mouse_y) const
 {

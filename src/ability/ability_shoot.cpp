@@ -102,9 +102,9 @@ void AbilityShoot::apply(Hero *hero)
 	}
 	else clear();
 }
-void AbilityShoot::render(uint16_t xpos, uint16_t ypos) const
+void AbilityShoot::render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const
 {
-	Ability::render(xpos, ypos);
+	Ability::render(xpos, ypos, key);
 
 	if (target_texture != nullptr) for (auto node : valid_nodes)
 		target_texture->render(node.first * 32 - camera.get_cam_x(), node.second * 32 - camera.get_cam_y());
