@@ -30,7 +30,8 @@ enum ActorType
 	ACTOR_NULL,
 	ACTOR_HERO,
 	ACTOR_MONSTER,
-	ACTOR_MOUNT
+	ACTOR_MOUNT,
+	ACTOR_PROP
 };
 enum ActionType
 {

@@ -32,17 +32,22 @@ public:
 
 	virtual void free();
 	virtual void init();
+	virtual void render_ui();
 
 	virtual const std::string generate(uint8_t depth);
-	virtual void post_process(uint8_t depth, Level *level);
-	virtual void next_turn(uint16_t turn, ActorManager *am, Level *level);
+	virtual void post_process(ActorManager *am, Level *level);
+	virtual void next_turn(ActorManager *am, Level *level);
 
 	virtual std::pair<uint8_t, uint8_t> get_base_pos() const { return base_pos; }
 	virtual std::pair<uint8_t, uint8_t> get_spawn_pos() const;
 
 private:
-	uint8_t width, height;
+	uint8_t width;
+	uint8_t height;
 	AStar *pathfinder;
+
+	uint8_t current_wave;
+	uint16_t current_turn;
 
 	std::pair<uint8_t, uint8_t> base_pos;
 	std::vector< std::pair<uint8_t, uint8_t> > spawn_positions;

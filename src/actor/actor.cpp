@@ -214,6 +214,9 @@ void Actor::action_idle()
 	if (actor_type == ACTOR_HERO && moves.first <= 0)
 		frame_rect.y = 16;
 
+	else if (actor_type == ACTOR_PROP)
+		frame_rect.y = 0;
+
 	else if (current_action.type == ACTION_NULL)
 	{
 		if (frame_rect.y == 0)

@@ -21,9 +21,13 @@
 #include "level.hpp"
 #include "astar.hpp"
 
+#include "texture.hpp"
+#include "bitmap_font.hpp"
+#include "ui.hpp"
+
 #include <unordered_map>
 
-GeneratorForest::GeneratorForest() : pathfinder(nullptr)
+GeneratorForest::GeneratorForest() : pathfinder(nullptr), current_wave(0), current_turn(0)
 {
 
 }
@@ -45,6 +49,11 @@ void GeneratorForest::init()
 	pathfinder = new AStar;
 	pathfinder->init();
 }
+void GeneratorForest::render_ui()
+{
+	ui.get_bitmap_font()->render_text(16, 16, "Wave: " + std::to_string(current_wave));
+	ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));
+}
 const std::string GeneratorForest::generate(uint8_t depth)
 {
 	const int8_t offset_x[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
@@ -65,6 +74,9 @@ const std::string GeneratorForest::generate(uint8_t depth)
 		uint8_t xpos = base_pos.first;
 		uint8_t ypos = base_pos.second;
 		map_data[ypos * width + xpos] = 0;
+
+		current_wave = 0;
+		current_turn = 0;
 
 		while (floor_num < 180)
 		{
@@ -93,23 +105,35 @@ const std::string GeneratorForest::generate(uint8_t depth)
 		if (!map_fine)
 			std::cout << "map discarded, no access to right edge" << std::endl;
 	}
+	const std::string woods = (depth % 2 == 0) ? "spruce_dead" : "oak_dead";
+	const std::string bases[4] = { "base_camp", "base_outpost", "base_garrison", "base_fort" };
 	std::string level =
 		"l-0-core/texture/level/floor/dark2_base.png\n"
 		"l-1-core/texture/level/floor/dark2_grass.png\n"
 		"l-2-core/texture/level/floor/dark2_hill.png\n"
-		"l-T-core/texture/level/tree/oak_dead.png\n"
+		"l-3-core/texture/level/floor/dark2_field.png\n"
 		"l-M-core/texture/level/hill/dark_blue.png\n"
-		"l-#-core/texture/level/map/road_dark2.png\n"
-		"l-B-core/texture/level/map/base_outpost.png\n";
+		"l-#-core/texture/level/map/road_dark2.png\n";
+	level += "l-T-core/texture/level/tree/" + woods +  ".png\n";
+	level += "l-B-core/texture/level/map/" + ((depth < 5) ? bases[depth-1] : bases[3]) + ".png\n";
+
 	for (uint8_t y = 0; y < height; y++)
 	{
 		for (uint8_t x = 0; x < width; x++)
 		{
 			const uint8_t node = map_data[y * width + x];
-			if (x < 15)
-				level += (engine.get_rng() % 2 == 0) ? '0' : '1';
+			bool field = false;
+
+			if (node != 1 && x < 10 && x > 1 && y < 11 && y > 3)
+			{
+				level += (engine.get_rng() % 10 == 0) ? '3' : '0';
+				field = true;
+			}
+			else if (x < 15)
+				level += (engine.get_rng() % 5 < 2) ? '0' : '1';
 			else level += (engine.get_rng() % 4 == 0) ? '1' : '2';
-			if (node == 1)
+
+			if (node == 1 && !field)
 			{
 				if (engine.get_rng() % ((x + 1) * 4) > 20)
 					level += 'M';
@@ -122,7 +146,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	std::cout << level << std::endl;
 	return level;
 }
-void GeneratorForest::post_process(uint8_t depth, Level *level)
+void GeneratorForest::post_process(ActorManager *am, Level *level)
 {
 	if (pathfinder == nullptr)
 	{
@@ -160,11 +184,27 @@ void GeneratorForest::post_process(uint8_t depth, Level *level)
 	}
 	level->set_node(start_x, start_y, new_node);
 	level->set_node(base_pos.first, base_pos.second, base_node);
+
+	const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
+	MapNode temp_node;
+
+	for (uint8_t y = 0; y < height; y++)
+	{
+		for (uint8_t x = 0; x < width; x++)
+		{
+			temp_node = level->get_node(x, y);
+			if (am != nullptr && temp_node.floor_texture->get_name().find("_field") != std::string::npos)
+			{
+				const std::string crop_name = "core/texture/level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
+				am->spawn_actor(level, ACTOR_PROP, x, y, crop_name);
+			}
+		}
+	}
 }
-void GeneratorForest::next_turn(uint16_t turn, ActorManager *am, Level *level)
+void GeneratorForest::next_turn(ActorManager *am, Level *level)
 {
-	std::cout << "forest generator turn #" << (int)turn << std::endl;
-	if (am != nullptr && turn % 2 == 0)
+	current_turn += 1;
+	if (am != nullptr && current_turn % 2 == 0)
 	{
 		auto pos = get_spawn_pos();
 		am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/dwarf_warrior.png");

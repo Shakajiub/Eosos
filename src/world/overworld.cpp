@@ -33,9 +33,8 @@
 #include <cmath> // for std::floor
 
 Overworld::Overworld() :
-	anim_timer(0), current_depth(0), current_wave(0), current_turn(0),
-	actor_manager(nullptr), hovered_actor(nullptr), current_level(nullptr),
-	node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
+	anim_timer(0), current_depth(1), actor_manager(nullptr), hovered_actor(nullptr),
+	current_level(nullptr), node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
 {
 
 }
@@ -70,12 +69,13 @@ void Overworld::init()
 	ui.init_background();
 	ui.init_message_log();
 
-	current_level = new Level;
-	current_level->create(current_depth);
-	auto pos = current_level->get_base_pos();
-
 	actor_manager = new ActorManager;
 	actor_manager->init();
+
+	current_level = new Level;
+	current_level->create(actor_manager, current_depth);
+
+	auto pos = current_level->get_base_pos();
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
 	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
@@ -166,9 +166,8 @@ bool Overworld::update()
 				case SDLK_g:
 					if (current_level != nullptr)
 					{
-						current_turn = 0;
 						current_depth += 1;
-						current_level->create(current_depth);
+						current_level->create(actor_manager, current_depth);
 						actor_manager->clear_actors(current_level);
 					}
 					break;
@@ -286,9 +285,13 @@ void Overworld::render() const
 	if (actor_manager != nullptr)
 		actor_manager->render_ui();
 
+	if (current_level != nullptr)
+		current_level->render_ui();
+
 	ui.render();
-	ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
-	ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));
+
+	//ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));
+	//ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));
 
 	if (pointers.size() > 1)
 	{
@@ -313,7 +316,6 @@ void Overworld::render() const
 }
 void Overworld::next_turn()
 {
-	current_turn += 1;
 	if (current_level != nullptr)
-		current_level->next_turn(current_turn, actor_manager);
+		current_level->next_turn(actor_manager);
 }

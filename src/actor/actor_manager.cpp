@@ -23,6 +23,7 @@
 #include "hero.hpp"
 #include "monster.hpp"
 #include "mount.hpp"
+#include "prop.hpp"
 #include "camera.hpp"
 
 #include <algorithm> // for std::find
@@ -208,6 +209,8 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 			temp = new Monster;
 		else if (at == ACTOR_MOUNT)
 			temp = new Mount;
+		else if (at == ACTOR_PROP)
+			temp = new Prop;
 
 		if (temp != nullptr)
 		{

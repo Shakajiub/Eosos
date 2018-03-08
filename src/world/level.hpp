@@ -60,10 +60,11 @@ public:
 	~Level();
 
 	void free();
-	void create(uint8_t depth);
+	void create(ActorManager *am, uint8_t depth);
 	void render() const;
+	void render_ui() const;
 	void animate();
-	void next_turn(uint16_t turn, ActorManager *am);
+	void next_turn(ActorManager *am);
 
 	uint8_t get_map_width() const { return map_width; }
 	uint8_t get_map_height() const { return map_height; }
@@ -93,7 +94,8 @@ private:
 	std::string get_surroundings(uint8_t xpos, uint8_t ypos, bool check_floor) const;
 
 	bool map_created;
-	uint8_t map_width, map_height;
+	uint8_t map_width;
+	uint8_t map_height;
 
 	std::vector< std::vector<MapNode> > map_data;
 	std::unordered_map<std::string, uint8_t> neighbor_rules;

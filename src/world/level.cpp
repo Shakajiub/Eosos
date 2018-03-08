@@ -60,7 +60,7 @@ void Level::free()
 	textures.clear();
 	sub_nodes.clear();
 }
-void Level::create(uint8_t depth)
+void Level::create(ActorManager *am, uint8_t depth)
 {
 	free();
 
@@ -68,10 +68,12 @@ void Level::create(uint8_t depth)
 	map_generator->init();
 
 	bool floor_layer = true;
-	uint8_t map_x = 0, map_y = 0;
-	std::string line;
+	uint8_t map_x = 0;
+	uint8_t map_y = 0;
 
 	std::istringstream level(map_generator->generate(depth));
+	std::string line;
+
 	while (std::getline(level, line))
 	{
 		if (line[0] == 'l') // Lines starting with an 'l' (for "level") declare our nodes
@@ -122,7 +124,7 @@ void Level::create(uint8_t depth)
 	map_height = (uint8_t)map_data.size();
 
 	map_created = true;
-	map_generator->post_process(depth, this);
+	map_generator->post_process(am, this);
 
 	// Correct the frames for all map nodes (so that tiles connect to eachother nicely)
 	load_neighbor_rules();
@@ -153,6 +155,11 @@ void Level::render() const
 		SDL_RenderCopyEx(engine.get_renderer(), map_texture, &clip, &quad, 0.0, nullptr, SDL_FLIP_NONE);
 	}
 }
+void Level::render_ui() const
+{
+	if (map_created && map_generator != nullptr)
+		map_generator->render_ui();
+}
 void Level::animate()
 {
 	if (!map_created)
@@ -179,10 +186,10 @@ void Level::animate()
 	if (refresh_texture)
 		refresh_map_texture(true);
 }
-void Level::next_turn(uint16_t turn, ActorManager *am)
+void Level::next_turn(ActorManager *am)
 {
 	if (map_generator != nullptr)
-		map_generator->next_turn(turn, am, this);
+		map_generator->next_turn(am, this);
 }
 bool Level::get_wall(int8_t xpos, int8_t ypos, bool check_occupying) const
 {
@@ -262,6 +269,7 @@ void Level::refresh_map_texture(bool animated_only)
 	SDL_SetRenderTarget(engine.get_renderer(), map_texture);
 	SDL_Rect default_rect = { 0, 0, 16, 16 };
 
+	//Texture *grass = engine.get_texture_manager()->load_texture("core/texture/level/decor/grass.png");
 	for (uint8_t y = 0; y < map_height; y++)
 	{
 		for (uint8_t x = 0; x < map_width; x++)
@@ -273,12 +281,22 @@ void Level::refresh_map_texture(bool animated_only)
 			map_data[y][x].node_rendered = true;
 
 			if (map_data[y][x].floor_texture != nullptr)
+			{
 				map_data[y][x].floor_texture->render(x * 32 + 16, y * 32 + 16, &map_data[y][x].floor_rect);
-
+				/*if (grass != nullptr && engine.get_rng() % 5 == 0 &&
+					map_data[y][x].floor_texture->get_name().find("_grass") != std::string::npos)
+				{
+					const SDL_Rect rect = { (engine.get_rng() % 2) * 16, (engine.get_rng() % 2) * 16, 16, 16 };
+					grass->render(x * 32 + 16, y * 32 + 16, &rect);
+				}*/
+			}
 			if (map_data[y][x].wall_texture != nullptr && map_data[y][x].wall_type != NT_INVISIBLE)
 				map_data[y][x].wall_texture->render(x * 32 + 16, y * 32 + 16, &map_data[y][x].wall_rect);
 		}
 	}
+	//if (grass != nullptr)
+		//engine.get_texture_manager()->free_texture(grass->get_name());
+
 	SDL_SetRenderTarget(engine.get_renderer(), NULL);
 }
 void Level::load_neighbor_rules()

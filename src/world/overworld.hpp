@@ -44,8 +44,6 @@ public:
 private:
 	uint8_t anim_timer;
 	uint8_t current_depth;
-	uint8_t current_wave;
-	uint16_t current_turn;
 
 	ActorManager *actor_manager;
 	Actor *hovered_actor;
