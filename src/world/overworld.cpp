@@ -75,12 +75,6 @@ void Overworld::init()
 	current_level = new Level;
 	current_level->create(actor_manager, current_depth);
 
-	auto pos = current_level->get_base_pos();
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_HERO, pos.first, pos.second, "core/texture/actor/orc_peon.png");
-	actor_manager->spawn_actor(current_level, ACTOR_MOUNT, pos.first, pos.second, "core/texture/actor/sheep_white.png");
-
 	if (engine.get_sound_manager() != nullptr)
 	{
 		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Intro_01.mid");
@@ -168,7 +162,6 @@ bool Overworld::update()
 					{
 						current_depth += 1;
 						current_level->create(actor_manager, current_depth);
-						actor_manager->clear_actors(current_level);
 					}
 					break;
 				case SDLK_c:

@@ -26,7 +26,7 @@
 #include "prop.hpp"
 #include "camera.hpp"
 
-#include <algorithm> // for std::find
+#include <algorithm> // for std::find & delete_actor()
 
 ActorManager::ActorManager() : next_turn(false), current_actor(nullptr), ability_manager(nullptr)
 {
@@ -76,38 +76,18 @@ bool ActorManager::update(Level *level)
 			Actor *temp_actor = nullptr;
 			Actor *first_actor = nullptr;
 
-			std::vector<Actor*> to_erase;
-			for (Actor *a : actors)
+			for (uint8_t i = 0; i < actors.size(); i++) if (actors[i] != nullptr)
 			{
-				if (a->get_delete())
+				if (actors[i]->get_delete())
 				{
-					to_erase.push_back(a);
+					delete_actor(level, actors[i]);
+					actors_deleted = true;
 					continue;
 				}
-				if (a->get_ID() > current_ID && (temp_actor == nullptr || a->get_ID() < temp_actor->get_ID()))
-					temp_actor = a;
-				if (first_actor == nullptr || a->get_ID() < first_actor->get_ID())
-					first_actor = a;
-			}
-			if (to_erase.size() > 0) for (Actor *a : to_erase)
-			{
-				std::vector<Actor*>::iterator pos = std::find(actors.begin(), actors.end(), a);
-				if (pos != actors.end())
-					actors.erase(pos);
-
-				pos = std::find(heroes.begin(), heroes.end(), a);
-				if (pos != heroes.end())
-					heroes.erase(pos);
-
-				actors_deleted = true;
-				Mount *temp_mount = a->get_mount();
-				if (temp_mount != nullptr)
-				{
-					temp_mount->set_rider(nullptr);
-					level->set_actor(a->get_grid_x(), a->get_grid_y(), temp_mount);
-				}
-				else level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
-				delete a;
+				if (actors[i]->get_ID() > current_ID && (temp_actor == nullptr || actors[i]->get_ID() < temp_actor->get_ID()))
+					temp_actor = actors[i];
+				if (first_actor == nullptr || actors[i]->get_ID() < first_actor->get_ID())
+					first_actor = actors[i];
 			}
 			if (temp_actor == nullptr)
 			{
@@ -115,7 +95,9 @@ bool ActorManager::update(Level *level)
 				next_turn = true;
 			}
 			else current_actor = temp_actor;
-			current_actor->start_turn();
+
+			if (current_actor != nullptr)
+				current_actor->start_turn();
 		}
 		for (Actor * a : actors)
 			a->update(level);
@@ -156,24 +138,11 @@ void ActorManager::render_ui() const
 }
 void ActorManager::clear_actors(Level *level, bool clear_heroes)
 {
-	std::vector<Actor*> to_erase;
-	for (Actor *a : actors)
+	for (uint8_t i = 0; i < actors.size(); i++) if (actors[i] != nullptr)
 	{
-		if (clear_heroes || a->get_actor_type() != ACTOR_HERO)
-			to_erase.push_back(a);
-	}
-	for (Actor *a : to_erase)
-	{
-		std::vector<Actor*>::iterator pos = std::find(actors.begin(), actors.end(), a);
-		if (pos != actors.end())
-			actors.erase(pos);
-
-		pos = std::find(heroes.begin(), heroes.end(), a);
-		if (pos != heroes.end())
-			heroes.erase(pos);
-
-		level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
-		delete a;
+		if (clear_heroes || actors[i]->get_actor_type() != ACTOR_HERO)
+			delete_actor(level, actors[i]);
+		else actors[i]->clear_mount();
 	}
 }
 bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
@@ -181,26 +150,12 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 	if (level == nullptr)
 		return false;
 
-	bool valid_spot = false;
-	if (level->get_wall(xpos, ypos, true))
+	auto spot = find_spot(level, xpos, ypos);
+	if (spot.first != 0)
 	{
-		for (int8_t x = -1; x < 2; x++)
-		{
-			for (int8_t y = -1; y < 2; y++)
-			{
-				if (!level->get_wall(xpos + x, ypos + y, true))
-				{
-					xpos += x; ypos += y;
-					valid_spot = true;
-				}
-				if (valid_spot) break;
-			}
-			if (valid_spot) break;
-		}
-	}
-	else valid_spot = true;
-	if (valid_spot)
-	{
+		xpos = spot.first;
+		ypos = spot.second;
+
 		Actor *temp = nullptr;
 
 		if (at == ACTOR_HERO)
@@ -236,6 +191,23 @@ bool ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t
 		return temp != nullptr;
 	}
 	return false;
+}
+void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos)
+{
+	for (uint8_t i = 0; i < heroes.size(); i++) if (heroes[i] != nullptr)
+		level->set_actor(heroes[i]->get_grid_x(), heroes[i]->get_grid_y(), nullptr);
+
+	for (uint8_t i = 0; i < actors.size(); i++) if (actors[i] != nullptr)
+	{
+		std::pair<uint8_t, uint8_t> spot;
+		if (actors[i]->get_actor_type() == ACTOR_HERO)
+			spot = find_spot(level, base_pos.first, base_pos.second);
+		else spot = find_spot(level, actors[i]->get_grid_x(), actors[i]->get_grid_y());
+
+		if (spot.first != 0)
+			level->set_actor(spot.first, spot.second, actors[i]);
+		else delete_actor(level, actors[i]);
+	}
 }
 void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {
@@ -304,4 +276,37 @@ bool ActorManager::get_click(int16_t mouse_x, int16_t mouse_y) const
 	if (ability_manager != nullptr && current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
 		return ability_manager->get_click(dynamic_cast<Hero*>(current_actor), mouse_x, mouse_y);
 	return false;
+}
+std::pair<uint8_t, uint8_t> ActorManager::find_spot(Level *level, uint8_t xpos, uint8_t ypos) const
+{
+	if (level->get_wall(xpos, ypos, true))
+	{
+		for (int8_t x = -1; x < 2; x++)
+		{
+			for (int8_t y = -1; y < 2; y++)
+			{
+				if (!level->get_wall(xpos + x, ypos + y, true))
+					return std::make_pair(xpos + x, ypos + y);
+			}
+		}
+		return std::make_pair(0, 0);
+	}
+	return std::make_pair(xpos, ypos);
+}
+void ActorManager::delete_actor(Level *level, Actor *actor)
+{
+	if (level == nullptr || actor == nullptr)
+		return;
+
+	Mount *temp_mount = actor->get_mount();
+	if (temp_mount != nullptr)
+	{
+		actor->clear_mount();
+		level->set_actor(actor->get_grid_x(), actor->get_grid_y(), temp_mount);
+	}
+	else level->set_actor(actor->get_grid_x(), actor->get_grid_y(), nullptr);
+
+	actors.erase(std::remove(actors.begin(), actors.end(), actor), actors.end());
+	heroes.erase(std::remove(heroes.begin(), heroes.end(), actor), heroes.end());
+	delete actor;
 }

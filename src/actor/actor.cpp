@@ -251,7 +251,7 @@ bool Actor::action_move(Level *level)
 			grid_x = current_action.xpos;
 			grid_y = current_action.ypos;
 
-			level->set_actor(grid_x, grid_y, this);
+			level->set_actor(grid_x, grid_y, this, false);
 
 			if (!in_camera)
 			{
@@ -448,6 +448,13 @@ void Actor::attack(Actor *other)
 
 	MessageLog *ml = ui.get_message_log();
 
+	if (other->get_actor_type() == ACTOR_PROP)
+	{
+		other->set_delete(true);
+		ml->add_message("The " + name + " pillages the fields.");
+		if (health.first < health.second) health.first += 1;
+		return;
+	}
 	uint8_t damage = get_damage();
 	const bool crit = engine.get_rng() % 20 == 0;
 	if (crit) damage *= 2;
@@ -505,4 +512,12 @@ void Actor::set_mount(Mount *m)
 
 	if (mount != nullptr)
 		mount->set_rider(this);
+}
+void Actor::clear_mount()
+{
+	if (mount != nullptr)
+	{
+		mount->set_rider(nullptr);
+		mount = nullptr;
+	}
 }

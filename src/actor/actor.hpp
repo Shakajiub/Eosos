@@ -100,6 +100,9 @@ public:
 	StatusType get_status() const { return status; }
 	void set_status(StatusType st);
 
+	void set_mount(Mount *m);
+	void clear_mount();
+
 	bool get_delete() const { return delete_me; }
 	bool get_in_camera() const { return in_camera; }
 	bool get_facing_right() const { return facing_right; }
@@ -116,10 +119,14 @@ public:
 	Mount* get_mount() const { return mount; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
 
+	void set_x(uint16_t xpos) { x = xpos; }
+	void set_y(uint16_t ypos) { y = ypos; }
+	void set_grid_x(uint8_t xpos) { grid_x = xpos; }
+	void set_grid_y(uint8_t ypos) { grid_y = ypos; }
 	void set_delete(bool del) { delete_me = del; }
+	void set_turn_done(bool done) { turn_done = done; }
 	void set_hovered(HoverType ht) { hovered = ht; }
 	void set_moves(int8_t m) { moves.first = m; }
-	void set_mount(Mount *m);
 
 protected:
 	bool delete_me;

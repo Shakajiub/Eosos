@@ -29,7 +29,7 @@
 #include <fstream> // for std::ifstream
 #include <sstream> // for std::istringstream
 
-Level::Level() : map_created(false), map_texture(nullptr), map_generator(nullptr)
+Level::Level() : map_created(false), map_texture(nullptr), map_generator(nullptr), map_width(0), map_height(0)
 {
 
 }
@@ -39,6 +39,15 @@ Level::~Level()
 }
 void Level::free()
 {
+	for (uint8_t y = 0; y < map_height; y++)
+	{
+		for (uint8_t x = 0; x < map_width; x++)
+		{
+			map_data[y][x].occupying_actor = nullptr;
+			map_data[y][x].floor_texture = nullptr;
+			map_data[y][x].wall_texture = nullptr;
+		}
+	}
 	map_created = false;
 
 	map_data.clear();
@@ -63,6 +72,9 @@ void Level::free()
 void Level::create(ActorManager *am, uint8_t depth)
 {
 	free();
+
+	if (depth > 1 && am != nullptr)
+		am->clear_actors(this);
 
 	map_generator = new GeneratorForest;
 	map_generator->init();
@@ -124,7 +136,9 @@ void Level::create(ActorManager *am, uint8_t depth)
 	map_height = (uint8_t)map_data.size();
 
 	map_created = true;
-	map_generator->post_process(am, this);
+	if (depth > 1 && am != nullptr)
+		am->place_actors(this, get_base_pos());
+	map_generator->post_process(am, this, depth);
 
 	// Correct the frames for all map nodes (so that tiles connect to eachother nicely)
 	load_neighbor_rules();
@@ -234,11 +248,17 @@ std::pair<uint8_t, uint8_t> Level::get_spawn_pos() const
 		return map_generator->get_spawn_pos();
 	return std::make_pair(0, 0);
 }
-void Level::set_actor(uint8_t xpos, uint8_t ypos, Actor *actor)
+void Level::set_actor(uint8_t xpos, uint8_t ypos, Actor *actor, bool jump)
 {
 	if (!map_created || xpos < 0 || ypos < 0 || xpos >= map_width || ypos >= map_height)
 		return;
 	map_data[ypos][xpos].occupying_actor = actor;
+
+	if (actor != nullptr && jump)
+	{
+		actor->set_grid_x(xpos); actor->set_x(xpos * 32);
+		actor->set_grid_y(ypos); actor->set_y(ypos * 32);
+	}
 }
 void Level::set_node(uint8_t xpos, uint8_t ypos, MapNode node)
 {

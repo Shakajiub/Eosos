@@ -146,7 +146,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	std::cout << level << std::endl;
 	return level;
 }
-void GeneratorForest::post_process(ActorManager *am, Level *level)
+void GeneratorForest::post_process(ActorManager *am, Level *level, uint8_t depth)
 {
 	if (pathfinder == nullptr)
 	{
@@ -185,6 +185,10 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 	level->set_node(start_x, start_y, new_node);
 	level->set_node(base_pos.first, base_pos.second, base_node);
 
+	if (depth == 1)
+	{
+		am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
+	}
 	const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
 	MapNode temp_node;
 
@@ -192,11 +196,18 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 	{
 		for (uint8_t x = 0; x < width; x++)
 		{
+			if (x == base_pos.first && y == base_pos.second)
+				continue;
+
 			temp_node = level->get_node(x, y);
 			if (am != nullptr && temp_node.floor_texture->get_name().find("_field") != std::string::npos)
 			{
-				const std::string crop_name = "core/texture/level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
-				am->spawn_actor(level, ACTOR_PROP, x, y, crop_name);
+				if (engine.get_rng() % 4 != 0)
+				{
+					const std::string crop_name = "core/texture/level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
+					am->spawn_actor(level, ACTOR_PROP, x, y, crop_name);
+				}
+				else am->spawn_actor(level, ACTOR_MOUNT, x, y, "core/texture/actor/sheep_white.png");
 			}
 		}
 	}

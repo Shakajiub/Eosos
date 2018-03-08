@@ -41,6 +41,7 @@ public:
 
 	void clear_actors(Level *level, bool clear_heroes = false);
 	bool spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
+	void place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos);
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 	void input_mouse_button_down(SDL_Event eve, Level *level);
@@ -51,6 +52,9 @@ public:
 	bool get_click(int16_t mouse_x, int16_t mouse_y) const;
 
 private:
+	std::pair<uint8_t, uint8_t> find_spot(Level *level, uint8_t xpos, uint8_t ypos) const;
+	void delete_actor(Level *level, Actor *actor);
+
 	bool next_turn;
 	Actor *current_actor;
 	std::vector<Actor*> actors;

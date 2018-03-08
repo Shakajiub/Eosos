@@ -79,7 +79,7 @@ public:
 	std::pair<uint8_t, uint8_t> get_base_pos() const;
 	std::pair<uint8_t, uint8_t> get_spawn_pos() const;
 
-	void set_actor(uint8_t xpos, uint8_t ypos, Actor *actor);
+	void set_actor(uint8_t xpos, uint8_t ypos, Actor *actor, bool jump = true);
 	void set_node(uint8_t xpos, uint8_t ypos, MapNode node);
 
 private:

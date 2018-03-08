@@ -100,6 +100,8 @@ bool Monster::take_turn(Level *level)
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 			{
 				delete_me = true;
+				//if (mount != nullptr)
+					//mount->set_delete(true);
 				return true;
 			}
 			if (!pathfinder->get_path_found())
@@ -131,13 +133,17 @@ void Monster::step_pathfinder(Level *level)
 	Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
 	if (temp_actor != nullptr)
 	{
-		if (temp_actor->get_actor_type() == ACTOR_HERO)
+		if (temp_actor->get_actor_type() == ACTOR_HERO || temp_actor->get_actor_type() == ACTOR_PROP)
 			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y());
 
 		else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
 		{
-			add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
-			set_mount(dynamic_cast<Mount*>(temp_actor));
+			if (mount == nullptr)
+			{
+				add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+				set_mount(dynamic_cast<Mount*>(temp_actor));
+			}
+			else turn_done = true;
 		}
 		else turn_done = true;
 		moves.first = 0;

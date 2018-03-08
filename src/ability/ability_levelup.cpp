@@ -42,6 +42,7 @@ void AbilityLevelUp::apply(Hero *hero)
 	{
 		hero->set_status(STATUS_NONE);
 		hero->remove_ability("level-up");
+		hero->set_turn_done(true);
 		hero->set_moves(0);
 	}
 }

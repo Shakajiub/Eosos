@@ -61,11 +61,6 @@ bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &tex
 	if (!Actor::init(at, xpos, ypos, texture_name))
 		return false;
 
-	if (actor_ID == 1)
-		init_class(HC_JUGGERNAUT);
-	else if (actor_ID == 2)
-		init_class(HC_NINJA);
-
 	return (init_ui_texture() && init_pathfinder());
 }
 void Hero::update(Level *level)
@@ -282,17 +277,22 @@ void Hero::step_pathfinder(Level *level)
 	Actor *temp_actor = level->get_actor(pathfinder->get_goto_x(), pathfinder->get_goto_y());
 	if (temp_actor != nullptr)
 	{
-		if (temp_actor->get_actor_type() == ACTOR_MONSTER)
+		if (temp_actor->get_actor_type() == ACTOR_MONSTER || temp_actor->get_actor_type() == ACTOR_PROP)
 		{
 			add_action(ACTION_ATTACK, pathfinder->get_goto_x(), pathfinder->get_goto_y(), moves.first);
 			moves.first = 0;
 		}
 		else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
 		{
-			add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
-			set_mount(dynamic_cast<Mount*>(temp_actor));
-			add_ability("dismount");
-			moves.first = 0;
+			if (mount == nullptr)
+			{
+				add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+				set_mount(dynamic_cast<Mount*>(temp_actor));
+				add_ability("dismount");
+				moves.first = 0;
+			}
+			else if (ui.get_message_log() != nullptr)
+				ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", COLOR_LEAF);
 		}
 		else
 		{
@@ -353,17 +353,22 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 		Actor *temp_actor = level->get_actor(grid_x + offset_x, grid_y + offset_y);
 		if (temp_actor != nullptr)
 		{
-			if (temp_actor->get_actor_type() == ACTOR_MONSTER)
+			if (temp_actor->get_actor_type() == ACTOR_MONSTER || temp_actor->get_actor_type() == ACTOR_PROP)
 			{
 				add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y, moves.first);
 				moves.first = 0;
 			}
 			else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
 			{
-				add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
-				set_mount(dynamic_cast<Mount*>(temp_actor));
-				add_ability("dismount");
-				moves.first = 0;
+				if (mount == nullptr)
+				{
+					add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
+					set_mount(dynamic_cast<Mount*>(temp_actor));
+					add_ability("dismount");
+					moves.first = 0;
+				}
+				else if (ui.get_message_log() != nullptr)
+					ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", COLOR_LEAF);
 			}
 		}
 		else if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
