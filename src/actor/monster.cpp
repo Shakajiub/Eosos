@@ -17,6 +17,7 @@
 
 #include "engine.hpp"
 #include "monster.hpp"
+#include "actor_manager.hpp"
 #include "level.hpp"
 #include "astar.hpp"
 
@@ -24,12 +25,14 @@
 #include "camera.hpp"
 #include "texture.hpp"
 #include "texture_manager.hpp"
+#include "message_log.hpp"
+#include "ui.hpp"
 
 uint16_t distance(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
 {
 	return (uint16_t)SDL_sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }
-Monster::Monster() : pathfinder(nullptr), healthbar(nullptr), monster_class(MONSTER_NONE)
+Monster::Monster() : pathfinder(nullptr), healthbar(nullptr), monster_class(MONSTER_NONE), spell_timer(0)
 {
 	health = std::make_pair(3, 3);
 	name = "???";
@@ -84,8 +87,11 @@ void Monster::start_turn()
 
 	if (pathfinder != nullptr)
 		pathfinder->clear_path();
+
+	if (spell_timer > 0)
+		spell_timer -= 1;
 }
-bool Monster::take_turn(Level *level)
+bool Monster::take_turn(Level *level, ActorManager *am)
 {
 	if (turn_done)
 	{
@@ -97,9 +103,9 @@ bool Monster::take_turn(Level *level)
 		if (moves.first > 0)
 			turn_done = false;
 	}
-	if (actions_empty() && moves.first > 0)
+	if (actions_empty())
 	{
-		if (has_ability("shoot"))
+		if (moves.first > 0 && has_ability("shoot"))
 		{
 			const int8_t offset_x[12] = { -1, 0, 1, -2, -2, -2, 2, 2, 2, -1, 0, 1 };
 			const int8_t offset_y[12] = { -2, -2, -2, -1, 0, 1, -1, 0, 1, 2, 2, 2 };
@@ -126,12 +132,37 @@ bool Monster::take_turn(Level *level)
 				}
 			}
 		}
+		if (moves.first > 0 && has_ability("necromancy"))
+		{
+			if (spell_timer == 0)
+			{
+				if (am != nullptr)
+				{
+					Actor *spawn = am->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
+					if (spawn != nullptr)
+					{
+						if (engine.get_rng() % 10 != 0)
+							dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON);
+						else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON_DISEASED);
+
+						//camera.update_position(grid_x * 32, grid_y * 32);
+						if (ui.get_message_log() != nullptr)
+							ui.get_message_log()->add_message("The " + name + " summons a minion!", COLOR_OCHER);
+					}
+				}
+				add_action(ACTION_INTERACT, grid_x, grid_y);
+				spell_timer = 8;
+				moves.first = 0;
+			}
+		}
 		if (moves.first > 0 && pathfinder != nullptr)
 		{
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 			{
 				delete_me = true;
 				level->set_damage_base(true);
+				//if (mount != nullptr)
+					//mount->set_delete(true);
 				return true;
 			}
 			if (!pathfinder->get_path_found())
@@ -142,7 +173,7 @@ bool Monster::take_turn(Level *level)
 			step_pathfinder(level);
 		}
 	}
-	return Actor::take_turn(level);
+	return Actor::take_turn(level, am);
 }
 void Monster::end_turn()
 {
@@ -179,6 +210,8 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_DWARF_NECROMANCER:
 			name = "Dwarven Necromancer";
 			class_texture = "core/texture/actor/dwarf_necromancer.png";
+			add_ability("necromancy");
+			spell_timer = 4;
 			break;
 		case MONSTER_DWARF_BEASTMASTER:
 			name = "Dwarven Beastmaster";
@@ -189,6 +222,8 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_DWARF_KING:
 			name = "Dwarven King";
 			class_texture = "core/texture/actor/dwarf_king.png";
+			health = std::make_pair(12, 12);
+			max_damage = 2;
 			break;
 		case MONSTER_KOBOLD_WARRIOR:
 			name = "Kobold Warrior";
@@ -227,6 +262,15 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_UNDEAD_MUMMY:
 			name = "Mummy";
 			class_texture = "core/texture/actor/mummy.png";
+			break;
+		case MONSTER_UNDEAD_SKELETON:
+			name = "Skeleton";
+			class_texture = "core/texture/actor/skeleton.png";
+			break;
+		case MONSTER_UNDEAD_SKELETON_DISEASED:
+			name = "Diseased Skeleton";
+			class_texture = "core/texture/actor/skeleton_diseased.png";
+			proj_type = PROJECTILE_DART;
 			break;
 		default: monster_class = MONSTER_NONE; break;
 	}

@@ -50,6 +50,37 @@ void Mount::update(Level *level)
 		in_camera = rider->get_in_camera();
 	}
 }
+void Mount::start_turn()
+{
+	if (rider == nullptr)
+	{
+		turn_done = false;
+		moves = std::make_pair(1, 1);
+	}
+	else turn_done = true;
+}
+bool Mount::take_turn(Level *level, ActorManager *am)
+{
+	if (turn_done)
+		return true;
+
+	if (actions_empty() && moves.first > 0)
+	{
+		if (engine.get_rng() % 10 == 0)
+		{
+			const int8_t offset_x[4] = { 0, 0, -1, 1 };
+			const int8_t offset_y[4] = { -1, 1, 0, 0 };
+			const uint8_t i = engine.get_rng() % 4;
+
+			if (!level->get_wall(grid_x + offset_x[i], grid_y + offset_y[i], true))
+				add_action(ACTION_MOVE, grid_x + offset_x[i], grid_y + offset_y[i]);
+			else turn_done = true;
+			moves.first = 0;
+		}
+		else turn_done = true;
+	}
+	return turn_done;
+}
 void Mount::set_rider(Actor *new_rider)
 {
 	rider = new_rider;

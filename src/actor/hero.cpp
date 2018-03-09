@@ -150,8 +150,13 @@ void Hero::start_turn()
 		if (!get_auto_move())
 			camera.update_position(grid_x * 32, grid_y * 32);
 	}
+	if (grid_x > 20 && ui.get_message_log() != nullptr)
+	{
+		ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", COLOR_BERRY);
+		ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", COLOR_BERRY);
+	}
 }
-bool Hero::take_turn(Level *level)
+bool Hero::take_turn(Level *level, ActorManager *am)
 {
 	if (sleep_timer > 0)
 	{
@@ -169,7 +174,14 @@ bool Hero::take_turn(Level *level)
 		}
 		command_this_turn = false;
 		if (moves.first > 0)
+		{
+			if (grid_x > 20 && ui.get_message_log() != nullptr)
+			{
+				ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", COLOR_BERRY);
+				ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", COLOR_BERRY);
+			}
 			turn_done = false;
+		}
 	}
 	if (actions_empty() && moves.first > 0)
 	{
@@ -180,12 +192,21 @@ bool Hero::take_turn(Level *level)
 				auto_move_path = false;
 		}
 	}
-	return Actor::take_turn(level);
+	return Actor::take_turn(level, am);
 }
 void Hero::end_turn()
 {
 	Actor::end_turn();
 	hovered = HOVER_NONE;
+
+	if (grid_x > 20 && ui.get_message_log() != nullptr && health.first > 0)
+	{
+		ui.get_message_log()->add_message("The cool mountain air is too pure for " + name + "! (%61%F damage)");
+		health.first -= 1;
+
+		if (health.first == 0)
+			delete_me = true;
+	}
 }
 uint8_t Hero::get_damage() const
 {

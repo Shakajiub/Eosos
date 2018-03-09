@@ -34,7 +34,7 @@ Actor::Actor() :
 	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false),
 	name("???"), hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr),
 	status_icon(nullptr), status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0),
-	projectile(nullptr), proj_type(PROJECTILE_ARROW), mount(nullptr)
+	max_damage(1), projectile(nullptr), proj_type(PROJECTILE_ARROW), mount(nullptr)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0, 0 };
@@ -173,7 +173,7 @@ void Actor::start_turn()
 	// Called when our turn to move begins.
 	turn_done = true;
 }
-bool Actor::take_turn(Level *level)
+bool Actor::take_turn(Level *level, ActorManager *am)
 {
 	// Called continuously every frame when it's our turn.
 	// Return true once we're done with our turn.
@@ -205,8 +205,8 @@ void Actor::end_turn()
 }
 uint8_t Actor::get_damage() const
 {
-	std::cout << "warning! Actor::get_damage() has no override!" << std::endl;
-	return 1;
+	//std::cout << "warning! Actor::get_damage() has no override!" << std::endl;
+	return (max_damage > 1) ? (engine.get_rng() % max_damage) + 1 : max_damage;
 }
 void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos, int8_t value)
 {
@@ -427,13 +427,16 @@ bool Actor::action_interact()
 		anim_timer -= 18;
 		if (anim_frames % 2 == 0)
 		{
-			if (anim_frames < 6)
+			if (anim_frames < 8)
 				y -= 2;
 			else y += 2;
+
+			if (anim_frames % 4 == 0)
+				facing_right = !facing_right;
 		}
 		anim_frames += 1;
 	}
-	if (anim_frames >= 12)
+	if (anim_frames >= 16)
 	{
 		turn_done = true;
 		anim_timer = 0;
@@ -472,7 +475,7 @@ void Actor::attack(Actor *other)
 	if (other->get_actor_type() == ACTOR_PROP)
 	{
 		other->set_delete(true);
-		ml->add_message("The " + name + " pillages the fields!");
+		ml->add_message("The " + name + " pillages the fields!", COLOR_PEACH);
 		add_health(1);
 		return;
 	}

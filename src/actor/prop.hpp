@@ -26,7 +26,7 @@ public:
 	Prop();
 	~Prop();
 
-	virtual bool take_turn(Level *level);
+	virtual bool take_turn(Level *level, ActorManager *am);
 };
 
 #endif // PROP_HPP

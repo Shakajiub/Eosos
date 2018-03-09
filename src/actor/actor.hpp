@@ -21,6 +21,7 @@
 #include <queue>
 #include <vector>
 
+class ActorManager;
 class Mount;
 class Level;
 class Texture;
@@ -83,7 +84,7 @@ public:
 	virtual void render_ui(uint16_t xpos, uint16_t ypos) const;
 
 	virtual void start_turn();
-	virtual bool take_turn(Level *level);
+	virtual bool take_turn(Level *level, ActorManager *am);
 	virtual void end_turn();
 
 	virtual uint8_t get_damage() const;
@@ -172,6 +173,7 @@ protected:
 
 	uint8_t combat_level;
 	uint8_t experience;
+	uint8_t max_damage;
 	std::vector<std::string> abilities;
 
 	SDL_Rect frame_rect;

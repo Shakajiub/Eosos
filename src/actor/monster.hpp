@@ -40,7 +40,9 @@ enum MonsterClass
 	MONSTER_UNDEAD_ZOMBIE,
 	MONSTER_UNDEAD_VAMPIRE,
 	MONSTER_UNDEAD_GHOST,
-	MONSTER_UNDEAD_MUMMY
+	MONSTER_UNDEAD_MUMMY,
+	MONSTER_UNDEAD_SKELETON,
+	MONSTER_UNDEAD_SKELETON_DISEASED
 };
 class Monster : public Actor
 {
@@ -53,7 +55,7 @@ public:
 
 	virtual void render() const;
 	virtual void start_turn();
-	virtual bool take_turn(Level *level);
+	virtual bool take_turn(Level *level, ActorManager *am);
 	virtual void end_turn();
 
 	bool init_class(MonsterClass mc);
@@ -66,6 +68,7 @@ private:
 	Texture *healthbar;
 
 	MonsterClass monster_class;
+	uint8_t spell_timer;
 };
 
 #endif // MONSTER_HPP

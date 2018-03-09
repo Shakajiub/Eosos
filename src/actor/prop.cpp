@@ -26,7 +26,7 @@ Prop::~Prop()
 {
 
 }
-bool Prop::take_turn(Level *level)
+bool Prop::take_turn(Level *level, ActorManager *am)
 {
 	return true;
 }

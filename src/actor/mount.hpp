@@ -22,6 +22,10 @@
 
 class Level;
 
+enum MountClass
+{
+	MOUNT_SHEEP
+};
 class Mount : public Actor
 {
 public:
@@ -31,6 +35,9 @@ public:
 	void free();
 
 	virtual void update(Level *level);
+	virtual void start_turn();
+	virtual bool take_turn(Level *level, ActorManager *am);
+
 	void set_rider(Actor *new_rider);
 
 private:

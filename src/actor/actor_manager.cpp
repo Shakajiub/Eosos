@@ -65,7 +65,7 @@ bool ActorManager::update(Level *level)
 	bool actors_deleted = false;
 	if (current_actor != nullptr)
 	{
-		while (current_actor->take_turn(level))
+		while (current_actor->take_turn(level, this))
 		{
 			current_actor->end_turn();
 

@@ -83,28 +83,29 @@ void Overworld::init()
 
 	if (engine.get_sound_manager() != nullptr)
 	{
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Intro_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_04.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Opening_05.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Desert_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Desert_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Desert_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_04.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Dungeon_05.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Evil_04.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Forest_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Beach_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Beach_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Castle_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Castle_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Castle_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Cave_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Cave_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Fanfare_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Fanfare_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Fanfare_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Plains_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Plains_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Plains_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Snow_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Snow_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Swamp_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Swamp_02.mid");
 		engine.get_sound_manager()->set_playlist(PT_BOSS);
 	}
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
@@ -260,7 +261,10 @@ bool Overworld::update()
 			base_health -= 1;
 			if (base_health == 0)
 			{
-				ui.spawn_message_box("Defeat", "all your base are belong to us", true);
+				const std::string defeats[1] = {
+					"Better luck next time...",
+				};
+				ui.spawn_message_box("Defeat", defeats[engine.get_rng() % 1], true);
 				if (actor_manager != nullptr)
 					actor_manager->clear_heroes(current_level);
 			}

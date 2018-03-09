@@ -23,8 +23,10 @@
 
 #include "hero.hpp"
 #include "monster.hpp"
+#include "mount.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
+#include "message_log.hpp"
 #include "ui.hpp"
 
 #include <unordered_map>
@@ -221,6 +223,9 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 }
 void GeneratorForest::next_turn(ActorManager *am, Level *level)
 {
+	if (current_wave > current_depth + 2)
+		return;
+
 	current_turn += 1;
 	if (calm_timer > 0)
 	{
@@ -236,8 +241,27 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 		if (monster != nullptr && wave_monsters.size() > 1)
 		{
 			const uint8_t i = (engine.get_rng() % (wave_monsters.size() - 1));
-			dynamic_cast<Monster*>(monster)->init_class((MonsterClass)wave_monsters[i]);
+			MonsterClass mc = (MonsterClass)wave_monsters[i];
+
+			if (current_wave == current_depth + 2 && spawned_mobs == (current_wave * 5 + 4))
+			{
+				mc = (MonsterClass)wave_monsters[wave_monsters.size() - 1];
+				ui.spawn_message_box("BOSS", "The Dwarven King");
+				if (ui.get_message_log() != nullptr)
+					ui.get_message_log()->add_message("The Dwarven King has arrived!", COLOR_MAIZE);
+			}
+			dynamic_cast<Monster*>(monster)->init_class(mc);
 			spawned_mobs += 1;
+
+			if (engine.get_rng() % 20 == 0)
+			{
+				Actor *mount = am->spawn_actor(level, ACTOR_MOUNT, pos.first, pos.second, "core/texture/actor/griffin.png");
+				if (mount != nullptr)
+				{
+					level->set_actor(mount->get_grid_x(), mount->get_grid_y(), nullptr);
+					monster->set_mount(dynamic_cast<Mount*>(mount));
+				}
+			}
 		}
 		if (spawned_mobs >= (current_wave * 5 + 5))
 		{
