@@ -102,6 +102,17 @@ bool UI::spawn_message_box(const std::string &title, const std::string &message,
 	delete mb;
 	return false;
 }
+void UI::clear_message_box()
+{
+	while (!message_queue.empty())
+	{
+		MessageBox *mb = message_queue.front();
+		message_queue.pop();
+		delete mb;
+	}
+	delete message_box;
+	message_box = nullptr;
+}
 void UI::update()
 {
 	if (message_box == nullptr && !message_queue.empty())
@@ -187,8 +198,8 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 }
 bool UI::get_overlap(ActorManager *at, int16_t xpos, int16_t ypos) const
 {
-	if (message_box != nullptr)
-		return message_box->get_overlap(xpos, ypos);
+	//if (message_box != nullptr)
+		//return message_box->get_overlap(xpos, ypos);
 	if (at != nullptr && at->get_overlap(xpos, ypos))
 		return true;
 	return false;
@@ -202,7 +213,7 @@ bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos)
 			delete message_box;
 			message_box = nullptr;
 		}
-		return true;
+		//return true;
 	}
 	if (at != nullptr && at->get_click(xpos, ypos))
 		return true;

@@ -183,7 +183,7 @@ bool Overworld::update()
 					ui.spawn_message_box("title", "text");
 					break;
 				default:
-					if (actor_manager != nullptr && ui.get_message_box() == nullptr)
+					if (actor_manager != nullptr)
 						actor_manager->input_keyboard_down(event.key.keysym.sym, current_level);
 					break;
 			}

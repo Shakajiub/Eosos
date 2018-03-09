@@ -103,10 +103,16 @@ void Hero::render_ui(uint16_t xpos, uint16_t ypos) const
 	if (health_texture != nullptr && health.second > 0)
 	{
 		SDL_Rect rect = { (hb_timer < 100) ? 64 : 0, 0, 16, 16 };
+
 		int8_t hearts = health.second / 3;
 		int8_t hp_left = health.first;
 		uint16_t render_x = xpos + 50;
 		uint16_t render_y = ypos + 8;
+
+		if (status == STATUS_POISON)
+			rect.y = 16;
+		else if (status == STATUS_WITHER)
+			rect.y = 48;
 
 		while (hearts > 0)
 		{
@@ -365,7 +371,7 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
 			{
-				health.first += 1;
+				add_health(1);
 				add_action(ACTION_INTERACT, grid_x, grid_y);
 			}
 			else turn_done = true;
@@ -420,7 +426,7 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 			}
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
 			{
-				health.first += 1;
+				add_health(1);
 				add_action(ACTION_INTERACT, grid_x, grid_y);
 			}
 			else turn_done = true;

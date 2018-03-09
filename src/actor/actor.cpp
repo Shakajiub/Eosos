@@ -190,6 +190,17 @@ void Actor::end_turn()
 			bubble = nullptr;
 		}
 	}
+	if (status == STATUS_POISON)
+	{
+		if (health.first > 1)
+			health.first -= 1;
+	}
+	else if (status == STATUS_WITHER)
+	{
+		health.first -= 1;
+		if (health.first < 1)
+			delete_me = true;
+	}
 }
 uint8_t Actor::get_damage() const
 {
@@ -460,8 +471,14 @@ void Actor::attack(Actor *other)
 	if (other->get_actor_type() == ACTOR_PROP)
 	{
 		other->set_delete(true);
-		ml->add_message("The " + name + " pillages the fields.");
-		if (health.first < health.second) health.first += 1;
+		ml->add_message("The " + name + " pillages the fields!");
+		add_health(1);
+		return;
+	}
+	if (proj_type == PROJECTILE_DART && other->get_status() != STATUS_POISON)
+	{
+		other->set_status(STATUS_POISON);
+		ml->add_message("The " + name + " poisons the " + other->name + "!");
 		return;
 	}
 	uint8_t damage = get_damage();
@@ -490,6 +507,15 @@ void Actor::level_up()
 	experience = 0;
 	combat_level += 1;
 }
+void Actor::add_health(uint8_t amount)
+{
+	if (health.first + amount > health.second)
+		health.first = health.second;
+	else health.first += amount;
+
+	if (status == STATUS_POISON)
+		set_status(STATUS_NONE);
+}
 void Actor::load_bubble(const std::string &bubble_name, uint8_t timer)
 {
 	if (bubble != nullptr)
@@ -514,11 +540,20 @@ void Actor::set_status(StatusType st)
 		engine.get_texture_manager()->free_texture(status_icon->get_name());
 		status_icon = nullptr;
 	}
-	if (st == STATUS_LEVELUP)
-		status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/level_up.png");
-
-	if (status_icon != nullptr)
-		status = st;
+	status = st;
+	switch (status)
+	{
+		case STATUS_LEVELUP:
+			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/level_up.png");
+			break;
+		case STATUS_POISON:
+			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/poison.png");
+			break;
+		case STATUS_WITHER:
+			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/wither.png");
+			break;
+		default: break;
+	}
 }
 void Actor::set_mount(Mount *m)
 {

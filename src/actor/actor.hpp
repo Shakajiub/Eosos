@@ -50,7 +50,9 @@ enum HoverType
 enum StatusType
 {
 	STATUS_NONE,
-	STATUS_LEVELUP
+	STATUS_LEVELUP,
+	STATUS_POISON,
+	STATUS_WITHER
 };
 enum ProjectileType
 {
@@ -100,6 +102,7 @@ public:
 
 	void attack(Actor *other);
 	void level_up();
+	void add_health(uint8_t amount);
 
 	void load_bubble(const std::string &bubble_name, uint8_t timer = 0);
 	void clear_bubble();

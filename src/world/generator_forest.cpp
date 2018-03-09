@@ -29,7 +29,7 @@
 
 #include <unordered_map>
 
-GeneratorForest::GeneratorForest() : pathfinder(nullptr), current_wave(0), current_turn(0), wave_class(WAVE_NONE)
+GeneratorForest::GeneratorForest() : pathfinder(nullptr), wave_class(WAVE_NONE)
 {
 
 }
@@ -53,8 +53,8 @@ void GeneratorForest::init()
 }
 void GeneratorForest::render_ui()
 {
-	ui.get_bitmap_font()->render_text(16, 16, "Wave: " + std::to_string(current_wave));
-	ui.get_bitmap_font()->render_text(16, 27, "Turn: " + std::to_string(current_turn));
+	ui.get_bitmap_font()->render_text(16, 16, "Level: " + std::to_string(current_depth));
+	ui.get_bitmap_font()->render_text(16, 27, "Wave: " + std::to_string(current_wave));
 }
 const std::string GeneratorForest::generate(uint8_t depth)
 {
@@ -65,15 +65,12 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	uint8_t map_data[width * height];
 	base_pos = std::make_pair(5, 7 + ((engine.get_rng() % 5) - 2));
 
-	wave_class = WAVE_DWARF;
-	wave_monsters.clear();
-	wave_monsters = {
-		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
-		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
-		MONSTER_DWARF_BEASTMASTER, MONSTER_DWARF_BEASTMASTER,
-		MONSTER_DWARF_NECROMANCER,
-		MONSTER_DWARF_KING
-	};
+	calm_timer = 3;
+	spawned_mobs = 0;
+	current_wave = 0;
+	current_turn = 0;
+	current_depth = depth;
+
 	bool map_fine = false;
 	while (!map_fine)
 	{
@@ -84,9 +81,6 @@ const std::string GeneratorForest::generate(uint8_t depth)
 		uint8_t xpos = base_pos.first;
 		uint8_t ypos = base_pos.second;
 		map_data[ypos * width + xpos] = 0;
-
-		current_wave = 0;
-		current_turn = 0;
 
 		while (floor_num < 180)
 		{
@@ -157,7 +151,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	std::cout << level << std::endl;
 	return level;
 }
-void GeneratorForest::post_process(ActorManager *am, Level *level, uint8_t depth)
+void GeneratorForest::post_process(ActorManager *am, Level *level)
 {
 	if (pathfinder == nullptr)
 	{
@@ -196,7 +190,7 @@ void GeneratorForest::post_process(ActorManager *am, Level *level, uint8_t depth
 	level->set_node(start_x, start_y, new_node);
 	level->set_node(base_pos.first, base_pos.second, base_node);
 
-	if (depth < 4)
+	if (current_depth < 4)
 	{
 		Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
 		if (hero != nullptr)
@@ -228,7 +222,13 @@ void GeneratorForest::post_process(ActorManager *am, Level *level, uint8_t depth
 void GeneratorForest::next_turn(ActorManager *am, Level *level)
 {
 	current_turn += 1;
-	if (am != nullptr && current_turn % 2 == 0)
+	if (calm_timer > 0)
+	{
+		calm_timer -= 1;
+		if (calm_timer == 0)
+			init_wave();
+	}
+	else if (am != nullptr && current_turn % 2 != 0)
 	{
 		auto pos = get_spawn_pos();
 		Actor *monster = am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/missing.png");
@@ -237,12 +237,36 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 		{
 			const uint8_t i = (engine.get_rng() % (wave_monsters.size() - 1));
 			dynamic_cast<Monster*>(monster)->init_class((MonsterClass)wave_monsters[i]);
+			spawned_mobs += 1;
+		}
+		if (spawned_mobs >= (current_wave * 5 + 5))
+		{
+			calm_timer = 10;
 		}
 	}
+	else if (current_turn == 2)
+		ui.clear_message_box();
 }
 std::pair<uint8_t, uint8_t> GeneratorForest::get_spawn_pos() const
 {
 	if (spawn_positions.size() == 0)
 		return std::make_pair(0, 0);
 	return spawn_positions[engine.get_rng() % spawn_positions.size()];
+}
+void GeneratorForest::init_wave()
+{
+	spawned_mobs = 0;
+	current_turn = 0;
+	current_wave += 1;
+
+	wave_class = WAVE_DWARF;
+
+	wave_monsters.clear();
+	wave_monsters = {
+		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+		MONSTER_DWARF_BEASTMASTER, MONSTER_DWARF_BEASTMASTER,
+		MONSTER_DWARF_NECROMANCER, MONSTER_DWARF_KING
+	};
+	ui.spawn_message_box("Wave #" + std::to_string(current_wave), "placeholder text");
 }

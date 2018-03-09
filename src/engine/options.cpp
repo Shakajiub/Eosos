@@ -49,13 +49,13 @@ void Options::init()
 	options_b["display-fullscreen"] = false;
 	options_b["display-borderless"] = false;
 	options_i["display-width"] = 1024;
-	options_i["display-height"] = 640;
+	options_i["display-height"] = 576;
 	options_i["display-fps_cap"] = 60;
 	options_b["display-vsync"] = true;
 
 	options_b["camera-follow_action"] = true;
 	options_i["camera-scroll_speed"] = 40;
-	options_i["camera-follow_speed"] = 20;
+	options_i["camera-follow_speed"] = 25;
 	options_b["camera-apply_shake"] = true;
 
 	options_i["sound-music_volume"] = 80;
@@ -118,8 +118,8 @@ void Options::apply()
 {
 	// Make sure the options are reasonable
 
-	if (options_i["display-width"] < 640) options_i["display-width"] = 640;
-	if (options_i["display-height"] < 360) options_i["display-height"] = 360;
+	if (options_i["display-width"] < 1024) options_i["display-width"] = 1024;
+	if (options_i["display-height"] < 576) options_i["display-height"] = 576;
 	if (options_i["display-fps_cap"] < 1) options_i["display-fps_cap"] = 1;
 
 	if (options_i["camera-scroll_speed"] < 1)
