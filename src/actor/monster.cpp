@@ -132,27 +132,48 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 				}
 			}
 		}
-		if (moves.first > 0 && has_ability("necromancy"))
+		if (moves.first > 0 && has_ability("bloodlust") && spell_timer == 0)
 		{
-			if (spell_timer == 0)
+			std::vector<Actor*> targets;
+			for (int8_t ypos = -2; ypos < 2; ypos++)
 			{
-				if (am != nullptr)
+				for (int8_t xpos = -2; xpos < 2; xpos++)
 				{
-					Actor *spawn = am->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
-					if (spawn != nullptr)
+					Actor *temp_actor = level->get_actor(grid_x + xpos, grid_y + ypos);
+					if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
 					{
-						if (engine.get_rng() % 10 != 0)
-							dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON);
-						else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON_DISEASED);
-
-						//camera.update_position(grid_x * 32, grid_y * 32);
-						if (ui.get_message_log() != nullptr)
-							ui.get_message_log()->add_message("The " + name + " summons a minion!", COLOR_OCHER);
+						if (temp_actor->get_status() != STATUS_BUFF)
+							targets.push_back(temp_actor);
 					}
 				}
+			}
+			if (targets.size() > 0)
+			{
+				Actor *temp_actor = targets[targets.size() - 1];
+				temp_actor->set_status(STATUS_BUFF);
 				add_action(ACTION_INTERACT, grid_x, grid_y);
-				spell_timer = 8;
+				spell_timer = 5;
 				moves.first = 0;
+			}
+		}
+		if (moves.first > 0 && has_ability("necromancy") && spell_timer == 0)
+		{
+			if (am != nullptr)
+			{
+				Actor *spawn = am->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
+				if (spawn != nullptr)
+				{
+					if (engine.get_rng() % 10 != 0)
+						dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON);
+					else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON_DISEASED);
+
+					add_action(ACTION_INTERACT, grid_x, grid_y);
+					spell_timer = 8;
+					moves.first = 0;
+
+					if (ui.get_message_log() != nullptr)
+						ui.get_message_log()->add_message("The " + name + " summons a minion!", COLOR_OCHER);
+				}
 			}
 		}
 		if (moves.first > 0 && pathfinder != nullptr)
@@ -238,10 +259,13 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_KOBOLD_MAGE:
 			name = "Kobold Mage";
 			class_texture = "core/texture/actor/kobold_mage.png";
+			add_ability("bloodlust");
+			spell_timer = 2;
 			break;
 		case MONSTER_KOBOLD_DEMONIAC:
 			name = "Kobold Demoniac";
 			class_texture = "core/texture/actor/kobold_demoniac.png";
+			proj_type = PROJECTILE_WITHER;
 			break;
 		case MONSTER_KOBOLD_TRUEFORM:
 			name = "Kobold Trueform";

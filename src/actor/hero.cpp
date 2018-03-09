@@ -152,6 +152,7 @@ void Hero::start_turn()
 	}
 	if (grid_x > 20 && ui.get_message_log() != nullptr)
 	{
+		load_bubble("exclamation", 1);
 		ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", COLOR_BERRY);
 		ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", COLOR_BERRY);
 	}
@@ -177,6 +178,7 @@ bool Hero::take_turn(Level *level, ActorManager *am)
 		{
 			if (grid_x > 20 && ui.get_message_log() != nullptr)
 			{
+				load_bubble("exclamation", 1);
 				ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", COLOR_BERRY);
 				ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", COLOR_BERRY);
 			}

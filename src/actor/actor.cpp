@@ -488,10 +488,19 @@ void Actor::attack(Actor *other)
 	if (proj_type == PROJECTILE_DART && other->get_status() != STATUS_POISON)
 	{
 		other->set_status(STATUS_POISON);
-		ml->add_message("The " + name + " %Bpoisons %Fthe " + other->name + "!");
+		ml->add_message("The " + name + " %Bpoisons%F the " + other->name + "!");
+		return;
+	}
+	if (proj_type == PROJECTILE_WITHER && other->get_status() != STATUS_WITHER)
+	{
+		other->set_status(STATUS_WITHER);
+		ml->add_message("The " + name + " %1withers%F the " + other->name + "!");
 		return;
 	}
 	uint8_t damage = get_damage();
+	if (status == STATUS_BUFF)
+		damage += 1;
+
 	const bool crit = engine.get_rng() % 20 == 0;
 	if (crit) damage *= 2;
 
@@ -520,7 +529,12 @@ void Actor::level_up()
 void Actor::add_health(uint8_t amount)
 {
 	if (health.first + amount > health.second)
+	{
 		health.first = health.second;
+
+		if (status == STATUS_REGEN)
+			set_status(STATUS_NONE);
+	}
 	else health.first += amount;
 
 	if (status == STATUS_POISON)
@@ -564,6 +578,12 @@ void Actor::set_status(StatusType st)
 			break;
 		case STATUS_ARMORED:
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/armored.png");
+			break;
+		case STATUS_BUFF:
+			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/buff.png");
+			break;
+		case STATUS_REGEN:
+			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/regeneration.png");
 			break;
 		default: break;
 	}

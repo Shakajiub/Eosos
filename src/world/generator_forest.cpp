@@ -31,7 +31,8 @@
 
 #include <unordered_map>
 
-GeneratorForest::GeneratorForest() : pathfinder(nullptr), wave_class(WAVE_NONE)
+GeneratorForest::GeneratorForest() :
+	pathfinder(nullptr), wave_class(WAVE_NONE), wave_boss(MONSTER_NONE), boss_name("???"), boss_desc("???")
 {
 
 }
@@ -240,22 +241,22 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 
 		if (monster != nullptr && wave_monsters.size() > 1)
 		{
-			const uint8_t i = (engine.get_rng() % (wave_monsters.size() - 1));
+			const uint8_t i = (engine.get_rng() % wave_monsters.size());
 			MonsterClass mc = (MonsterClass)wave_monsters[i];
 
 			if (current_wave == current_depth + 2 && spawned_mobs == (current_wave * 5 + 4))
 			{
-				mc = (MonsterClass)wave_monsters[wave_monsters.size() - 1];
-				ui.spawn_message_box("BOSS", "The Dwarven King");
+				mc = (MonsterClass)wave_boss;
+				ui.spawn_message_box("BOSS", boss_name);
 				if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message("The Dwarven King has arrived!", COLOR_MAIZE);
+					ui.get_message_log()->add_message(boss_desc, COLOR_MAIZE);
 			}
 			dynamic_cast<Monster*>(monster)->init_class(mc);
 			spawned_mobs += 1;
 
 			if (engine.get_rng() % 20 == 0)
 			{
-				Actor *mount = am->spawn_actor(level, ACTOR_MOUNT, pos.first, pos.second, "core/texture/actor/griffin.png");
+				Actor *mount = am->spawn_actor(level, ACTOR_MOUNT, pos.first, pos.second, mount_name);
 				if (mount != nullptr)
 				{
 					level->set_actor(mount->get_grid_x(), mount->get_grid_y(), nullptr);
@@ -283,14 +284,56 @@ void GeneratorForest::init_wave()
 	current_turn = 0;
 	current_wave += 1;
 
-	wave_class = WAVE_DWARF;
-
 	wave_monsters.clear();
-	wave_monsters = {
-		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
-		MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
-		MONSTER_DWARF_BEASTMASTER, MONSTER_DWARF_BEASTMASTER,
-		MONSTER_DWARF_NECROMANCER, MONSTER_DWARF_KING
-	};
+	if (current_wave == 1)
+	{
+		if (current_depth == 1) // Tier 1 waves
+		{
+			wave_class = WAVE_SLIME;
+		}
+		else if (current_depth == 2) // Tier 2 waves
+		{
+			wave_class = WAVE_KOBOLD;
+		}
+		else if (current_depth == 3) // Tier 3 waves
+		{
+			wave_class = WAVE_DWARF;
+		}
+	}
+	if (wave_class == WAVE_SLIME)
+	{
+
+	}
+	else if (wave_class == WAVE_KOBOLD)
+	{
+		if (current_wave == 1)
+			wave_monsters = {
+				MONSTER_KOBOLD_WARRIOR, MONSTER_KOBOLD_WARRIOR, MONSTER_KOBOLD_WARRIOR, MONSTER_KOBOLD_WARRIOR,
+				MONSTER_KOBOLD_ARCHER, MONSTER_KOBOLD_ARCHER,
+				MONSTER_KOBOLD_MAGE
+			};
+		else wave_monsters = {
+				MONSTER_KOBOLD_WARRIOR, MONSTER_KOBOLD_WARRIOR, MONSTER_KOBOLD_WARRIOR,
+				MONSTER_KOBOLD_ARCHER, MONSTER_KOBOLD_ARCHER, MONSTER_KOBOLD_ARCHER,
+				MONSTER_KOBOLD_MAGE
+			};
+		wave_boss = MONSTER_KOBOLD_DEMONIAC;
+		boss_name = "Kobold Demoniac";
+		boss_desc = "The Kobold Demoniac has arrived!";
+		mount_name = "core/texture/actor/ape.png";
+	}
+	else if (wave_class == WAVE_DWARF)
+	{
+		wave_monsters = {
+			MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+			MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+			MONSTER_DWARF_BEASTMASTER, MONSTER_DWARF_BEASTMASTER,
+			MONSTER_DWARF_NECROMANCER
+		};
+		wave_boss = MONSTER_DWARF_KING;
+		boss_name = "The Dwarven King";
+		boss_desc = "The Dwarven King has arrived!";
+		mount_name = "core/texture/actor/griffin.png";
+	}
 	ui.spawn_message_box("Wave #" + std::to_string(current_wave), "placeholder text");
 }
