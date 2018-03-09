@@ -25,6 +25,10 @@
 #include "texture.hpp"
 #include "texture_manager.hpp"
 
+uint16_t distance(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
+{
+	return (uint16_t)SDL_sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+}
 Monster::Monster() : pathfinder(nullptr), healthbar(nullptr), monster_class(MONSTER_NONE)
 {
 	health = std::make_pair(2, 2);
@@ -95,7 +99,34 @@ bool Monster::take_turn(Level *level)
 	}
 	if (actions_empty() && moves.first > 0)
 	{
-		if (pathfinder != nullptr)
+		if (has_ability("shoot"))
+		{
+			const int8_t offset_x[12] = { -1, 0, 1, -2, -2, -2, 2, 2, 2, -1, 0, 1 };
+			const int8_t offset_y[12] = { -2, -2, -2, -1, 0, 1, -1, 0, 1, 2, 2, 2 };
+
+			for (uint8_t i = 0; i < 12; i++)
+			{
+				uint8_t block_x = grid_x + offset_x[i];
+				if (offset_x[i] == -2) block_x += 1;
+				else if (offset_x[i] == 2) block_x -= 1;
+
+				uint8_t block_y = grid_y + offset_y[i];
+				if (offset_y[i] == -2) block_y += 1;
+				else if (offset_y[i] == 2) block_y -= 1;
+
+				if (!level->get_wall(block_x, block_y))
+				{
+					Actor *temp_actor = level->get_actor(grid_x + offset_x[i], grid_y + offset_y[i]);
+					if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_HERO)
+					{
+						add_action(ACTION_SHOOT, grid_x + offset_x[i], grid_y + offset_y[i]);
+						moves.first = 0;
+						break;
+					}
+				}
+			}
+		}
+		if (moves.first > 0 && pathfinder != nullptr)
 		{
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 			{
@@ -129,9 +160,13 @@ bool Monster::init_class(MonsterClass mc)
 
 	switch (monster_class)
 	{
-		case MONSTER_MISC_LIVING_TREE:
-			name = "Living Tree";
+		case MONSTER_MISC_LIVING_OAK:
+			name = "Living Oak";
 			class_texture = "core/texture/actor/living_oak.png";
+			break;
+		case MONSTER_MISC_LIVING_SPRUCE:
+			name = "Living Spruce";
+			class_texture = "core/texture/actor/living_spruce.png";
 			break;
 		case MONSTER_DWARF_WARRIOR:
 			name = "Dwarven Warrior";
@@ -144,7 +179,7 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_DWARF_BEASTMASTER:
 			name = "Dwarven Beastmaster";
 			class_texture = "core/texture/actor/dwarf_beastmaster.png";
-			proj_name = "core/texture/item/dart.png";
+			proj_type = PROJECTILE_DART;
 			add_ability("shoot");
 			break;
 		case MONSTER_DWARF_KING:
@@ -158,7 +193,7 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_KOBOLD_ARCHER:
 			name = "Kobold Archer";
 			class_texture = "core/texture/actor/kobold_archer.png";
-			proj_name = "core/texture/item/arrow.png";
+			proj_type = PROJECTILE_ARROW;
 			add_ability("shoot");
 			break;
 		case MONSTER_KOBOLD_MAGE:

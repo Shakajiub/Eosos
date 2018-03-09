@@ -66,10 +66,12 @@ void AbilityDismount::apply(Hero *hero)
 		if (scene != nullptr)
 			level = scene->get_level();
 
-		if (level == nullptr)
+		if (level == nullptr || hero == nullptr)
 			return;
 
 		valid_nodes.clear();
+
+		hero->set_ability_activated(true);
 		hero->clear_pathfinder();
 
 		const uint8_t xpos = hero->get_grid_x();
@@ -83,7 +85,7 @@ void AbilityDismount::apply(Hero *hero)
 		activated = true;
 		temp_hero = hero;
 	}
-	else clear();
+	else clear(hero);
 }
 void AbilityDismount::render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const
 {
@@ -107,15 +109,18 @@ bool AbilityDismount::get_click(uint16_t mouse_x, uint16_t mouse_y)
 				temp_hero->add_action(ACTION_MOVE, map_x, map_y, 1);
 				temp_hero->set_moves(0);
 			}
-			clear();
+			clear(temp_hero);
 			return true;
 		}
 	}
 	return activated;
 }
-void AbilityDismount::clear()
+void AbilityDismount::clear(Hero *hero)
 {
 	valid_nodes.clear();
+
+	if (hero != nullptr)
+		hero->set_ability_activated(false);
 
 	activated = false;
 	temp_hero = nullptr;

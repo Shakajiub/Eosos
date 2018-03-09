@@ -67,7 +67,7 @@ bool Ability::get_click(uint16_t mouse_x, uint16_t mouse_y)
 {
 	return false;
 }
-void Ability::clear()
+void Ability::clear(Hero *hero)
 {
 
 }

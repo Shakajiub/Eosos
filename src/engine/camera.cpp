@@ -23,7 +23,7 @@
 Camera camera;
 
 Camera::Camera() :
-	free_move(false), scroll_speed(0.0f), follow_speed(0.0f), camera_x(0.0f), camera_y(0.0f),
+	locked(false), free_move(false), scroll_speed(0.0f), follow_speed(0.0f), camera_x(0.0f), camera_y(0.0f),
 	camera_shake(0), camera_w(0), camera_h(0), offset_x(0), offset_y(0), center_x(0), center_y(0)
 {
 
@@ -46,7 +46,7 @@ void Camera::init()
 void Camera::update()
 {
 	//if (camera_shake > 0) shake();
-	if (free_move) return;
+	if (locked || free_move) return;
 
 	float t = engine.get_dt() / 100.0f * follow_speed;
 

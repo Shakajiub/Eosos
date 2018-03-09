@@ -34,7 +34,7 @@ Actor::Actor() :
 	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false),
 	name("???"), hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr),
 	status_icon(nullptr), status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0),
-	projectile(nullptr), proj_name("???"), mount(nullptr)
+	projectile(nullptr), proj_type(PROJECTILE_ARROW), mount(nullptr)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0, 0 };
@@ -345,9 +345,18 @@ bool Actor::action_shoot(Level *level)
 		anim_timer -= 18;
 		if (anim_frames == 0)
 		{
-			if (projectile == nullptr)
-				projectile = engine.get_texture_manager()->load_texture(proj_name);
-
+			if (projectile == nullptr) switch (proj_type)
+			{
+				case PROJECTILE_SHURIKEN:
+					projectile = engine.get_texture_manager()->load_texture("core/texture/item/shuriken.png");
+					break;
+				case PROJECTILE_DART:
+					projectile = engine.get_texture_manager()->load_texture("core/texture/item/dart.png");
+					break;
+				default:
+					projectile = engine.get_texture_manager()->load_texture("core/texture/item/arrow.png");
+					break;
+			}
 			if (grid_x != current_action.xpos)
 				facing_right = (grid_x < current_action.xpos);
 
@@ -475,6 +484,11 @@ void Actor::attack(Actor *other)
 		}
 	}
 	else ml->add_message("The " + name + std::string(crit ? " %ECRITS%F the " : " strikes the ") + other->name + " for %6" + std::to_string(damage) + "%F damage!");
+}
+void Actor::level_up()
+{
+	experience = 0;
+	combat_level += 1;
 }
 void Actor::load_bubble(const std::string &bubble_name, uint8_t timer)
 {

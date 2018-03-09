@@ -52,6 +52,12 @@ enum StatusType
 	STATUS_NONE,
 	STATUS_LEVELUP
 };
+enum ProjectileType
+{
+	PROJECTILE_ARROW,
+	PROJECTILE_SHURIKEN,
+	PROJECTILE_DART
+};
 typedef struct
 {
 	ActionType type;
@@ -93,6 +99,7 @@ public:
 	bool has_ability(const std::string &ability) const;
 
 	void attack(Actor *other);
+	void level_up();
 
 	void load_bubble(const std::string &bubble_name, uint8_t timer = 0);
 	void clear_bubble();
@@ -118,6 +125,7 @@ public:
 	uint8_t get_grid_y() const { return grid_y; }
 	Mount* get_mount() const { return mount; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
+	std::pair<int8_t, int8_t> get_health() const { return health; }
 
 	void set_x(uint16_t xpos) { x = xpos; }
 	void set_y(uint16_t ypos) { y = ypos; }
@@ -127,6 +135,7 @@ public:
 	void set_turn_done(bool done) { turn_done = done; }
 	void set_hovered(HoverType ht) { hovered = ht; }
 	void set_moves(int8_t m) { moves.first = m; }
+	void set_health(int8_t h) { health.first = h; }
 
 protected:
 	bool delete_me;
@@ -169,7 +178,7 @@ protected:
 	double proj_angle;
 	uint16_t proj_x, proj_y;
 	Texture *projectile;
-	std::string proj_name;
+	ProjectileType proj_type;
 
 	static uint16_t ID;
 };

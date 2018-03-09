@@ -96,11 +96,12 @@ void AbilityShoot::apply(Hero *hero)
 				valid_nodes.push_back(std::make_pair(x + offset_x[i], y + offset_y[i]));
 		}
 		hero->clear_pathfinder();
+		hero->set_ability_activated(true);
 
 		activated = true;
 		temp_hero = hero;
 	}
-	else clear();
+	else clear(hero);
 }
 void AbilityShoot::render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const
 {
@@ -123,15 +124,18 @@ bool AbilityShoot::get_click(uint16_t mouse_x, uint16_t mouse_y)
 				temp_hero->add_action(ACTION_SHOOT, map_x, map_y);
 				temp_hero->set_moves(0);
 			}
-			clear();
+			clear(temp_hero);
 			return true;
 		}
 	}
 	return activated;
 }
-void AbilityShoot::clear()
+void AbilityShoot::clear(Hero *hero)
 {
 	valid_nodes.clear();
+
+	if (hero != nullptr)
+		hero->set_ability_activated(false);
 
 	activated = false;
 	temp_hero = nullptr;

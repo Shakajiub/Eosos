@@ -38,6 +38,7 @@ public:
 	uint16_t get_cam_w() const { return camera_w; }
 	uint16_t get_cam_h() const { return camera_h; }
 
+	void set_locked(bool lock) { locked = lock; }
 	void set_free_move(bool move) { free_move = move; }
 	void set_scroll_speed(float speed) { scroll_speed = speed; }
 	void set_follow_speed(float speed) { follow_speed = speed; }
@@ -45,6 +46,7 @@ public:
 	void set_window_fullscreen(bool fullscreen);
 
 private:
+	bool locked;
 	bool free_move;
 
 	float scroll_speed;

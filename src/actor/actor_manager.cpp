@@ -70,7 +70,7 @@ bool ActorManager::update(Level *level)
 			current_actor->end_turn();
 
 			if (current_actor->get_actor_type() == ACTOR_HERO)
-				ability_manager->clear();
+				ability_manager->clear(dynamic_cast<Hero*>(current_actor));
 
 			const uint16_t current_ID = current_actor->get_ID();
 			Actor *temp_actor = nullptr;
@@ -132,13 +132,18 @@ void ActorManager::render_ui() const
 	const uint16_t xpos = 0;
 	uint16_t ypos = 48;
 
-	for (Actor *a : heroes)
+	for (Actor *a : actors)
 	{
-		dynamic_cast<Hero*>(a)->render_ui(xpos, ypos);
-		ypos += 48;
+		if (a->get_actor_type() == ACTOR_HERO)
+		{
+			dynamic_cast<Hero*>(a)->render_ui(xpos, ypos);
+			ypos += 48;
 
-		if (ability_manager != nullptr && a == current_actor)
-			ability_manager->render_ui(dynamic_cast<Hero*>(a));
+			if (ability_manager != nullptr && a == current_actor)
+				ability_manager->render_ui(dynamic_cast<Hero*>(a));
+		}
+		else if (a->get_actor_type() == ACTOR_MONSTER)
+			a->render_ui(0, 0);
 	}
 }
 void ActorManager::clear_actors(Level *level, bool clear_heroes)
@@ -146,9 +151,12 @@ void ActorManager::clear_actors(Level *level, bool clear_heroes)
 	std::vector<Actor*> to_erase;
 	for (Actor *a : actors)
 	{
-		if (clear_heroes || a->get_actor_type() != ACTOR_HERO)
-			to_erase.push_back(a);
-		else a->clear_mount();
+		if (!clear_heroes && a->get_actor_type() == ACTOR_HERO)
+		{
+			level->set_actor(a->get_grid_x(), a->get_grid_y(), nullptr);
+			a->clear_mount();
+		}
+		else to_erase.push_back(a);
 	}
 	for (Actor *a : to_erase)
 		delete_actor(level, a);
@@ -202,20 +210,22 @@ Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8
 }
 void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos)
 {
-	for (uint8_t i = 0; i < heroes.size(); i++) if (heroes[i] != nullptr)
-		level->set_actor(heroes[i]->get_grid_x(), heroes[i]->get_grid_y(), nullptr);
+	std::cout << "placing actors ..." << std::endl;
 
-	for (uint8_t i = 0; i < actors.size(); i++) if (actors[i] != nullptr)
+	std::vector<Actor*> to_erase;
+	for (Actor *a : actors)
 	{
 		std::pair<uint8_t, uint8_t> spot;
-		if (actors[i]->get_actor_type() == ACTOR_HERO)
+		if (a->get_actor_type() == ACTOR_HERO)
 			spot = find_spot(level, base_pos.first, base_pos.second);
-		else spot = find_spot(level, actors[i]->get_grid_x(), actors[i]->get_grid_y());
+		else spot = find_spot(level, a->get_grid_x(), a->get_grid_y());
 
 		if (spot.first != 0)
-			level->set_actor(spot.first, spot.second, actors[i]);
-		else delete_actor(level, actors[i]);
+			level->set_actor(spot.first, spot.second, a);
+		else to_erase.push_back(a);
 	}
+	for (Actor *a : to_erase)
+		delete_actor(level, a);
 }
 void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {

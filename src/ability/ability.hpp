@@ -33,7 +33,7 @@ public:
 	virtual void apply(Hero *hero) = 0;
 	virtual void render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const;
 	virtual bool get_click(uint16_t mouse_x, uint16_t mouse_y);
-	virtual void clear();
+	virtual void clear(Hero *hero);
 
 	bool init_texture(const std::string &icon, SDL_Color color);
 

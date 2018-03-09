@@ -32,7 +32,7 @@ public:
 	void free();
 	void render_ui(Hero *hero) const;
 	void load_ability(const std::string &name);
-	void clear();
+	void clear(Hero *hero);
 
 	void input_keyboard_down(Hero *hero, SDL_Keycode key);
 

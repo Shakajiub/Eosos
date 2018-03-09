@@ -24,12 +24,13 @@
 #include "mount.hpp"
 #include "camera.hpp"
 #include "texture_manager.hpp"
+#include "bitmap_font.hpp"
 #include "message_log.hpp"
 #include "ui.hpp"
 
 Hero::Hero() :
-	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), max_moves(2), hp_shake(0),
-	hb_timer(100), pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr), sleep_timer(0)
+	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), max_moves(2), hp_shake(0), hb_timer(100),
+	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr), sleep_timer(0), ability_activated(false)
 {
 	health = std::make_pair(3, 3);
 	prev_health = health.first;
@@ -52,8 +53,10 @@ void Hero::free()
 		ui_texture = nullptr;
 	}
 	if (health_texture != nullptr)
+	{
 		engine.get_texture_manager()->free_texture(health_texture->get_name());
-
+		health_texture = nullptr;
+	}
 	abilities.clear();
 }
 bool Hero::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
@@ -120,6 +123,14 @@ void Hero::render_ui(uint16_t xpos, uint16_t ypos) const
 			render_x += 32;
 		}
 	}
+	if (moves.first > 0)
+	{
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 96, 16,
+			"Moves: " + std::to_string(moves.first) + "/" + std::to_string(moves.second)
+		);
+		const std::string xp = "XP: " + std::to_string(experience) + "/" + std::to_string(combat_level * 10);
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 16 - (xp.length() * 8), 27, xp);
+	}
 }
 void Hero::start_turn()
 {
@@ -179,6 +190,8 @@ uint8_t Hero::get_damage() const
 }
 bool Hero::init_ui_texture()
 {
+	clear_ui_texture();
+
 	health_texture = engine.get_texture_manager()->load_texture("core/texture/ui/health_hearts.png");
 	if (health_texture == nullptr)
 		return false;
@@ -246,7 +259,7 @@ bool Hero::init_class(HeroClass hc)
 		case HC_NINJA:
 			name = "Ninja";
 			class_texture = "core/texture/actor/orc_ninja.png";
-			proj_name = "core/texture/item/shuriken.png";
+			proj_type = PROJECTILE_SHURIKEN;
 			add_ability("shoot");
 			break;
 		case HC_BARBARIAN:
@@ -266,7 +279,10 @@ bool Hero::init_class(HeroClass hc)
 		texture = nullptr;
 	}
 	texture = engine.get_texture_manager()->load_texture(class_texture);
-	return texture != nullptr;
+
+	if (texture != nullptr)
+		return init_ui_texture();
+	else return false;
 }
 void Hero::step_pathfinder(Level *level)
 {
@@ -316,9 +332,22 @@ void Hero::clear_pathfinder()
 	if (pathfinder->get_path_found())
 		pathfinder->clear_path();
 }
+void Hero::clear_ui_texture()
+{
+	if (ui_texture != nullptr)
+	{
+		SDL_DestroyTexture(ui_texture);
+		ui_texture = nullptr;
+	}
+	if (health_texture != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(health_texture->get_name());
+		health_texture = nullptr;
+	}
+}
 void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 {
-	if (!actions_empty() || moves.first <= 0)
+	if (!actions_empty() || moves.first <= 0 || ability_activated)
 		return;
 
 	int8_t offset_x = 0, offset_y = 0;

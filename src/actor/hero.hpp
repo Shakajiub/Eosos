@@ -54,6 +54,7 @@ public:
 
 	void step_pathfinder(Level *level);
 	void clear_pathfinder();
+	void clear_ui_texture();
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 	void input_mouse_button_down(SDL_Event eve, Level *level);
@@ -62,10 +63,12 @@ public:
 	bool get_auto_move() const;
 
 	void set_sleep_timer(uint8_t timer);
+	void set_ability_activated(bool a) { ability_activated = a; }
 
 private:
 	bool auto_move_path;
 	bool command_this_turn;
+	bool ability_activated;
 
 	HeroClass hero_class;
 	uint8_t max_moves;

@@ -53,6 +53,7 @@ void Options::init()
 	options_i["display-fps_cap"] = 60;
 	options_b["display-vsync"] = true;
 
+	options_b["camera-follow_action"] = true;
 	options_i["camera-scroll_speed"] = 40;
 	options_i["camera-follow_speed"] = 20;
 	options_b["camera-apply_shake"] = true;
@@ -138,6 +139,7 @@ void Options::apply()
 		SDL_SetWindowBordered(engine.get_window(), SDL_FALSE);
 	else SDL_SetWindowBordered(engine.get_window(), SDL_TRUE);
 
+	camera.set_locked(!options_b["camera-follow_action"]);
 	camera.set_scroll_speed(options_i["camera-scroll_speed"] * 0.01f);
 	camera.set_follow_speed(options_i["camera-follow_speed"] * 0.01f);
 	camera.set_window_size(options_i["display-width"], options_i["display-height"]);

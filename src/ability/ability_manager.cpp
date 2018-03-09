@@ -26,8 +26,6 @@
 #include "ability_sleep.hpp"
 
 #include "camera.hpp"
-#include "bitmap_font.hpp"
-#include "ui.hpp"
 
 AbilityManager::AbilityManager()
 {
@@ -64,9 +62,6 @@ void AbilityManager::render_ui(Hero *hero) const
 				ypos += 48;
 			}
 		}
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 96, 16,
-			"Moves: " + std::to_string(hero->get_moves().first) + "/" + std::to_string(hero->get_moves().second)
-		);
 	}
 }
 void AbilityManager::load_ability(const std::string &ability)
@@ -94,10 +89,10 @@ void AbilityManager::load_ability(const std::string &ability)
 		else delete new_ability;
 	}
 }
-void AbilityManager::clear()
+void AbilityManager::clear(Hero *hero)
 {
 	for (Ability *a : abilities)
-		a->clear();
+		a->clear(hero);
 }
 void AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
 {

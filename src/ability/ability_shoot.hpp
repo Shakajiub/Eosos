@@ -36,7 +36,7 @@ public:
 	virtual void apply(Hero *hero);
 	virtual void render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const;
 	virtual bool get_click(uint16_t mouse_x, uint16_t mouse_y);
-	virtual void clear();
+	virtual void clear(Hero *hero);
 
 private:
 	std::vector<std::pair<uint8_t, uint8_t> > valid_nodes;

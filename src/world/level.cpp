@@ -134,10 +134,11 @@ void Level::create(ActorManager *am, uint8_t depth)
 	}
 	map_width = (uint8_t)map_data[0].size();
 	map_height = (uint8_t)map_data.size();
-
 	map_created = true;
+
 	if (depth > 1 && am != nullptr)
 		am->place_actors(this, get_base_pos());
+
 	map_generator->post_process(am, this, depth);
 
 	// Correct the frames for all map nodes (so that tiles connect to eachother nicely)
@@ -155,6 +156,7 @@ void Level::create(ActorManager *am, uint8_t depth)
 	neighbor_rules.clear();
 	init_map_texture();
 
+	camera.update_position(((map_width - 2) * 32) / 2, ((map_height - 1) * 32) / 2);
 	std::cout << "map created, size: " << (int)(map_width) << ", " << (int)(map_height) << std::endl;
 }
 void Level::render() const

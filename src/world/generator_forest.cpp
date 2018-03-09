@@ -21,6 +21,7 @@
 #include "level.hpp"
 #include "astar.hpp"
 
+#include "hero.hpp"
 #include "monster.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
@@ -62,8 +63,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 
 	width = 25; height = 15;
 	uint8_t map_data[width * height];
-	base_pos = std::make_pair(5, 7);
-	base_pos.second += (engine.get_rng() % 5) - 2;
+	base_pos = std::make_pair(5, 7 + ((engine.get_rng() % 5) - 2));
 
 	wave_class = WAVE_DWARF;
 	wave_monsters.clear();
@@ -196,9 +196,11 @@ void GeneratorForest::post_process(ActorManager *am, Level *level, uint8_t depth
 	level->set_node(start_x, start_y, new_node);
 	level->set_node(base_pos.first, base_pos.second, base_node);
 
-	if (depth == 1)
+	if (depth < 4)
 	{
-		am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
+		Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
+		if (hero != nullptr)
+			dynamic_cast<Hero*>(hero)->init_class(HC_NINJA);
 	}
 	const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
 	MapNode temp_node;

@@ -67,6 +67,8 @@ bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x
 	c->x = start_x; c->y = start_y;
 	open_list.push_back(c);
 
+	c.reset();
+
 	// Used for looping all neighbouring nodes
 	const int8_t offset_x[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
 	const int8_t offset_y[8] = { -1, 1, 0, 0, -1, -1, 1, 1 };
@@ -153,7 +155,7 @@ bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x
 				n->f = n->g + n->h;
 				open_list.push_back(n);
 
-				if (n->x < c->x)
+				if (c == nullptr || n->x < c->x)
 					c = n;
 				n.reset();
 			}
