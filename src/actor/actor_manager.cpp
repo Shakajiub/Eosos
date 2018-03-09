@@ -139,7 +139,7 @@ void ActorManager::render_ui() const
 			dynamic_cast<Hero*>(a)->render_ui(xpos, ypos);
 			ypos += 48;
 
-			if (ability_manager != nullptr && a == current_actor)
+			if (ability_manager != nullptr && (a == current_actor || heroes.size() == 1))
 				ability_manager->render_ui(dynamic_cast<Hero*>(a));
 		}
 		else if (a->get_actor_type() == ACTOR_MONSTER)
@@ -158,6 +158,15 @@ void ActorManager::clear_actors(Level *level, bool clear_heroes)
 		}
 		else to_erase.push_back(a);
 	}
+	for (Actor *a : to_erase)
+		delete_actor(level, a);
+}
+void ActorManager::clear_heroes(Level *level)
+{
+	std::vector<Actor*> to_erase;
+	for (Actor *a : heroes)
+		to_erase.push_back(a);
+
 	for (Actor *a : to_erase)
 		delete_actor(level, a);
 }

@@ -38,7 +38,7 @@ public:
 	bool init_bitmap_font();
 	void init_message_log();
 
-	bool spawn_message_box(const std::string &title, const std::string &message, uint16_t xpos = 0, uint16_t ypos = 0);
+	bool spawn_message_box(const std::string &title, const std::string &message, bool lock = false);
 	void clear_message_box();
 
 	void update();
@@ -55,6 +55,8 @@ public:
 	MessageLog* get_message_log() const { return message_log; }
 
 private:
+	bool mb_lock;
+
 	Texture *ui_background;
 	BitmapFont *main_font;
 	MessageLog *message_log;

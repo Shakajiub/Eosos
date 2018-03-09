@@ -42,6 +42,7 @@ public:
 	Level* get_level() const { return current_level; }
 
 private:
+	uint8_t base_health;
 	uint8_t anim_timer;
 	uint8_t current_depth;
 
@@ -50,6 +51,7 @@ private:
 	Level *current_level;
 
 	Texture *node_highlight;
+	Texture *base_healthbar;
 	std::vector<Texture*> pointers;
 
 	uint8_t frames;

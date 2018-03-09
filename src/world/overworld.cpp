@@ -33,8 +33,9 @@
 #include <cmath> // for std::floor
 
 Overworld::Overworld() :
-	anim_timer(0), current_depth(1), actor_manager(nullptr), hovered_actor(nullptr),
-	current_level(nullptr), node_highlight(nullptr), frames(0), display_fps(0), frame_counter(0)
+	base_health(20), anim_timer(0), current_depth(1), actor_manager(nullptr),
+	hovered_actor(nullptr), current_level(nullptr), node_highlight(nullptr),
+	base_healthbar(nullptr), frames(0), display_fps(0), frame_counter(0)
 {
 
 }
@@ -58,6 +59,11 @@ void Overworld::free()
 	{
 		engine.get_texture_manager()->free_texture(node_highlight->get_name());
 		node_highlight = nullptr;
+	}
+	if (base_healthbar != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(base_healthbar->get_name());
+		base_healthbar = nullptr;
 	}
 	for (Texture *t : pointers)
 		engine.get_texture_manager()->free_texture(t->get_name());
@@ -104,6 +110,8 @@ void Overworld::init()
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
 		node_highlight->set_color(COLOR_BERRY);
+
+	base_healthbar = engine.get_texture_manager()->load_texture("core/texture/ui/health_boss.png");
 
 	const std::string pntrs[2] = { "pointer", "pointer_sword" };
 	for (auto pntr : pntrs)
@@ -179,9 +187,6 @@ bool Overworld::update()
 						else engine.get_sound_manager()->pause_music(true);
 					}
 					break;
-				case SDLK_w:
-					ui.spawn_message_box("title", "text");
-					break;
 				default:
 					if (actor_manager != nullptr)
 						actor_manager->input_keyboard_down(event.key.keysym.sym, current_level);
@@ -245,8 +250,22 @@ bool Overworld::update()
 	}
 	ui.update();
 	camera.update();
-
 	engine.get_sound_manager()->update();
+
+	if (current_level != nullptr && current_level->get_damage_base())
+	{
+		current_level->set_damage_base(false);
+		if (base_health > 0)
+		{
+			base_health -= 1;
+			if (base_health == 0)
+			{
+				ui.spawn_message_box("Defeat", "all your base are belong to us", true);
+				if (actor_manager != nullptr)
+					actor_manager->clear_heroes(current_level);
+			}
+		}
+	}
 	return true;
 }
 void Overworld::render() const
@@ -281,6 +300,35 @@ void Overworld::render() const
 	if (current_level != nullptr)
 		current_level->render_ui();
 
+	if (base_healthbar != nullptr)
+	{
+		SDL_Rect background = { 0, 0, 16, 16 };
+		SDL_Rect foreground = { 0, 16, 16, 16 };
+
+		int8_t hearts = 5;
+		int8_t hp_left = base_health;
+		uint16_t render_x = (camera.get_cam_w() / 2) - 80;
+		uint16_t render_y = 16;
+
+		while (hearts > 0)
+		{
+			if (hearts == 5) background.x = 0;
+			else if (hearts == 1) background.x = 32;
+			else background.x = 16;
+
+			if (hp_left == 3) foreground.x = 16;
+			else if (hp_left == 2) foreground.x = 32;
+			else if (hp_left == 1) foreground.x = 48;
+
+			base_healthbar->render(render_x, render_y, &background);
+			if (hp_left > 0)
+				base_healthbar->render(render_x, render_y, &foreground);
+
+			hearts -= 1;
+			hp_left -= 4;
+			render_x += 32;
+		}
+	}
 	ui.render();
 
 	//ui.get_bitmap_font()->render_text(16, 16, "FPS: " + std::to_string(display_fps));

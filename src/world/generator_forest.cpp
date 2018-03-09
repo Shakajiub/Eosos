@@ -231,7 +231,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 	else if (am != nullptr && current_turn % 2 != 0)
 	{
 		auto pos = get_spawn_pos();
-		Actor *monster = am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second, "core/texture/actor/missing.png");
+		Actor *monster = am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second);
 
 		if (monster != nullptr && wave_monsters.size() > 1)
 		{

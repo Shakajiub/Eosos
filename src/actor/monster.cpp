@@ -31,7 +31,7 @@ uint16_t distance(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
 }
 Monster::Monster() : pathfinder(nullptr), healthbar(nullptr), monster_class(MONSTER_NONE)
 {
-	health = std::make_pair(2, 2);
+	health = std::make_pair(3, 3);
 	name = "???";
 }
 Monster::~Monster()
@@ -131,8 +131,7 @@ bool Monster::take_turn(Level *level)
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 			{
 				delete_me = true;
-				//if (mount != nullptr)
-					//mount->set_delete(true);
+				level->set_damage_base(true);
 				return true;
 			}
 			if (!pathfinder->get_path_found())

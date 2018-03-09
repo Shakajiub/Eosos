@@ -29,7 +29,8 @@
 #include <fstream> // for std::ifstream
 #include <sstream> // for std::istringstream
 
-Level::Level() : map_created(false), map_texture(nullptr), map_generator(nullptr), map_width(0), map_height(0)
+Level::Level() :
+	dmg_base(false), map_created(false), map_texture(nullptr), map_generator(nullptr), map_width(0), map_height(0)
 {
 
 }

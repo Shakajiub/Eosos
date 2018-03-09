@@ -30,7 +30,7 @@
 UI ui;
 
 UI::UI() :
-	ui_background(nullptr), main_font(nullptr), message_log(nullptr), message_box(nullptr)
+	mb_lock(false), ui_background(nullptr), main_font(nullptr), message_log(nullptr), message_box(nullptr)
 {
 
 }
@@ -89,10 +89,14 @@ void UI::init_message_log()
 	message_log->init();
 	message_log->add_message("Welcome to HELL.", COLOR_BERRY);
 }
-bool UI::spawn_message_box(const std::string &title, const std::string &message, uint16_t xpos, uint16_t ypos)
+bool UI::spawn_message_box(const std::string &title, const std::string &message, bool lock)
 {
+	if (mb_lock)
+		return false;
+	mb_lock = lock;
+
 	MessageBox *mb = new MessageBox;
-	if (mb->init(title, message, xpos, ypos))
+	if (mb->init(title, message, 0, 0))
 	{
 		if (message_box != nullptr)
 			message_queue.push(mb);
@@ -104,6 +108,7 @@ bool UI::spawn_message_box(const std::string &title, const std::string &message,
 }
 void UI::clear_message_box()
 {
+	if (mb_lock) return;
 	while (!message_queue.empty())
 	{
 		MessageBox *mb = message_queue.front();

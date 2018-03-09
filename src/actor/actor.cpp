@@ -78,10 +78,12 @@ void Actor::free()
 }
 bool Actor::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
-	texture = engine.get_texture_manager()->load_texture(texture_name);
-	if (texture == nullptr)
-		return false;
-
+	if (texture_name.length() > 0)
+	{
+		texture = engine.get_texture_manager()->load_texture(texture_name);
+		if (texture == nullptr)
+			return false;
+	}
 	actor_type = at;
 	x = xpos * 32; y = ypos * 32;
 	grid_x = xpos; grid_y = ypos;
@@ -91,7 +93,6 @@ bool Actor::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &te
 
 	abilities.clear();
 	add_ability("sleep");
-
 	return true;
 }
 void Actor::update(Level *level)
@@ -478,7 +479,7 @@ void Actor::attack(Actor *other)
 	if (proj_type == PROJECTILE_DART && other->get_status() != STATUS_POISON)
 	{
 		other->set_status(STATUS_POISON);
-		ml->add_message("The " + name + " poisons the " + other->name + "!");
+		ml->add_message("The " + name + " %Bpoisons %Fthe " + other->name + "!");
 		return;
 	}
 	uint8_t damage = get_damage();
