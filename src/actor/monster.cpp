@@ -82,7 +82,7 @@ void Monster::start_turn()
 {
 	turn_done = false;
 
-	const uint8_t temp_moves = (mount != nullptr) ? 2 : 1;
+	const uint8_t temp_moves = (mount != nullptr) ? max_moves + 1 : max_moves;
 	moves = std::make_pair(temp_moves, temp_moves);
 
 	if (pathfinder != nullptr)
@@ -211,40 +211,23 @@ bool Monster::init_class(MonsterClass mc)
 
 	switch (monster_class)
 	{
-		case MONSTER_MISC_PLATINO:
+		case MONSTER_PLATINO:
 			name = "Platino";
 			class_texture = "core/texture/actor/dragon_de_platino.png";
 			break;
-		case MONSTER_MISC_LIVING_OAK:
-			name = "Living Oak";
-			class_texture = "core/texture/actor/living_oak.png";
+		case MONSTER_PEST_ANT:
+			name = "Giant Ant";
+			class_texture = "core/texture/actor/pest_ant.png";
 			break;
-		case MONSTER_MISC_LIVING_SPRUCE:
-			name = "Living Spruce";
-			class_texture = "core/texture/actor/living_spruce.png";
+		case MONSTER_PEST_BEE:
+			name = "Massive Bee";
+			class_texture = "core/texture/actor/pest_bee.png";
+			max_moves = 2;
 			break;
-		case MONSTER_DWARF_WARRIOR:
-			name = "Dwarven Warrior";
-			class_texture = "core/texture/actor/dwarf_warrior.png";
-			set_status(STATUS_ARMORED);
-			break;
-		case MONSTER_DWARF_NECROMANCER:
-			name = "Dwarven Necromancer";
-			class_texture = "core/texture/actor/dwarf_necromancer.png";
-			add_ability("necromancy");
-			spell_timer = 4;
-			break;
-		case MONSTER_DWARF_BEASTMASTER:
-			name = "Dwarven Beastmaster";
-			class_texture = "core/texture/actor/dwarf_beastmaster.png";
+		case MONSTER_PEST_SCORPION:
+			name = "Humongous Scorpion";
+			class_texture = "core/texture/actor/pest_scorpion.png";
 			proj_type = PROJECTILE_DART;
-			add_ability("shoot");
-			break;
-		case MONSTER_DWARF_KING:
-			name = "Dwarven King";
-			class_texture = "core/texture/actor/dwarf_king.png";
-			health = std::make_pair(12, 12);
-			max_damage = 2;
 			break;
 		case MONSTER_KOBOLD_WARRIOR:
 			name = "Kobold Warrior";
@@ -271,21 +254,28 @@ bool Monster::init_class(MonsterClass mc)
 			name = "Kobold Trueform";
 			class_texture = "core/texture/actor/kobold_trueform.png";
 			break;
-		case MONSTER_UNDEAD_ZOMBIE:
-			name = "Zombie";
-			class_texture = "core/texture/actor/zombie.png";
+		case MONSTER_DWARF_WARRIOR:
+			name = "Dwarven Warrior";
+			class_texture = "core/texture/actor/dwarf_warrior.png";
+			set_status(STATUS_ARMORED);
 			break;
-		case MONSTER_UNDEAD_VAMPIRE:
-			name = "Vampire";
-			class_texture = "core/texture/actor/vampire.png";
+		case MONSTER_DWARF_NECROMANCER:
+			name = "Dwarven Necromancer";
+			class_texture = "core/texture/actor/dwarf_necromancer.png";
+			add_ability("necromancy");
+			spell_timer = 4;
 			break;
-		case MONSTER_UNDEAD_GHOST:
-			name = "Ghost";
-			class_texture = "core/texture/actor/ghost.png";
+		case MONSTER_DWARF_BEASTMASTER:
+			name = "Dwarven Beastmaster";
+			class_texture = "core/texture/actor/dwarf_beastmaster.png";
+			proj_type = PROJECTILE_DART;
+			add_ability("shoot");
 			break;
-		case MONSTER_UNDEAD_MUMMY:
-			name = "Mummy";
-			class_texture = "core/texture/actor/mummy.png";
+		case MONSTER_DWARF_KING:
+			name = "Dwarven King";
+			class_texture = "core/texture/actor/dwarf_king.png";
+			health = std::make_pair(12, 12);
+			max_damage = 2;
 			break;
 		case MONSTER_UNDEAD_SKELETON:
 			name = "Skeleton";

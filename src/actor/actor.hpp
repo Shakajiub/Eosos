@@ -144,6 +144,7 @@ public:
 	void set_hovered(HoverType ht) { hovered = ht; }
 	void set_moves(int8_t m) { moves.first = m; }
 	void set_health(int8_t h) { health.first = h; }
+	void set_health_max(int8_t h) { health.second = h; }
 
 protected:
 	bool delete_me;
@@ -177,6 +178,7 @@ protected:
 	uint8_t combat_level;
 	uint8_t experience;
 	uint8_t max_damage;
+	uint8_t max_moves;
 	std::vector<std::string> abilities;
 
 	SDL_Rect frame_rect;

@@ -29,11 +29,12 @@
 #include "ui.hpp"
 
 Hero::Hero() :
-	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), max_moves(2), hp_shake(0), hb_timer(100),
+	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), hp_shake(0), hb_timer(100),
 	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr), sleep_timer(0), ability_activated(false)
 {
 	health = std::make_pair(3, 3);
 	prev_health = health.first;
+	max_moves = 2;
 	name = "Peon";
 }
 Hero::~Hero()

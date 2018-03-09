@@ -196,8 +196,8 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 	if (current_depth < 4)
 	{
 		Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
-		//if (hero != nullptr)
-			//dynamic_cast<Hero*>(hero)->init_class(HC_NINJA);
+		if (current_depth > 1)
+			ui.spawn_message_box("", "A new Peon has joined the party");
 	}
 	const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
 	MapNode temp_node;
@@ -224,7 +224,7 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 }
 void GeneratorForest::next_turn(ActorManager *am, Level *level)
 {
-	if (current_wave > current_depth + 2)
+	if (current_wave > current_depth)
 		return;
 
 	current_turn += 1;
@@ -244,7 +244,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			const uint8_t i = (engine.get_rng() % wave_monsters.size());
 			MonsterClass mc = (MonsterClass)wave_monsters[i];
 
-			if (current_wave == current_depth + 2 && spawned_mobs == (current_wave * 5 + 4))
+			if (current_wave == current_depth + 1 && spawned_mobs == (current_wave * 5 + 4))
 			{
 				mc = (MonsterClass)wave_boss;
 				ui.spawn_message_box("BOSS", boss_name);
@@ -254,7 +254,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			dynamic_cast<Monster*>(monster)->init_class(mc);
 			spawned_mobs += 1;
 
-			if (engine.get_rng() % 20 == 0)
+			if (mount_name.length() > 0 && engine.get_rng() % 20 == 0)
 			{
 				Actor *mount = am->spawn_actor(level, ACTOR_MOUNT, pos.first, pos.second, mount_name);
 				if (mount != nullptr)
@@ -269,7 +269,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			calm_timer = 10;
 		}
 	}
-	else if (current_turn == 2)
+	if (current_turn == 2)
 		ui.clear_message_box();
 }
 std::pair<uint8_t, uint8_t> GeneratorForest::get_spawn_pos() const
@@ -289,7 +289,7 @@ void GeneratorForest::init_wave()
 	{
 		if (current_depth == 1) // Tier 1 waves
 		{
-			wave_class = WAVE_SLIME;
+			wave_class = WAVE_PEST;
 		}
 		else if (current_depth == 2) // Tier 2 waves
 		{
@@ -299,10 +299,21 @@ void GeneratorForest::init_wave()
 		{
 			wave_class = WAVE_DWARF;
 		}
+		else // Final waves
+		{
+			wave_class = WAVE_DEMON;
+		}
 	}
-	if (wave_class == WAVE_SLIME)
+	if (wave_class == WAVE_PEST)
 	{
-
+		wave_monsters = {
+			MONSTER_PEST_ANT, MONSTER_PEST_ANT, MONSTER_PEST_ANT,
+			MONSTER_PEST_BEE
+		};
+		wave_boss = MONSTER_PEST_SCORPION;
+		boss_name = "Humongous Scorpion";
+		boss_desc = "The Humongous Scorpion has arrived!";
+		mount_name = "";
 	}
 	else if (wave_class == WAVE_KOBOLD)
 	{
@@ -334,6 +345,10 @@ void GeneratorForest::init_wave()
 		boss_name = "The Dwarven King";
 		boss_desc = "The Dwarven King has arrived!";
 		mount_name = "core/texture/actor/griffin.png";
+	}
+	else if (wave_class == WAVE_DEMON)
+	{
+
 	}
 	ui.spawn_message_box("Wave #" + std::to_string(current_wave), "placeholder text");
 }

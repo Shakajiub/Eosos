@@ -34,7 +34,7 @@ Actor::Actor() :
 	actor_type(ACTOR_NULL), actor_ID(ID++), delete_me(false), in_camera(false), turn_done(false),
 	name("???"), hovered(HOVER_NONE), anim_frames(0), anim_timer(0), texture(nullptr), bubble(nullptr),
 	status_icon(nullptr), status(STATUS_NONE), bubble_timer(0), combat_level(1), experience(0),
-	max_damage(1), projectile(nullptr), proj_type(PROJECTILE_ARROW), mount(nullptr)
+	max_damage(1), max_moves(1), projectile(nullptr), proj_type(PROJECTILE_ARROW), mount(nullptr)
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0, 0 };
@@ -513,7 +513,7 @@ void Actor::attack(Actor *other)
 		ml->add_message("The " + name + " kills the " + other->name + "! (%6" + std::to_string(damage) + "%F damage)");
 
 		experience += other->combat_level;
-		if (experience >= combat_level * 10)
+		if (experience >= combat_level * 5)
 		{
 			set_status(STATUS_LEVELUP);
 			add_ability("level-up");

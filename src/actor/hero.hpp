@@ -72,7 +72,6 @@ private:
 	bool ability_activated;
 
 	HeroClass hero_class;
-	uint8_t max_moves;
 
 	uint8_t hp_shake;
 	uint16_t hb_timer;

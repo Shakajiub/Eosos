@@ -241,7 +241,7 @@ bool Overworld::update()
 		if (actor_manager != nullptr)
 			actor_manager->animate();
 	}
-	if (actor_manager != nullptr && ui.get_level_up_box() == nullptr)
+	if (actor_manager != nullptr/* && ui.get_level_up_box() == nullptr*/)
 	{
 		if (actor_manager->update(current_level))
 			hovered_actor = nullptr;

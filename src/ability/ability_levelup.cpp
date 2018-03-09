@@ -41,17 +41,5 @@ bool AbilityLevelUp::init()
 void AbilityLevelUp::apply(Hero *hero)
 {
 	if (hero != nullptr)
-	{
-		auto health = hero->get_health();
-		hero->set_health(health.second);
-
-		hero->level_up();
-		hero->set_status(STATUS_NONE);
-		hero->remove_ability("level-up");
-
 		ui.spawn_level_up_box(hero);
-
-		hero->set_turn_done(true);
-		hero->set_moves(0);
-	}
 }

@@ -27,9 +27,10 @@ class AStar;
 enum WaveClass
 {
 	WAVE_NONE,
-	WAVE_SLIME,
+	WAVE_PEST,
 	WAVE_KOBOLD,
-	WAVE_DWARF
+	WAVE_DWARF,
+	WAVE_DEMON
 };
 class GeneratorForest : public Generator
 {

@@ -63,6 +63,8 @@ bool LevelUpBox::init(Hero *hero)
 		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
+	temp_hero = hero;
+
 	if (hero->get_hero_class() == HC_PEON)
 	{
 		const std::string classes[4] = {
@@ -78,7 +80,7 @@ bool LevelUpBox::init(Hero *hero)
 			"Damage equals the amount of moves left",
 			"Can attack from a distance with shuriken",
 			"TODO",
-			"+1 Heart"
+			"Receive +1 Heart"
 		};
 		for (uint8_t i = 0; i < 4; i++)
 		{
@@ -94,7 +96,36 @@ bool LevelUpBox::init(Hero *hero)
 			}
 		}
 		ui.spawn_message_box("Level up!", "Choose class specialization:");
-		temp_hero = hero;
+	}
+	else // Other levels after class specialization just give generic upgrades
+	{
+		const std::string bonuses[1] = {
+			"core/texture/ui/icon/heart.png"
+		};
+		const std::string titles[1] = {
+			"Health"
+		};
+		const std::string messages[1] = {
+			"Receive +1 Heart"
+		};
+		const SDL_Color colors[1] = {
+			COLOR_BERRY
+		};
+		for (uint8_t i = 0; i < 1; i++)
+		{
+			Texture *temp = engine.get_texture_manager()->load_texture(bonuses[i], true);
+			if (temp != nullptr)
+			{
+				temp->set_color(colors[i]);
+				LevelOption option;
+				option.overlap = false;
+				option.texture = temp;
+				option.title = titles[i];
+				option.message = messages[i];
+				level_options.push_back(option);
+			}
+		}
+		ui.spawn_message_box("Level up!", "Choose upgrade (you will also heal to max health):");
 	}
 	SDL_SetRenderTarget(engine.get_renderer(), selection_box);
 
@@ -169,20 +200,35 @@ bool LevelUpBox::get_overlap(int16_t mouse_x, int16_t mouse_y)
 }
 bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 {
-	for (uint8_t i = 0; i < level_options.size(); i++)
+	for (uint8_t i = 0; i < level_options.size(); i++) if (level_options[i].overlap)
 	{
-		if (level_options[i].overlap)
+		if (temp_hero != nullptr)
 		{
-			if (temp_hero != nullptr)
+			auto health = temp_hero->get_health();
+			if (temp_hero->get_hero_class() == HC_PEON)
 			{
 				const HeroClass classes[4] = {
 					HC_BARBARIAN, HC_NINJA, HC_MAGE, HC_JUGGERNAUT
 				};
 				temp_hero->init_class(classes[i]);
+				health = temp_hero->get_health();
 			}
-			ui.clear_message_box();
-			return true;
+			else
+			{
+				if (i == 0) // Health
+					health.second += 3;
+			}
+			temp_hero->set_health(health.second);
+
+			temp_hero->level_up();
+			temp_hero->set_status(STATUS_NONE);
+			temp_hero->remove_ability("level-up");
+
+			temp_hero->set_turn_done(true);
+			temp_hero->set_moves(0);
 		}
+		ui.clear_message_box();
+		return true;
 	}
 	return false;
 }
