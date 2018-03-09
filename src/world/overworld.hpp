@@ -42,6 +42,8 @@ public:
 	Level* get_level() const { return current_level; }
 
 private:
+	bool in_menu;
+
 	uint8_t base_health;
 	uint8_t anim_timer;
 	uint8_t current_depth;

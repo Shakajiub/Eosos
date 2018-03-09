@@ -26,7 +26,7 @@
 #include <algorithm> // for std::remove
 
 SoundManager::SoundManager() :
-	next_song(0), silence_timer(1000), current_song(nullptr),
+	next_song(-1), silence_timer(1000), current_song(nullptr),
 	current_playlist(PT_MENU), previous_playlist(PT_MENU)
 {
 	set_music_volume(options.get_i("sound-music_volume"));
@@ -38,7 +38,10 @@ SoundManager::~SoundManager()
 void SoundManager::free()
 {
 	playlists[PT_MENU].clear();
-	playlists[PT_WORLD].clear();
+	playlists[PT_PEST].clear();
+	playlists[PT_KOBOLD].clear();
+	playlists[PT_DWARF].clear();
+	playlists[PT_DEMON].clear();
 	playlists[PT_BOSS].clear();
 
 	sound_map.clear();
@@ -51,7 +54,7 @@ void SoundManager::update()
 	if (silence_timer > 0)
 		silence_timer -= engine.get_dt();
 
-	else if (volume_music > 0 && playlists[current_playlist].size() > 0 &&
+	else if (volume_music > 0 && next_song >= 0 && playlists[current_playlist].size() > 0 &&
 		Mix_PlayingMusic() == 0 && Mix_FadingMusic() == MIX_NO_FADING)
 	{
 		if (current_song != nullptr)
@@ -72,9 +75,10 @@ void SoundManager::update()
 				if (split != std::string::npos)
 					ml->add_message("Now playing '" + next.substr(split + 1) + "'", COLOR_CORNFLOWER);
 			}
-			next_song += 1;
+			next_song = -1;
+			/*next_song += 1;
 			if (next_song >= playlists[current_playlist].size())
-				next_song = 0;
+				next_song = 0;*/
 
 			previous_playlist = current_playlist;
 		}
@@ -90,6 +94,10 @@ void SoundManager::skip_song(uint16_t ms)
 		if (ms > 0)
 			Mix_FadeOutMusic(ms);
 		else Mix_HaltMusic();
+
+		next_song += 1;
+		if (next_song >= playlists[current_playlist].size())
+			next_song = 0;
 	}
 	silence_timer = ms + 500;
 }

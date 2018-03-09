@@ -27,7 +27,10 @@ class Sound;
 enum PlaylistType
 {
 	PT_MENU,
-	PT_WORLD,
+	PT_PEST,
+	PT_KOBOLD,
+	PT_DWARF,
+	PT_DEMON,
 	PT_BOSS
 };
 class SoundManager
@@ -58,7 +61,7 @@ public:
 	void set_playlist(PlaylistType playlist, bool instant = true);
 
 private:
-	uint8_t next_song;
+	int8_t next_song;
 	uint8_t volume_music;
 	int16_t silence_timer;
 
@@ -66,7 +69,7 @@ private:
 	PlaylistType current_playlist;
 	PlaylistType previous_playlist;
 
-	std::vector<std::string> playlists[3];
+	std::vector<std::string> playlists[6];
 	std::unordered_map<std::string, std::shared_ptr<Sound> > sound_map;
 	std::unordered_map<std::string, uint16_t> reference_count;
 };

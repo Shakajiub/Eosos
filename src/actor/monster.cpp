@@ -228,6 +228,7 @@ bool Monster::init_class(MonsterClass mc)
 			name = "Humongous Scorpion";
 			class_texture = "core/texture/actor/pest_scorpion.png";
 			proj_type = PROJECTILE_DART;
+			health = std::make_pair(8, 8);
 			break;
 		case MONSTER_KOBOLD_WARRIOR:
 			name = "Kobold Warrior";
@@ -253,6 +254,7 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_KOBOLD_TRUEFORM:
 			name = "Kobold Trueform";
 			class_texture = "core/texture/actor/kobold_trueform.png";
+			health = std::make_pair(8, 8);
 			break;
 		case MONSTER_DWARF_WARRIOR:
 			name = "Dwarven Warrior";

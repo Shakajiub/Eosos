@@ -24,6 +24,7 @@
 #include "hero.hpp"
 #include "monster.hpp"
 #include "mount.hpp"
+#include "sound_manager.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
 #include "message_log.hpp"
@@ -250,6 +251,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 				ui.spawn_message_box("BOSS", boss_name);
 				if (ui.get_message_log() != nullptr)
 					ui.get_message_log()->add_message(boss_desc, COLOR_MAIZE);
+				engine.get_sound_manager()->set_playlist(PT_BOSS);
 			}
 			dynamic_cast<Monster*>(monster)->init_class(mc);
 			spawned_mobs += 1;
@@ -290,14 +292,36 @@ void GeneratorForest::init_wave()
 		if (current_depth == 1) // Tier 1 waves
 		{
 			wave_class = WAVE_PEST;
+			wave_monsters = {
+				MONSTER_PEST_ANT, MONSTER_PEST_ANT, MONSTER_PEST_ANT,
+				MONSTER_PEST_BEE
+			};
+			wave_boss = MONSTER_PEST_SCORPION;
+			boss_name = "Humongous Scorpion";
+			boss_desc = "The Humongous Scorpion has arrived!";
+			mount_name = "";
 		}
 		else if (current_depth == 2) // Tier 2 waves
 		{
 			wave_class = WAVE_KOBOLD;
+			wave_boss = MONSTER_KOBOLD_DEMONIAC;
+			boss_name = "Kobold Demoniac";
+			boss_desc = "The Kobold Demoniac has arrived!";
+			mount_name = "core/texture/actor/ape.png";
 		}
 		else if (current_depth == 3) // Tier 3 waves
 		{
 			wave_class = WAVE_DWARF;
+			wave_monsters = {
+				MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+				MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
+				MONSTER_DWARF_BEASTMASTER, MONSTER_DWARF_BEASTMASTER,
+				MONSTER_DWARF_NECROMANCER
+			};
+			wave_boss = MONSTER_DWARF_KING;
+			boss_name = "The Dwarven King";
+			boss_desc = "The Dwarven King has arrived!";
+			mount_name = "core/texture/actor/griffin.png";
 		}
 		else // Final waves
 		{
@@ -306,14 +330,7 @@ void GeneratorForest::init_wave()
 	}
 	if (wave_class == WAVE_PEST)
 	{
-		wave_monsters = {
-			MONSTER_PEST_ANT, MONSTER_PEST_ANT, MONSTER_PEST_ANT,
-			MONSTER_PEST_BEE
-		};
-		wave_boss = MONSTER_PEST_SCORPION;
-		boss_name = "Humongous Scorpion";
-		boss_desc = "The Humongous Scorpion has arrived!";
-		mount_name = "";
+		engine.get_sound_manager()->set_playlist(PT_PEST);
 	}
 	else if (wave_class == WAVE_KOBOLD)
 	{
@@ -328,27 +345,15 @@ void GeneratorForest::init_wave()
 				MONSTER_KOBOLD_ARCHER, MONSTER_KOBOLD_ARCHER, MONSTER_KOBOLD_ARCHER,
 				MONSTER_KOBOLD_MAGE
 			};
-		wave_boss = MONSTER_KOBOLD_DEMONIAC;
-		boss_name = "Kobold Demoniac";
-		boss_desc = "The Kobold Demoniac has arrived!";
-		mount_name = "core/texture/actor/ape.png";
+		engine.get_sound_manager()->set_playlist(PT_KOBOLD);
 	}
 	else if (wave_class == WAVE_DWARF)
 	{
-		wave_monsters = {
-			MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
-			MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR, MONSTER_DWARF_WARRIOR,
-			MONSTER_DWARF_BEASTMASTER, MONSTER_DWARF_BEASTMASTER,
-			MONSTER_DWARF_NECROMANCER
-		};
-		wave_boss = MONSTER_DWARF_KING;
-		boss_name = "The Dwarven King";
-		boss_desc = "The Dwarven King has arrived!";
-		mount_name = "core/texture/actor/griffin.png";
+		engine.get_sound_manager()->set_playlist(PT_DWARF);
 	}
 	else if (wave_class == WAVE_DEMON)
 	{
-
+		engine.get_sound_manager()->set_playlist(PT_DEMON);
 	}
 	ui.spawn_message_box("Wave #" + std::to_string(current_wave), "placeholder text");
 }

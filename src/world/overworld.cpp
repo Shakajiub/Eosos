@@ -33,9 +33,9 @@
 #include <cmath> // for std::floor
 
 Overworld::Overworld() :
-	base_health(20), anim_timer(0), current_depth(1), actor_manager(nullptr),
-	hovered_actor(nullptr), current_level(nullptr), node_highlight(nullptr),
-	base_healthbar(nullptr), frames(0), display_fps(0), frame_counter(0)
+	in_menu(true), base_health(20), anim_timer(0), current_depth(1), actor_manager(nullptr),
+	hovered_actor(nullptr), current_level(nullptr), node_highlight(nullptr), base_healthbar(nullptr),
+	frames(0), display_fps(0), frame_counter(0)
 {
 
 }
@@ -82,30 +82,33 @@ void Overworld::init()
 
 	if (engine.get_sound_manager() != nullptr)
 	{
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Beach_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Beach_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_02.mid");
+
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_04.mid");
+
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_03.mid");
+
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Battle_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Battle_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Dungeon_01.mid");
+
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_04.mid");
+
 		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Castle_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Castle_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Castle_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Cave_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Cave_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Fanfare_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Fanfare_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Fanfare_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Night_04.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Plains_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Plains_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Plains_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Snow_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Snow_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Swamp_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Swamp_02.mid");
-		engine.get_sound_manager()->set_playlist(PT_BOSS);
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Battle_02.mid");
+
+		engine.get_sound_manager()->set_playlist(PT_MENU);
 	}
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
@@ -120,6 +123,10 @@ void Overworld::init()
 		if (temp_pntr != nullptr)
 			pointers.push_back(temp_pntr);
 	}
+	camera.update_position(
+		((current_level->get_map_width() - 2) * 32) / 2,
+		(((current_level->get_map_height() - 1) * 32) / 2) - 240
+	);
 }
 bool Overworld::update()
 {
@@ -160,7 +167,28 @@ bool Overworld::update()
 			switch (event.key.keysym.sym)
 			{
 				case SDLK_ESCAPE:
-					return false;
+					if (!in_menu)
+					{
+						in_menu = true;
+						engine.get_sound_manager()->set_playlist(PT_MENU);
+						camera.update_position(
+							((current_level->get_map_width() - 2) * 32) / 2,
+							(((current_level->get_map_height() - 1) * 32) / 2) - 240
+						);
+					}
+					else return false;
+					break;
+				case SDLK_RETURN: case SDLK_RETURN2: case SDLK_KP_ENTER:
+					if (in_menu)
+					{
+						in_menu = false;
+						if (current_level != nullptr)
+							camera.update_position(
+								((current_level->get_map_width() - 2) * 32) / 2,
+								((current_level->get_map_height() - 1) * 32) / 2
+							);
+					}
+					break;
 				case SDLK_d:
 					if (SDL_GetModState() & KMOD_CTRL)
 						options.load();
@@ -172,14 +200,14 @@ bool Overworld::update()
 						current_level->create(actor_manager, current_depth);
 					}
 					break;
-				case SDLK_c:
+				case SDLK_c: case SDLK_AUDIONEXT: case SDLK_AUDIOPLAY:
 					if (engine.get_sound_manager() != nullptr)
 					{
 						if (!engine.get_sound_manager()->get_paused())
 							engine.get_sound_manager()->skip_song();
 					}
 					break;
-				case SDLK_x:
+				case SDLK_x: case SDLK_AUDIOMUTE:
 					if (engine.get_sound_manager() != nullptr)
 					{
 						if (engine.get_sound_manager()->get_paused())
@@ -188,12 +216,12 @@ bool Overworld::update()
 					}
 					break;
 				default:
-					if (actor_manager != nullptr && ui.get_level_up_box() == nullptr)
+					if (!in_menu && actor_manager != nullptr && ui.get_level_up_box() == nullptr)
 						actor_manager->input_keyboard_down(event.key.keysym.sym, current_level);
 					break;
 			}
 		}
-		else if (event.type == SDL_MOUSEBUTTONDOWN)
+		else if (event.type == SDL_MOUSEBUTTONDOWN && !in_menu)
 		{
 			if (!ui.get_click(actor_manager, event.button.x, event.button.y))
 			{
@@ -203,7 +231,7 @@ bool Overworld::update()
 		}
 	}
 	SDL_GetMouseState(&mouse_x, &mouse_y);
-	if (current_level != nullptr)
+	if (current_level != nullptr && !in_menu)
 	{
 		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
 		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
@@ -224,57 +252,85 @@ bool Overworld::update()
 			}
 		}
 	}
-	// Idle / map animations
-	anim_timer += engine.get_dt();
-	while (anim_timer > 100)
+	if (in_menu)
 	{
-		anim_timer -= 100;
-		static uint8_t loop; loop += 1;
-		if (loop < 4) continue; loop = 0;
 
-		static bool animate_map; animate_map = !animate_map;
-		if (animate_map)
-		{
-			if (current_level != nullptr)
-				current_level->animate();
-		}
-		if (actor_manager != nullptr)
-			actor_manager->animate();
 	}
-	if (actor_manager != nullptr/* && ui.get_level_up_box() == nullptr*/)
+	else
 	{
-		if (actor_manager->update(current_level))
-			hovered_actor = nullptr;
-		if (actor_manager->get_next_turn())
-			next_turn();
-	}
-	ui.update();
-	camera.update();
-	engine.get_sound_manager()->update();
+		// Idle / map animations
+		anim_timer += engine.get_dt();
+		while (anim_timer > 100)
+		{
+			anim_timer -= 100;
+			static uint8_t loop; loop += 1;
+			if (loop < 4) continue; loop = 0;
 
-	if (current_level != nullptr && current_level->get_damage_base())
-	{
-		current_level->set_damage_base(false);
-		if (base_health > 0)
-		{
-			base_health -= 1;
-			if (base_health == 0)
+			static bool animate_map; animate_map = !animate_map;
+			if (animate_map)
 			{
-				const std::string defeats[1] = {
-					"Better luck next time...",
-				};
-				ui.spawn_message_box("Defeat", defeats[engine.get_rng() % 1], true);
-				if (actor_manager != nullptr)
-					actor_manager->clear_heroes(current_level);
+				if (current_level != nullptr)
+					current_level->animate();
+			}
+			if (actor_manager != nullptr)
+				actor_manager->animate();
+		}
+		if (actor_manager != nullptr/* && ui.get_level_up_box() == nullptr*/)
+		{
+			if (actor_manager->update(current_level))
+				hovered_actor = nullptr;
+			if (actor_manager->get_next_turn())
+				next_turn();
+		}
+		if (current_level != nullptr && current_level->get_damage_base())
+		{
+			current_level->set_damage_base(false);
+			if (base_health > 0)
+			{
+				base_health -= 1;
+				if (base_health == 0)
+				{
+					const std::string defeats[1] = {
+						"Better luck next time...",
+					};
+					ui.spawn_message_box("Defeat", defeats[engine.get_rng() % 1], true);
+					if (actor_manager != nullptr)
+						actor_manager->clear_heroes(current_level);
+				}
 			}
 		}
+		ui.update();
 	}
+	camera.update();
+	engine.get_sound_manager()->update();
 	return true;
 }
 void Overworld::render() const
 {
 	SDL_RenderClear(engine.get_renderer());
 
+	if (in_menu)
+	{
+		ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
+		ui.get_bitmap_font()->set_scale(3);
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 144, 64, "Eosos - 7DRL");
+		ui.get_bitmap_font()->set_scale(2);
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 176, 112, "Press %A[Enter]%F to start");
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 144, 134, "(%A[Escape]%F to quit)");
+		ui.get_bitmap_font()->set_scale(1);
+
+		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 27, "DragonDePlatino & Quale");
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 104, camera.get_cam_h() - 27, "Jere Oikarinen (@Shakajiub)");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 272, camera.get_cam_h() - 27, "Beau Buckley (fantasymusica.org)");
+
+		ui.get_bitmap_font()->set_color(COLOR_SLATE);
+		ui.get_bitmap_font()->render_text(96, camera.get_cam_h() - 38, "Art");
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 80, camera.get_cam_h() - 38, "Design & Programming");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 38, "Music");
+
+		SDL_RenderPresent(engine.get_renderer());
+		return;
+	}
 	if (current_level != nullptr)
 	{
 		current_level->render();
