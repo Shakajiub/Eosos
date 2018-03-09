@@ -196,8 +196,8 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 	if (current_depth < 4)
 	{
 		Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
-		if (hero != nullptr)
-			dynamic_cast<Hero*>(hero)->init_class(HC_NINJA);
+		//if (hero != nullptr)
+			//dynamic_cast<Hero*>(hero)->init_class(HC_NINJA);
 	}
 	const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
 	MapNode temp_node;

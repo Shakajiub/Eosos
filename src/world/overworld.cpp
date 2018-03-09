@@ -67,7 +67,6 @@ void Overworld::free()
 	}
 	for (Texture *t : pointers)
 		engine.get_texture_manager()->free_texture(t->get_name());
-
 	pointers.clear();
 }
 void Overworld::init()
@@ -189,7 +188,7 @@ bool Overworld::update()
 					}
 					break;
 				default:
-					if (actor_manager != nullptr)
+					if (actor_manager != nullptr && ui.get_level_up_box() == nullptr)
 						actor_manager->input_keyboard_down(event.key.keysym.sym, current_level);
 					break;
 			}
@@ -242,7 +241,7 @@ bool Overworld::update()
 		if (actor_manager != nullptr)
 			actor_manager->animate();
 	}
-	if (actor_manager != nullptr)
+	if (actor_manager != nullptr && ui.get_level_up_box() == nullptr)
 	{
 		if (actor_manager->update(current_level))
 			hovered_actor = nullptr;

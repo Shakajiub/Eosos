@@ -212,7 +212,7 @@ void Hero::end_turn()
 }
 uint8_t Hero::get_damage() const
 {
-	if (hero_class == HC_JUGGERNAUT)
+	if (hero_class == HC_BARBARIAN)
 		return current_action.action_value;
 
 	return 1;
@@ -281,9 +281,9 @@ bool Hero::init_class(HeroClass hc)
 
 	switch (hero_class)
 	{
-		case HC_MAGE:
-			name = "Mage";
-			class_texture = "core/texture/actor/orc_mage.png";
+		case HC_BARBARIAN:
+			name = "Barbarian";
+			class_texture = "core/texture/actor/orc_barbarian.png";
 			break;
 		case HC_NINJA:
 			name = "Ninja";
@@ -291,14 +291,14 @@ bool Hero::init_class(HeroClass hc)
 			proj_type = PROJECTILE_SHURIKEN;
 			add_ability("shoot");
 			break;
-		case HC_BARBARIAN:
-			name = "Barbarian";
-			class_texture = "core/texture/actor/orc_barbarian.png";
-			health = std::make_pair(hp + 3, hp + 3);
+		case HC_MAGE:
+			name = "Mage";
+			class_texture = "core/texture/actor/orc_mage.png";
 			break;
 		case HC_JUGGERNAUT:
 			name = "Juggernaut";
 			class_texture = "core/texture/actor/orc_juggernaut.png";
+			health = std::make_pair(hp + 3, hp + 3);
 			break;
 		default: hero_class = HC_PEON; break;
 	}

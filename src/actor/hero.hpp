@@ -25,9 +25,9 @@ class AStar;
 enum HeroClass
 {
 	HC_PEON,
-	HC_MAGE,
-	HC_NINJA,
 	HC_BARBARIAN,
+	HC_NINJA,
+	HC_MAGE,
 	HC_JUGGERNAUT
 };
 class Hero : public Actor
@@ -59,6 +59,7 @@ public:
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 	void input_mouse_button_down(SDL_Event eve, Level *level);
 
+	HeroClass get_hero_class() const { return hero_class; }
 	AStar* get_pathfinder() const { return pathfinder; }
 	bool get_auto_move() const;
 

@@ -20,6 +20,7 @@
 #include "actor_manager.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
+#include "level_up_box.hpp"
 #include "message_box.hpp"
 #include "message_log.hpp"
 
@@ -68,6 +69,25 @@ void UI::free()
 	}
 	//std::queue<MessageBox*>().swap(message_queue);
 }
+void UI::update()
+{
+	if (message_box == nullptr && !message_queue.empty())
+	{
+		message_box = message_queue.front();
+		message_queue.pop();
+	}
+}
+void UI::render() const
+{
+	if (message_log != nullptr)
+		message_log->render();
+
+	if (level_up_box != nullptr)
+		level_up_box->render();
+
+	if (message_box != nullptr)
+		message_box->render();
+}
 void UI::init_background()
 {
 	ui_background = engine.get_texture_manager()->load_texture(
@@ -88,6 +108,17 @@ void UI::init_message_log()
 	message_log->set_size(25, 4);
 	message_log->init();
 	message_log->add_message("Welcome to HELL.", COLOR_BERRY);
+}
+bool UI::spawn_level_up_box(Hero *hero)
+{
+	if (level_up_box == nullptr)
+		level_up_box = new LevelUpBox;
+
+	if (!level_up_box->init(hero))
+	{
+		delete level_up_box;
+		level_up_box = nullptr;
+	}
 }
 bool UI::spawn_message_box(const std::string &title, const std::string &message, bool lock)
 {
@@ -117,22 +148,6 @@ void UI::clear_message_box()
 	}
 	delete message_box;
 	message_box = nullptr;
-}
-void UI::update()
-{
-	if (message_box == nullptr && !message_queue.empty())
-	{
-		message_box = message_queue.front();
-		message_queue.pop();
-	}
-}
-void UI::render() const
-{
-	if (message_log != nullptr)
-		message_log->render();
-
-	if (message_box != nullptr)
-		message_box->render();
 }
 void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight) const
 {
@@ -203,14 +218,23 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 }
 bool UI::get_overlap(ActorManager *at, int16_t xpos, int16_t ypos) const
 {
-	//if (message_box != nullptr)
-		//return message_box->get_overlap(xpos, ypos);
+	if (level_up_box != nullptr)
+		return level_up_box->get_overlap(xpos, ypos);
 	if (at != nullptr && at->get_overlap(xpos, ypos))
 		return true;
 	return false;
 }
 bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos)
 {
+	if (level_up_box != nullptr)
+	{
+		if (level_up_box->get_click(xpos, ypos))
+		{
+			delete level_up_box;
+			level_up_box = nullptr;
+		}
+		return true;
+	}
 	if (message_box != nullptr)
 	{
 		if (message_box->get_click(xpos, ypos))

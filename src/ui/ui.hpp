@@ -21,8 +21,10 @@
 #include <queue>
 
 class ActorManager;
+class Hero;
 class Texture;
 class BitmapFont;
+class LevelUpBox;
 class MessageBox;
 class MessageLog;
 
@@ -34,15 +36,16 @@ public:
 
 	void free();
 
+	void update();
+	void render() const;
+
 	void init_background();
 	bool init_bitmap_font();
 	void init_message_log();
 
+	bool spawn_level_up_box(Hero *hero);
 	bool spawn_message_box(const std::string &title, const std::string &message, bool lock = false);
 	void clear_message_box();
-
-	void update();
-	void render() const;
 
 	void draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight = false) const;
 
@@ -51,7 +54,7 @@ public:
 
 	Texture* get_background() const { return ui_background; }
 	BitmapFont* get_bitmap_font() const { return main_font; }
-	MessageBox* get_message_box() const { return message_box; }
+	LevelUpBox* get_level_up_box() const { return level_up_box; }
 	MessageLog* get_message_log() const { return message_log; }
 
 private:
@@ -59,9 +62,10 @@ private:
 
 	Texture *ui_background;
 	BitmapFont *main_font;
+	LevelUpBox *level_up_box;
 	MessageLog *message_log;
-
 	MessageBox *message_box;
+
 	std::queue<MessageBox*> message_queue;
 };
 extern UI ui;

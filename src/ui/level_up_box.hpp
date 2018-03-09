@@ -15,43 +15,40 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#include "engine.hpp"
-#include "ability_levelup.hpp"
-#include "hero.hpp"
+#ifndef LEVEL_UP_BOX_HPP
+#define LEVEL_UP_BOX_HPP
 
-#include "ui.hpp"
+#include <vector>
 
-AbilityLevelUp::AbilityLevelUp()
+class Hero;
+class Texture;
+
+typedef struct
 {
-
+	bool overlap;
+	Texture *texture;
+	std::string title;
+	std::string message;
 }
-AbilityLevelUp::~AbilityLevelUp()
+LevelOption;
+
+class LevelUpBox
 {
-	free();
-}
-void AbilityLevelUp::free()
-{
+public:
+	LevelUpBox();
+	~LevelUpBox();
 
-}
-bool AbilityLevelUp::init()
-{
-	if (init_texture("core/texture/ui/icon/arrow_up.png", COLOR_SKY))
-		ability_name = "level-up";
-}
-void AbilityLevelUp::apply(Hero *hero)
-{
-	if (hero != nullptr)
-	{
-		auto health = hero->get_health();
-		hero->set_health(health.second);
+	void free();
+	bool init(Hero *hero);
+	void render() const;
 
-		hero->level_up();
-		hero->set_status(STATUS_NONE);
-		hero->remove_ability("level-up");
+	bool get_overlap(int16_t mouse_x, int16_t mouse_y);
+	bool get_click(int16_t mouse_x, int16_t mouse_y) const;
 
-		ui.spawn_level_up_box(hero);
+private:
+	Hero *temp_hero;
+	SDL_Texture *selection_box;
+	std::vector<LevelOption> level_options;
+};
 
-		hero->set_turn_done(true);
-		hero->set_moves(0);
-	}
-}
+#endif // LEVEL_UP_BOX_HPP

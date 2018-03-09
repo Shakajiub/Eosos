@@ -135,9 +135,9 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 		if (moves.first > 0 && has_ability("bloodlust") && spell_timer == 0)
 		{
 			std::vector<Actor*> targets;
-			for (int8_t ypos = -2; ypos < 2; ypos++)
+			for (int8_t ypos = -2; ypos < 3; ypos++)
 			{
-				for (int8_t xpos = -2; xpos < 2; xpos++)
+				for (int8_t xpos = -2; xpos < 3; xpos++)
 				{
 					Actor *temp_actor = level->get_actor(grid_x + xpos, grid_y + ypos);
 					if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
