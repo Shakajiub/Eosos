@@ -476,6 +476,12 @@ void Actor::attack(Actor *other)
 		add_health(1);
 		return;
 	}
+	if (other->get_status() == STATUS_ARMORED)
+	{
+		other->set_status(STATUS_NONE);
+		ml->add_message("The " + name + " destroys the armor from the " + other->name + "!");
+		return;
+	}
 	if (proj_type == PROJECTILE_DART && other->get_status() != STATUS_POISON)
 	{
 		other->set_status(STATUS_POISON);
@@ -552,6 +558,9 @@ void Actor::set_status(StatusType st)
 			break;
 		case STATUS_WITHER:
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/wither.png");
+			break;
+		case STATUS_ARMORED:
+			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/armored.png");
 			break;
 		default: break;
 	}

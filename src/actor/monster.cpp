@@ -159,6 +159,10 @@ bool Monster::init_class(MonsterClass mc)
 
 	switch (monster_class)
 	{
+		case MONSTER_MISC_PLATINO:
+			name = "Platino";
+			class_texture = "core/texture/actor/dragon_de_platino.png";
+			break;
 		case MONSTER_MISC_LIVING_OAK:
 			name = "Living Oak";
 			class_texture = "core/texture/actor/living_oak.png";
@@ -170,6 +174,7 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_DWARF_WARRIOR:
 			name = "Dwarven Warrior";
 			class_texture = "core/texture/actor/dwarf_warrior.png";
+			set_status(STATUS_ARMORED);
 			break;
 		case MONSTER_DWARF_NECROMANCER:
 			name = "Dwarven Necromancer";
