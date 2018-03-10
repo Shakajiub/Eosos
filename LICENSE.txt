@@ -43,6 +43,7 @@ Other textures by Jere Oikarinen (CC BY-SA 3.0):
 	build/data/core/texture/ui/path.png
 	build/data/core/texture/ui/pointer.png
 	build/data/core/texture/ui/pointer_sword.png
+	build/data/core/texture/ui/target.png
 
 The original tileset by Andrew Rios has been split into multiple files by Jere Oikarinen.
 Missing characters added to "./build/data/core/texture/ui/font.png" by Jere Oikarinen.

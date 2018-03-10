@@ -26,7 +26,7 @@
 #include <algorithm> // for std::remove
 
 SoundManager::SoundManager() :
-	next_song(-1), silence_timer(1000), current_song(nullptr),
+	next_song(-1), prev_song(-2), silence_timer(1000), current_song(nullptr),
 	current_playlist(PT_MENU), previous_playlist(PT_MENU)
 {
 	set_music_volume(options.get_i("sound-music_volume"));
@@ -42,6 +42,8 @@ void SoundManager::free()
 	playlists[PT_KOBOLD].clear();
 	playlists[PT_DWARF].clear();
 	playlists[PT_DEMON].clear();
+	playlists[PT_DEFEAT].clear();
+	playlists[PT_VICTORY].clear();
 	playlists[PT_BOSS].clear();
 
 	sound_map.clear();
@@ -75,6 +77,7 @@ void SoundManager::update()
 				if (split != std::string::npos)
 					ml->add_message("Now playing '" + next.substr(split + 1) + "'", COLOR_CORNFLOWER);
 			}
+			prev_song = next_song;
 			next_song = -1;
 			/*next_song += 1;
 			if (next_song >= playlists[current_playlist].size())
@@ -94,6 +97,8 @@ void SoundManager::skip_song(uint16_t ms)
 		if (ms > 0)
 			Mix_FadeOutMusic(ms);
 		else Mix_HaltMusic();
+
+		prev_song = next_song;
 
 		next_song += 1;
 		if (next_song >= playlists[current_playlist].size())
@@ -187,15 +192,28 @@ void SoundManager::set_music_volume(uint8_t volume)
 }
 void SoundManager::set_playlist(PlaylistType playlist, bool instant)
 {
-	const bool skip = (instant && playlist != current_playlist);
+	//const bool skip = (instant && playlist != current_playlist);
 
 	previous_playlist = current_playlist;
 	current_playlist = playlist;
 
-	if (playlists[current_playlist].size() > 1) // Start with a random song if there's more than one
-		next_song = engine.get_rng() % playlists[current_playlist].size();
-	else next_song = 0;
+	if (next_song < 0)
+	{
+		uint8_t loops = 0;
+		while (next_song != prev_song)
+		{
+			if (playlists[playlist].size() > 1) // Start with a random song if there's more than one
+				next_song = engine.get_rng() % playlists[playlist].size();
+			else next_song = 0;
 
-	if (skip) // Stop playing whatever we're playing and move to the next playlist
-		skip_song(100);
+			loops += 1;
+			if (loops > 200)
+			{
+				next_song = 0;
+				break;
+			}
+		}
+	}
+	//if (skip) // Stop playing whatever we're playing and move to the next playlist/song
+		//skip_song(100);
 }

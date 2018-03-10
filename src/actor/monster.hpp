@@ -60,6 +60,8 @@ public:
 	bool init_pathfinder();
 	void step_pathfinder(Level *level);
 
+	MonsterClass get_monster_class() const { return monster_class; }
+
 private:
 	AStar *pathfinder;
 	Texture *healthbar;

@@ -30,7 +30,8 @@
 #include <sstream> // for std::istringstream
 
 Level::Level() :
-	dmg_base(false), map_created(false), map_texture(nullptr), map_generator(nullptr), map_width(0), map_height(0)
+	victory(false), dmg_base(0), map_created(false),
+	map_texture(nullptr), map_generator(nullptr), map_width(0), map_height(0)
 {
 
 }

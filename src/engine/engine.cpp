@@ -57,7 +57,7 @@ bool Engine::init()
 		flags = flags | SDL_WINDOW_BORDERLESS;
 
 	// Create main window
-	main_window = SDL_CreateWindow("Eosos", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	main_window = SDL_CreateWindow("Eosos - 7DRL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		options.get_i("display-width"), options.get_i("display-height"), flags
 	);
 	if (main_window == NULL)

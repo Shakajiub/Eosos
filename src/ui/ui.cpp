@@ -71,11 +71,11 @@ void UI::free()
 }
 void UI::update()
 {
-	if (message_box == nullptr && !message_queue.empty())
+	/*if (message_box == nullptr && !message_queue.empty())
 	{
 		message_box = message_queue.front();
 		message_queue.pop();
-	}
+	}*/
 }
 void UI::render() const
 {
@@ -107,7 +107,7 @@ void UI::init_message_log()
 	message_log->set_position(0, camera.get_cam_h() - 128);
 	message_log->set_size(25, 4);
 	message_log->init();
-	message_log->add_message("Welcome to HELL.", COLOR_BERRY);
+	//message_log->add_message("Welcome to HELL.", COLOR_BERRY);
 }
 bool UI::spawn_level_up_box(Hero *hero)
 {
@@ -126,12 +126,15 @@ bool UI::spawn_message_box(const std::string &title, const std::string &message,
 		return false;
 	mb_lock = lock;
 
+	if (message_box != nullptr)
+	{
+		delete message_box;
+		message_box = nullptr;
+	}
 	MessageBox *mb = new MessageBox;
 	if (mb->init(title, message, 0, 0))
 	{
-		if (message_box != nullptr)
-			message_queue.push(mb);
-		else message_box = mb;
+		message_box = mb;
 		return true;
 	}
 	delete mb;

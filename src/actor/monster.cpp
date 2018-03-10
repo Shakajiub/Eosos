@@ -151,9 +151,13 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 			{
 				Actor *temp_actor = targets[targets.size() - 1];
 				temp_actor->set_status(STATUS_BUFF);
+
 				add_action(ACTION_INTERACT, grid_x, grid_y);
 				spell_timer = 5;
 				moves.first = 0;
+
+				if (ui.get_message_log() != nullptr)
+					ui.get_message_log()->add_message("The " + name + " casts %6Bloodlust%9!", COLOR_OCHER);
 			}
 		}
 		if (moves.first > 0 && has_ability("necromancy") && spell_timer == 0)
@@ -180,10 +184,12 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 		{
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 			{
+				if (monster_class == MONSTER_PEST_SCORPION || monster_class == MONSTER_KOBOLD_TRUEFORM ||
+					monster_class == MONSTER_DWARF_KING || monster_class == MONSTER_PLATINO)
+					level->set_damage_base(20);
+				else level->set_damage_base(1);
+
 				delete_me = true;
-				level->set_damage_base(true);
-				//if (mount != nullptr)
-					//mount->set_delete(true);
 				return true;
 			}
 			if (!pathfinder->get_path_found())

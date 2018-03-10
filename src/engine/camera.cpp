@@ -63,7 +63,7 @@ void Camera::update()
 	if (std::abs(camera_x - desired_x) < 2.0f && std::abs(camera_y - desired_y) < 2.0f)
 		free_move = true; // Once we're close enough stop calculating this
 }
-void Camera::update_position(uint16_t desired_x, uint16_t desired_y, bool jump)
+void Camera::update_position(int16_t desired_x, int16_t desired_y, bool jump)
 {
 	free_move = false;
 	center_x = desired_x;

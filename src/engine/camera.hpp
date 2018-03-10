@@ -27,7 +27,7 @@ public:
 	void init();
 	void update();
 
-	void update_position(uint16_t desired_x, uint16_t desired_y, bool jump = false);
+	void update_position(int16_t desired_x, int16_t desired_y, bool jump = false);
 	void move_camera(uint8_t direction, uint8_t map_width, uint8_t map_height);
 
 	void shake(uint8_t intensity = 0);
@@ -56,8 +56,8 @@ private:
 	uint8_t camera_shake;
 
 	uint16_t camera_w, camera_h;
-	uint16_t offset_x, offset_y;
-	uint16_t center_x, center_y;
+	int16_t offset_x, offset_y;
+	int16_t center_x, center_y;
 	uint16_t shake_ox, shake_oy;
 };
 extern Camera camera;

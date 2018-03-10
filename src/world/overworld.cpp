@@ -28,6 +28,7 @@
 #include "sound_manager.hpp"
 #include "texture_manager.hpp"
 #include "bitmap_font.hpp"
+#include "message_log.hpp"
 #include "ui.hpp"
 
 #include <cmath> // for std::floor
@@ -84,12 +85,13 @@ void Overworld::init()
 	{
 		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Forest_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Battle_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_05.mid");
 
 		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_02.mid");
@@ -108,6 +110,12 @@ void Overworld::init()
 		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_02.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Battle_02.mid");
 
+		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "core/sound/music/Boss_01.mid");
+
+		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_03.mid");
+
 		engine.get_sound_manager()->set_playlist(PT_MENU);
 	}
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
@@ -125,7 +133,8 @@ void Overworld::init()
 	}
 	camera.update_position(
 		((current_level->get_map_width() - 2) * 32) / 2,
-		(((current_level->get_map_height() - 1) * 32) / 2) - 240
+		(((current_level->get_map_height() - 1) * 32) / 2) - 240,
+		true
 	);
 }
 bool Overworld::update()
@@ -173,8 +182,13 @@ bool Overworld::update()
 						engine.get_sound_manager()->set_playlist(PT_MENU);
 						camera.update_position(
 							((current_level->get_map_width() - 2) * 32) / 2,
-							(((current_level->get_map_height() - 1) * 32) / 2) - 240
+							(((current_level->get_map_height() - 1) * 32) / 2) - 240,
+							true
 						);
+						base_health = 20;
+						current_depth = 1;
+						actor_manager->clear_actors(current_level, true);
+						current_level->create(actor_manager, current_depth);
 					}
 					else return false;
 					break;
@@ -187,6 +201,8 @@ bool Overworld::update()
 								((current_level->get_map_width() - 2) * 32) / 2,
 								((current_level->get_map_height() - 1) * 32) / 2
 							);
+						if (ui.get_message_log() != nullptr)
+							ui.get_message_log()->clear_log();
 					}
 					break;
 				case SDLK_d:
@@ -252,11 +268,7 @@ bool Overworld::update()
 			}
 		}
 	}
-	if (in_menu)
-	{
-
-	}
-	else
+	if (!in_menu)
 	{
 		// Idle / map animations
 		anim_timer += engine.get_dt();
@@ -277,26 +289,43 @@ bool Overworld::update()
 		}
 		if (actor_manager != nullptr/* && ui.get_level_up_box() == nullptr*/)
 		{
+			if (in_menu)
+				std::cout << "no no no" << std::endl;
 			if (actor_manager->update(current_level))
 				hovered_actor = nullptr;
 			if (actor_manager->get_next_turn())
 				next_turn();
 		}
-		if (current_level != nullptr && current_level->get_damage_base())
+		if (current_level != nullptr)
 		{
-			current_level->set_damage_base(false);
-			if (base_health > 0)
+			if (current_level->get_damage_base() > 0)
 			{
-				base_health -= 1;
-				if (base_health == 0)
+				if (base_health > 0)
 				{
-					const std::string defeats[1] = {
-						"Better luck next time...",
-					};
-					ui.spawn_message_box("Defeat", defeats[engine.get_rng() % 1], true);
-					if (actor_manager != nullptr)
-						actor_manager->clear_heroes(current_level);
+					if (base_health - current_level->get_damage_base() >= 0)
+						base_health -= 1;
+					else base_health = 0;
+
+					if (base_health == 0)
+					{
+						const std::string defeats[1] = {
+							"Better luck next time...",
+						};
+						ui.spawn_message_box("Defeat", defeats[engine.get_rng() % 1], true);
+						if (actor_manager != nullptr)
+							actor_manager->clear_heroes(current_level);
+						engine.get_sound_manager()->set_playlist(PT_DEFEAT);
+					}
 				}
+				current_level->set_damage_base(0);
+			}
+			else if (current_level->get_victory())
+			{
+				current_level->set_victory(false);
+				current_depth += 1;
+				current_level->create(actor_manager, current_depth);
+				ui.spawn_message_box("Boss defeated!", "");
+				engine.get_sound_manager()->set_playlist(PT_VICTORY);
 			}
 		}
 		ui.update();
@@ -316,17 +345,19 @@ void Overworld::render() const
 		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 144, 64, "Eosos - 7DRL");
 		ui.get_bitmap_font()->set_scale(2);
 		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 176, 112, "Press %A[Enter]%F to start");
-		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 144, 134, "(%A[Escape]%F to quit)");
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 136, 134, "%A[Escape]%F to quit");
 		ui.get_bitmap_font()->set_scale(1);
 
-		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 27, "DragonDePlatino & Quale");
-		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 104, camera.get_cam_h() - 27, "Jere Oikarinen (@Shakajiub)");
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 272, camera.get_cam_h() - 27, "Beau Buckley (fantasymusica.org)");
+		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 38, "DragonDePlatino");
+		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 27, "     Quale");
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 104, camera.get_cam_h() - 27, "Jere Oikarinen (Shakajiub)");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 38, "    Beau Buckley");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 27, "(fantasymusica.org)");
 
 		ui.get_bitmap_font()->set_color(COLOR_SLATE);
-		ui.get_bitmap_font()->render_text(96, camera.get_cam_h() - 38, "Art");
+		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 60, "      Art");
 		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 80, camera.get_cam_h() - 38, "Design & Programming");
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 38, "Music");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 60, "       Music");
 
 		SDL_RenderPresent(engine.get_renderer());
 		return;

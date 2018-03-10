@@ -66,7 +66,8 @@ public:
 	void animate();
 	void next_turn(ActorManager *am);
 
-	bool get_damage_base() const { return dmg_base; }
+	bool get_victory() const { return victory; }
+	uint8_t get_damage_base() const { return dmg_base; }
 	uint8_t get_map_width() const { return map_width; }
 	uint8_t get_map_height() const { return map_height; }
 	auto get_sub_nodes() const { return sub_nodes; }
@@ -80,7 +81,8 @@ public:
 	std::pair<uint8_t, uint8_t> get_base_pos() const;
 	std::pair<uint8_t, uint8_t> get_spawn_pos() const;
 
-	void set_damage_base(bool dmg) { dmg_base = dmg; }
+	void set_victory(bool win) { victory = win; }
+	void set_damage_base(uint8_t dmg) { dmg_base = dmg; }
 	void set_actor(uint8_t xpos, uint8_t ypos, Actor *actor, bool jump = true);
 	void set_node(uint8_t xpos, uint8_t ypos, MapNode node);
 
@@ -95,8 +97,9 @@ private:
 	bool get_node_animated(const Texture *node_texture) const;
 	std::string get_surroundings(uint8_t xpos, uint8_t ypos, bool check_floor) const;
 
-	bool dmg_base;
+	bool victory;
 	bool map_created;
+	uint8_t dmg_base;
 	uint8_t map_width;
 	uint8_t map_height;
 

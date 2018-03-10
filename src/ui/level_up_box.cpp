@@ -224,7 +224,8 @@ bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 			temp_hero->set_status(STATUS_NONE);
 			temp_hero->remove_ability("level-up");
 
-			temp_hero->set_turn_done(true);
+			temp_hero->add_action(ACTION_INTERACT, temp_hero->get_grid_x(), temp_hero->get_grid_y());
+			//temp_hero->set_turn_done(true);
 			temp_hero->set_moves(0);
 		}
 		ui.clear_message_box();

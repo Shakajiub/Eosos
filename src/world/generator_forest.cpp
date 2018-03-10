@@ -74,6 +74,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	current_wave = 0;
 	current_turn = 0;
 	current_depth = depth;
+	wave_monsters.clear();
 
 	bool map_fine = false;
 	while (!map_fine)
@@ -194,12 +195,6 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 	level->set_node(start_x, start_y, new_node);
 	level->set_node(base_pos.first, base_pos.second, base_node);
 
-	if (current_depth < 4)
-	{
-		Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
-		if (current_depth > 1)
-			ui.spawn_message_box("", "A new Peon has joined the party");
-	}
 	const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
 	MapNode temp_node;
 
@@ -231,6 +226,18 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 	current_turn += 1;
 	if (calm_timer > 0)
 	{
+		if (current_turn == 1)
+		{
+			if (current_depth < 4)
+			{
+				Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
+				if (current_depth > 1)
+					ui.spawn_message_box("", "A new Peon has joined the party");
+			}
+		}
+		else if (current_turn == 2)
+			ui.clear_message_box();
+
 		calm_timer -= 1;
 		if (calm_timer == 0)
 			init_wave();
@@ -271,7 +278,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			calm_timer = 10;
 		}
 	}
-	if (current_turn == 2)
+	else if (current_turn == 2)
 		ui.clear_message_box();
 }
 std::pair<uint8_t, uint8_t> GeneratorForest::get_spawn_pos() const
@@ -286,7 +293,6 @@ void GeneratorForest::init_wave()
 	current_turn = 0;
 	current_wave += 1;
 
-	wave_monsters.clear();
 	if (current_wave == 1)
 	{
 		if (current_depth == 1) // Tier 1 waves
@@ -330,7 +336,7 @@ void GeneratorForest::init_wave()
 	}
 	if (wave_class == WAVE_PEST)
 	{
-		engine.get_sound_manager()->set_playlist(PT_PEST);
+		//engine.get_sound_manager()->set_playlist(PT_PEST);
 	}
 	else if (wave_class == WAVE_KOBOLD)
 	{

@@ -107,6 +107,10 @@ bool ActorManager::update(Level *level)
 		for (Actor * a : actors)
 			a->update(level);
 	}
+	if (heroes.size() == 0)
+	{
+		level->set_damage_base(20);
+	}
 	return actors_deleted;
 }
 void ActorManager::render(Level *level) const
@@ -160,6 +164,8 @@ void ActorManager::clear_actors(Level *level, bool clear_heroes)
 	}
 	for (Actor *a : to_erase)
 		delete_actor(level, a);
+
+	current_actor = nullptr;
 }
 void ActorManager::clear_heroes(Level *level)
 {
@@ -325,6 +331,14 @@ void ActorManager::delete_actor(Level *level, Actor *actor)
 	if (level == nullptr || actor == nullptr)
 		return;
 
+	bool victory = false;
+	if (actor->get_actor_type() == ACTOR_MONSTER)
+	{
+		MonsterClass mc = dynamic_cast<Monster*>(actor)->get_monster_class();
+		if (mc == MONSTER_PEST_SCORPION || mc == MONSTER_KOBOLD_TRUEFORM ||
+			mc == MONSTER_DWARF_KING || mc == MONSTER_PLATINO)
+			level->set_victory(true);
+	}
 	Mount *temp_mount = actor->get_mount();
 	if (temp_mount != nullptr)
 	{

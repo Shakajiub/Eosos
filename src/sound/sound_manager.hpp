@@ -31,6 +31,8 @@ enum PlaylistType
 	PT_KOBOLD,
 	PT_DWARF,
 	PT_DEMON,
+	PT_DEFEAT,
+	PT_VICTORY,
 	PT_BOSS
 };
 class SoundManager
@@ -62,6 +64,7 @@ public:
 
 private:
 	int8_t next_song;
+	int8_t prev_song;
 	uint8_t volume_music;
 	int16_t silence_timer;
 
@@ -69,7 +72,7 @@ private:
 	PlaylistType current_playlist;
 	PlaylistType previous_playlist;
 
-	std::vector<std::string> playlists[6];
+	std::vector<std::string> playlists[8];
 	std::unordered_map<std::string, std::shared_ptr<Sound> > sound_map;
 	std::unordered_map<std::string, uint16_t> reference_count;
 };
