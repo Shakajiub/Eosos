@@ -142,8 +142,7 @@ void Level::create(ActorManager *am, uint8_t depth)
 	map_created = true;
 
 	map_generator->post_process(am, this);
-
-	if (depth > 1 && am != nullptr)
+	if (am != nullptr)
 		am->place_actors(this, get_base_pos());
 
 	// Correct the frames for all map nodes (so that tiles connect to eachother nicely)

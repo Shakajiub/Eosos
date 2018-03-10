@@ -92,7 +92,13 @@ void MessageBox::render() const
 	ui.get_bitmap_font()->set_scale(3);
 	ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - ((box_title.length() * 24) / 2), 64, box_title);
 	ui.get_bitmap_font()->set_scale(2);
-	ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - ((box_message.length() * 16) / 2), 112, box_message);
+	uint8_t message_length = box_message.length();
+	for (char c : box_message)
+	{
+		if (c == '%')
+			message_length -= 2;
+	}
+	ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - ((message_length * 16) / 2), 112, box_message);
 	ui.get_bitmap_font()->set_scale(1);
 }
 bool MessageBox::get_overlap(int16_t mouse_x, int16_t mouse_y) const

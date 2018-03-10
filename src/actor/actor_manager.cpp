@@ -183,7 +183,7 @@ void ActorManager::clear_heroes(Level *level)
 	heroes.clear();
 	//current_actor = nullptr;
 }
-Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
+Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name, bool place)
 {
 	if (level == nullptr)
 		return false;
@@ -215,7 +215,8 @@ Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8
 					current_actor = temp;
 					current_actor->start_turn();
 				}
-				level->set_actor(xpos, ypos, temp);
+				if (place)
+					level->set_actor(xpos, ypos, temp);
 
 				if (temp->get_actor_type() == ACTOR_HERO)
 					heroes.push_back(temp);
@@ -232,9 +233,6 @@ Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8
 }
 void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos)
 {
-	std::cout << "placing actors ..." << std::endl;
-	std::cout << "base_pos: (" << std::to_string(base_pos.first) << ", " << std::to_string(base_pos.second) << ")" << std::endl;
-
 	std::vector<Actor*> to_erase;
 	for (Actor *a : actors)
 	{

@@ -292,13 +292,13 @@ bool Monster::init_class(MonsterClass mc)
 			name = "Demon";
 			class_texture = "core/texture/actor/demon_red.png";
 			health = std::make_pair(4, 4);
+			set_status(STATUS_REGEN);
 			max_damage = 2;
 			break;
 		case MONSTER_DEMON_HORNED:
 			name = "Horned Demon";
 			class_texture = "core/texture/actor/demon_horned.png";
 			health = std::make_pair(4, 4);
-			set_status(STATUS_REGEN);
 			max_damage = 2;
 			break;
 		case MONSTER_DEMON_PLATINUM:

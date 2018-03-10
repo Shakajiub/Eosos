@@ -211,9 +211,9 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 				if (engine.get_rng() % 4 != 0)
 				{
 					const std::string crop_name = "core/texture/level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
-					am->spawn_actor(level, ACTOR_PROP, x, y, crop_name);
+					am->spawn_actor(level, ACTOR_PROP, x, y, crop_name, false);
 				}
-				else am->spawn_actor(level, ACTOR_MOUNT, x, y, "core/texture/actor/sheep_white.png");
+				else am->spawn_actor(level, ACTOR_MOUNT, x, y, "core/texture/actor/sheep_white.png", false);
 			}
 		}
 	}
@@ -340,9 +340,11 @@ void GeneratorForest::init_wave()
 			mount_name = "core/texture/actor/toad.png";
 		}
 	}
+	std::string wave_desc = "placeholder text";
 	if (wave_class == WAVE_PEST)
 	{
 		//engine.get_sound_manager()->set_playlist(PT_PEST);
+		wave_desc = "Enlarged pests!";
 	}
 	else if (wave_class == WAVE_KOBOLD)
 	{
@@ -357,43 +359,46 @@ void GeneratorForest::init_wave()
 				MONSTER_KOBOLD_ARCHER, MONSTER_KOBOLD_ARCHER, MONSTER_KOBOLD_ARCHER,
 				MONSTER_KOBOLD_MAGE
 			};
+		wave_desc = "Kobolds!";
 		engine.get_sound_manager()->set_playlist(PT_KOBOLD);
 	}
 	else if (wave_class == WAVE_DWARF)
 	{
+		wave_desc = "Dwarves!";
 		engine.get_sound_manager()->set_playlist(PT_DWARF);
 	}
 	else if (wave_class == WAVE_DEMON)
 	{
 		if (current_wave == 1)
 			wave_monsters = {
-				MONSTER_DEMON_RED, MONSTER_DEMON_RED, MONSTER_DEMON_RED,
-				MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_RED,
 				MONSTER_DEMON_FLYING
 			};
 		else if (current_wave == 2)
 			wave_monsters = {
-				MONSTER_DEMON_RED, MONSTER_DEMON_RED,
 				MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_RED, MONSTER_DEMON_RED,
 				MONSTER_DEMON_FLYING,
 				MONSTER_DEMON_FIRE
 			};
 		else if (current_wave == 3)
 			wave_monsters = {
-				MONSTER_DEMON_RED, MONSTER_DEMON_RED,
 				MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_RED, MONSTER_DEMON_RED,
 				MONSTER_DEMON_FLYING,
 				MONSTER_DEMON_FIRE, MONSTER_DEMON_FIRE,
 				MONSTER_DEMON_PLATINUM
 			};
 		else wave_monsters = {
-				MONSTER_DEMON_RED,
-				MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_RED, MONSTER_DEMON_RED,
 				MONSTER_DEMON_FLYING, MONSTER_DEMON_FLYING,
 				MONSTER_DEMON_FIRE, MONSTER_DEMON_FIRE,
 				MONSTER_DEMON_PLATINUM
 			};
+		wave_desc = "Demons!";
 		engine.get_sound_manager()->set_playlist(PT_DEMON);
 	}
-	ui.spawn_message_box("Wave #" + std::to_string(current_wave), "placeholder text");
+	ui.spawn_message_box("Wave #" + std::to_string(current_wave), wave_desc);
 }

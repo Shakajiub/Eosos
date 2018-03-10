@@ -220,6 +220,7 @@ bool Overworld::update()
 						state = GAME_IN_PROGRESS;
 						current_depth += 1;
 						current_level->create(actor_manager, current_depth);
+						return true;
 					}
 					break;
 				case SDLK_d:
@@ -254,9 +255,20 @@ bool Overworld::update()
 					break;
 			}
 		}
-		else if (event.type == SDL_MOUSEBUTTONDOWN && !in_menu)
+		else if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
-			if (!ui.get_click(actor_manager, event.button.x, event.button.y))
+			if (in_menu)
+			{
+				in_menu = false;
+				if (current_level != nullptr)
+				{
+					camera.update_position(
+						((current_level->get_map_width() - 2) * 32) / 2,
+						((current_level->get_map_height() - 1) * 32) / 2
+					);
+				}
+			}
+			else if (!ui.get_click(actor_manager, event.button.x, event.button.y))
 			{
 				if (actor_manager != nullptr)
 					actor_manager->input_mouse_button_down(event, current_level);
@@ -369,11 +381,11 @@ void Overworld::render() const
 		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 27, "     Quale");
 		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 104, camera.get_cam_h() - 27, "Jere Oikarinen (Shakajiub)");
 		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 38, "    Beau Buckley");
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 27, "fantasymusica.org");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 27, " fantasymusica.org");
 
 		ui.get_bitmap_font()->set_color(COLOR_SLATE);
 		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 60, "      Art");
-		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 80, camera.get_cam_h() - 49, "Design & Programming");
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 80, camera.get_cam_h() - 38, "Design & Programming");
 		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 60, "       Music");
 
 		if (pointers.size() > 0)
