@@ -34,9 +34,9 @@
 #include <cmath> // for std::floor
 
 Overworld::Overworld() :
-	in_menu(true), base_health(20), anim_timer(0), current_depth(1), actor_manager(nullptr),
-	hovered_actor(nullptr), current_level(nullptr), node_highlight(nullptr), base_healthbar(nullptr),
-	frames(0), display_fps(0), frame_counter(0)
+	in_menu(true), state(GAME_IN_PROGRESS), base_health(20), anim_timer(0), current_depth(1),
+	actor_manager(nullptr), hovered_actor(nullptr), current_level(nullptr), node_highlight(nullptr),
+	base_healthbar(nullptr), frames(0), display_fps(0), frame_counter(0)
 {
 
 }
@@ -69,11 +69,18 @@ void Overworld::free()
 	for (Texture *t : pointers)
 		engine.get_texture_manager()->free_texture(t->get_name());
 	pointers.clear();
+
+	hovered_actor = nullptr;
 }
 void Overworld::init()
 {
 	ui.init_background();
 	ui.init_message_log();
+
+	in_menu = true;
+	state = GAME_IN_PROGRESS;
+	current_depth = 1;
+	base_health = 20;
 
 	actor_manager = new ActorManager;
 	actor_manager->init();
@@ -83,8 +90,8 @@ void Overworld::init()
 
 	if (engine.get_sound_manager() != nullptr)
 	{
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_03.mid");
 
 		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Battle_03.mid");
@@ -112,7 +119,7 @@ void Overworld::init()
 
 		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "core/sound/music/Boss_01.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_01.mid");
+		//engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_02.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_03.mid");
 
@@ -178,17 +185,20 @@ bool Overworld::update()
 				case SDLK_ESCAPE:
 					if (!in_menu)
 					{
-						in_menu = true;
+						free();
+						init();
+						engine.get_sound_manager()->set_playlist(PT_MENU);
+						return true;
+						/*in_menu = true;
 						engine.get_sound_manager()->set_playlist(PT_MENU);
 						camera.update_position(
 							((current_level->get_map_width() - 2) * 32) / 2,
 							(((current_level->get_map_height() - 1) * 32) / 2) - 240,
 							true
 						);
-						base_health = 20;
 						current_depth = 1;
 						actor_manager->clear_actors(current_level, true);
-						current_level->create(actor_manager, current_depth);
+						current_level->create(actor_manager, current_depth);*/
 					}
 					else return false;
 					break;
@@ -197,12 +207,19 @@ bool Overworld::update()
 					{
 						in_menu = false;
 						if (current_level != nullptr)
+						{
 							camera.update_position(
 								((current_level->get_map_width() - 2) * 32) / 2,
 								((current_level->get_map_height() - 1) * 32) / 2
 							);
-						if (ui.get_message_log() != nullptr)
-							ui.get_message_log()->clear_log();
+						}
+					}
+					else if (state == GAME_BOSS_WON)
+					{
+						ui.clear_message_box();
+						state = GAME_IN_PROGRESS;
+						current_depth += 1;
+						current_level->create(actor_manager, current_depth);
 					}
 					break;
 				case SDLK_d:
@@ -210,7 +227,7 @@ bool Overworld::update()
 						options.load();
 					break;
 				case SDLK_g:
-					if (current_level != nullptr)
+					if (SDL_GetModState() & KMOD_CTRL && current_level != nullptr)
 					{
 						current_depth += 1;
 						current_level->create(actor_manager, current_depth);
@@ -247,29 +264,29 @@ bool Overworld::update()
 		}
 	}
 	SDL_GetMouseState(&mouse_x, &mouse_y);
-	if (current_level != nullptr && !in_menu)
-	{
-		const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
-		const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
-
-		if (!ui.get_overlap(actor_manager, mouse_x, mouse_y) && map_x >= 0 && map_y >= 0 &&
-			map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
-		{
-			Actor *temp_actor = current_level->get_actor(map_x, map_y);
-			if (temp_actor != hovered_actor)
-			{
-				if (hovered_actor != nullptr && hovered_actor->get_hovered() != HOVER_UI)
-					hovered_actor->set_hovered(HOVER_NONE);
-
-				hovered_actor = temp_actor;
-
-				if (hovered_actor != nullptr)
-					hovered_actor->set_hovered(HOVER_MAP);
-			}
-		}
-	}
 	if (!in_menu)
 	{
+		if (current_level != nullptr)
+		{
+			const int8_t map_x = (mouse_x + camera.get_cam_x()) / 32;
+			const int8_t map_y = (mouse_y + camera.get_cam_y()) / 32;
+
+			if (!ui.get_overlap(actor_manager, mouse_x, mouse_y) && map_x >= 0 && map_y >= 0 &&
+				map_x < current_level->get_map_width() && map_y < current_level->get_map_height())
+			{
+				Actor *temp_actor = current_level->get_actor(map_x, map_y);
+				if (temp_actor != hovered_actor)
+				{
+					if (hovered_actor != nullptr && hovered_actor->get_hovered() != HOVER_UI)
+						hovered_actor->set_hovered(HOVER_NONE);
+
+					hovered_actor = temp_actor;
+
+					if (hovered_actor != nullptr)
+						hovered_actor->set_hovered(HOVER_MAP);
+				}
+			}
+		}
 		// Idle / map animations
 		anim_timer += engine.get_dt();
 		while (anim_timer > 100)
@@ -289,9 +306,7 @@ bool Overworld::update()
 		}
 		if (actor_manager != nullptr/* && ui.get_level_up_box() == nullptr*/)
 		{
-			if (in_menu)
-				std::cout << "no no no" << std::endl;
-			if (actor_manager->update(current_level))
+			if (/*state == GAME_IN_PROGRESS &&*/ actor_manager->update(current_level))
 				hovered_actor = nullptr;
 			if (actor_manager->get_next_turn())
 				next_turn();
@@ -309,12 +324,13 @@ bool Overworld::update()
 					if (base_health == 0)
 					{
 						const std::string defeats[1] = {
-							"Better luck next time...",
+							"Better luck next time..",
 						};
 						ui.spawn_message_box("Defeat", defeats[engine.get_rng() % 1], true);
 						if (actor_manager != nullptr)
 							actor_manager->clear_heroes(current_level);
 						engine.get_sound_manager()->set_playlist(PT_DEFEAT);
+						state = GAME_OVER;
 					}
 				}
 				current_level->set_damage_base(0);
@@ -322,9 +338,10 @@ bool Overworld::update()
 			else if (current_level->get_victory())
 			{
 				current_level->set_victory(false);
-				current_depth += 1;
-				current_level->create(actor_manager, current_depth);
-				ui.spawn_message_box("Boss defeated!", "");
+				//current_depth += 1;
+				//current_level->create(actor_manager, current_depth);
+				state = GAME_BOSS_WON;
+				ui.spawn_message_box("Boss defeated!", "Press %A[Enter]%F to continue");
 				engine.get_sound_manager()->set_playlist(PT_VICTORY);
 			}
 		}
@@ -351,13 +368,16 @@ void Overworld::render() const
 		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 38, "DragonDePlatino");
 		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 27, "     Quale");
 		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 104, camera.get_cam_h() - 27, "Jere Oikarinen (Shakajiub)");
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 38, "    Beau Buckley");
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 27, "(fantasymusica.org)");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 38, "    Beau Buckley");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 27, "fantasymusica.org");
 
 		ui.get_bitmap_font()->set_color(COLOR_SLATE);
 		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 60, "      Art");
-		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 80, camera.get_cam_h() - 38, "Design & Programming");
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 168, camera.get_cam_h() - 60, "       Music");
+		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 80, camera.get_cam_h() - 49, "Design & Programming");
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 60, "       Music");
+
+		if (pointers.size() > 0)
+			pointers[0]->render(mouse_x, mouse_y);
 
 		SDL_RenderPresent(engine.get_renderer());
 		return;

@@ -85,6 +85,9 @@ void Level::create(ActorManager *am, uint8_t depth)
 	uint8_t map_x = 0;
 	uint8_t map_y = 0;
 
+	victory = false;
+	dmg_base = 0;
+
 	std::istringstream level(map_generator->generate(depth));
 	std::string line;
 
@@ -138,10 +141,10 @@ void Level::create(ActorManager *am, uint8_t depth)
 	map_height = (uint8_t)map_data.size();
 	map_created = true;
 
+	map_generator->post_process(am, this);
+
 	if (depth > 1 && am != nullptr)
 		am->place_actors(this, get_base_pos());
-
-	map_generator->post_process(am, this);
 
 	// Correct the frames for all map nodes (so that tiles connect to eachother nicely)
 	load_neighbor_rules();

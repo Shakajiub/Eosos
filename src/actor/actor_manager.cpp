@@ -63,7 +63,7 @@ void ActorManager::init()
 bool ActorManager::update(Level *level)
 {
 	bool actors_deleted = false;
-	if (current_actor != nullptr)
+	if (current_actor != nullptr && !next_turn)
 	{
 		while (current_actor->take_turn(level, this))
 		{
@@ -103,13 +103,12 @@ bool ActorManager::update(Level *level)
 
 			if (current_actor != nullptr)
 				current_actor->start_turn();
+
+			if (heroes.size() == 0)
+				break;
 		}
 		for (Actor * a : actors)
 			a->update(level);
-	}
-	if (heroes.size() == 0)
-	{
-		level->set_damage_base(20);
 	}
 	return actors_deleted;
 }
@@ -165,7 +164,12 @@ void ActorManager::clear_actors(Level *level, bool clear_heroes)
 	for (Actor *a : to_erase)
 		delete_actor(level, a);
 
-	current_actor = nullptr;
+	if (clear_heroes)
+	{
+		actors.clear();
+		heroes.clear();
+		current_actor = nullptr;
+	}
 }
 void ActorManager::clear_heroes(Level *level)
 {
@@ -175,6 +179,9 @@ void ActorManager::clear_heroes(Level *level)
 
 	for (Actor *a : to_erase)
 		delete_actor(level, a);
+
+	heroes.clear();
+	//current_actor = nullptr;
 }
 Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name)
 {
@@ -226,6 +233,7 @@ Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8
 void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos)
 {
 	std::cout << "placing actors ..." << std::endl;
+	std::cout << "base_pos: (" << std::to_string(base_pos.first) << ", " << std::to_string(base_pos.second) << ")" << std::endl;
 
 	std::vector<Actor*> to_erase;
 	for (Actor *a : actors)
@@ -349,5 +357,9 @@ void ActorManager::delete_actor(Level *level, Actor *actor)
 
 	actors.erase(std::remove(actors.begin(), actors.end(), actor), actors.end());
 	heroes.erase(std::remove(heroes.begin(), heroes.end(), actor), heroes.end());
+
+	if (actor->get_actor_type() == ACTOR_HERO && heroes.size() == 0)
+		level->set_damage_base(20);
+
 	delete actor;
 }

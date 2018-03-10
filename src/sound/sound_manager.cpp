@@ -199,21 +199,21 @@ void SoundManager::set_playlist(PlaylistType playlist, bool instant)
 
 	if (next_song < 0)
 	{
-		uint8_t loops = 0;
+		/*uint8_t loops = 0;
 		while (next_song != prev_song)
-		{
-			if (playlists[playlist].size() > 1) // Start with a random song if there's more than one
-				next_song = engine.get_rng() % playlists[playlist].size();
+		{*/
+			if (playlists[current_playlist].size() > 1) // Start with a random song if there's more than one
+				next_song = engine.get_rng() % playlists[current_playlist].size();
 			else next_song = 0;
 
-			loops += 1;
+			/*loops += 1;
 			if (loops > 200)
 			{
 				next_song = 0;
 				break;
 			}
-		}
+		}*/
 	}
 	//if (skip) // Stop playing whatever we're playing and move to the next playlist/song
-		//skip_song(100);
+		skip_song(100);
 }

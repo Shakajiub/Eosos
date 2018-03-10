@@ -168,8 +168,8 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 				if (spawn != nullptr)
 				{
 					if (engine.get_rng() % 10 != 0)
-						dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON);
-					else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_UNDEAD_SKELETON_DISEASED);
+						dynamic_cast<Monster*>(spawn)->init_class(MONSTER_SKELETON);
+					else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_SKELETON_DISEASED);
 
 					add_action(ACTION_INTERACT, grid_x, grid_y);
 					spell_timer = 8;
@@ -220,6 +220,9 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_PLATINO:
 			name = "Platino";
 			class_texture = "core/texture/actor/dragon_de_platino.png";
+			health = std::make_pair(20, 20);
+			proj_type = PROJECTILE_WITHER;
+			max_damage = 3;
 			break;
 		case MONSTER_PEST_ANT:
 			name = "Giant Ant";
@@ -285,11 +288,46 @@ bool Monster::init_class(MonsterClass mc)
 			health = std::make_pair(12, 12);
 			max_damage = 2;
 			break;
-		case MONSTER_UNDEAD_SKELETON:
+		case MONSTER_DEMON_RED:
+			name = "Demon";
+			class_texture = "core/texture/actor/demon_red.png";
+			health = std::make_pair(4, 4);
+			max_damage = 2;
+			break;
+		case MONSTER_DEMON_HORNED:
+			name = "Horned Demon";
+			class_texture = "core/texture/actor/demon_horned.png";
+			health = std::make_pair(4, 4);
+			set_status(STATUS_REGEN);
+			max_damage = 2;
+			break;
+		case MONSTER_DEMON_PLATINUM:
+			name = "Platinum Demon";
+			class_texture = "core/texture/actor/demon_platinum.png";
+			health = std::make_pair(5, 5);
+			proj_type = PROJECTILE_WITHER;
+			max_damage = 2;
+			break;
+		case MONSTER_DEMON_FLYING:
+			name = "Flying Demon";
+			class_texture = "core/texture/actor/demon_flying.png";
+			health = std::make_pair(4, 4);
+			max_damage = 2;
+			max_moves = 2;
+			break;
+		case MONSTER_DEMON_FIRE:
+			name = "Fire Demon";
+			class_texture = "core/texture/actor/demon_fire.png";
+			health = std::make_pair(4, 4);
+			proj_type = PROJECTILE_FIREBALL;
+			add_ability("shoot");
+			max_damage = 2;
+			break;
+		case MONSTER_SKELETON:
 			name = "Skeleton";
 			class_texture = "core/texture/actor/skeleton.png";
 			break;
-		case MONSTER_UNDEAD_SKELETON_DISEASED:
+		case MONSTER_SKELETON_DISEASED:
 			name = "Diseased Skeleton";
 			class_texture = "core/texture/actor/skeleton_diseased.png";
 			proj_type = PROJECTILE_DART;

@@ -38,6 +38,7 @@ Actor::Actor() :
 {
 	facing_right = (engine.get_rng() % 2 == 0);
 	current_action = { ACTION_NULL, 0, 0, 0 };
+	proj_rect = { 0, 0, 16, 16 };
 
 	moves = std::make_pair(0, 0);
 	health = std::make_pair(1, 1);
@@ -163,8 +164,8 @@ void Actor::render_ui(uint16_t xpos, uint16_t ypos) const
 	if (projectile != nullptr)
 	{
 		projectile->render(
-			proj_x - camera.get_cam_x(), proj_y - camera.get_cam_y(), nullptr, 2,
-			facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, proj_angle
+			proj_x - camera.get_cam_x(), proj_y - camera.get_cam_y(), &proj_rect,
+			2, facing_right ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE, proj_angle
 		);
 	}
 }
@@ -201,6 +202,15 @@ void Actor::end_turn()
 		health.first -= 1;
 		if (health.first < 1)
 			delete_me = true;
+	}
+	else if (status == STATUS_REGEN)
+	{
+		if (health.first < health.second)
+		{
+			add_health(1);
+			if (health.first == health.second)
+				set_status(STATUS_NONE);
+		}
 	}
 }
 uint8_t Actor::get_damage() const
@@ -365,6 +375,9 @@ bool Actor::action_shoot(Level *level)
 				case PROJECTILE_DART:
 					projectile = engine.get_texture_manager()->load_texture("core/texture/item/dart.png");
 					break;
+				case PROJECTILE_FIREBALL:
+					projectile = engine.get_texture_manager()->load_texture("core/texture/item/fireball.png");
+					break;
 				default:
 					projectile = engine.get_texture_manager()->load_texture("core/texture/item/arrow.png");
 					break;
@@ -391,6 +404,9 @@ bool Actor::action_shoot(Level *level)
 				if (anim_frames < 16)
 					proj_y -= 4;
 				else proj_y += 4;
+
+				if (proj_type == PROJECTILE_FIREBALL && anim_frames % 4 == 0)
+					proj_rect.y = (proj_rect.y == 0) ? 16 : 0;
 			}
 			if (grid_x < current_action.xpos) proj_x += ((current_action.xpos - grid_x) * 16) / 8;
 			else if (grid_x > current_action.xpos) proj_x -= ((grid_x - current_action.xpos) * 16) / 8;
@@ -435,15 +451,16 @@ bool Actor::action_interact()
 				facing_right = !facing_right;
 		}
 		anim_frames += 1;
-	}
-	if (anim_frames >= 16)
-	{
-		turn_done = true;
-		anim_timer = 0;
-		anim_frames = 0;
-		x = grid_x * 32;
-		y = grid_y * 32;
-		return true;
+
+		if (anim_frames >= 16)
+		{
+			turn_done = true;
+			anim_timer = 0;
+			anim_frames = 0;
+			x = grid_x * 32;
+			y = grid_y * 32;
+			return true;
+		}
 	}
 	return false;
 }
@@ -529,12 +546,7 @@ void Actor::level_up()
 void Actor::add_health(uint8_t amount)
 {
 	if (health.first + amount > health.second)
-	{
 		health.first = health.second;
-
-		if (status == STATUS_REGEN)
-			set_status(STATUS_NONE);
-	}
 	else health.first += amount;
 
 	if (status == STATUS_POISON)

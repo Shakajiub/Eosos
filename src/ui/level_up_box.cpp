@@ -99,19 +99,27 @@ bool LevelUpBox::init(Hero *hero)
 	}
 	else // Other levels after class specialization just give generic upgrades
 	{
-		const std::string bonuses[1] = {
-			"core/texture/ui/icon/heart.png"
+		const std::string bonuses[2] = {
+			"core/texture/ui/icon/heart.png",
+			"core/texture/ui/icon/shield.png"
 		};
-		const std::string titles[1] = {
-			"Health"
+		const std::string titles[2] = {
+			"Health",
+			"Armor"
 		};
-		const std::string messages[1] = {
-			"Receive +1 Heart"
+		const std::string messages[2] = {
+			"Receive +1 Heart",
+			"Receive the %AArmored%F buff"
 		};
-		const SDL_Color colors[1] = {
-			COLOR_BERRY
+		const SDL_Color colors[2] = {
+			COLOR_BERRY,
+			COLOR_SKY
 		};
-		for (uint8_t i = 0; i < 1; i++)
+		uint8_t it = 2;
+		if (hero->get_health().second > 3)
+			it = 1;
+
+		for (uint8_t i = 0; i < it; i++)
 		{
 			Texture *temp = engine.get_texture_manager()->load_texture(bonuses[i], true);
 			if (temp != nullptr)
@@ -204,6 +212,10 @@ bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 	{
 		if (temp_hero != nullptr)
 		{
+			temp_hero->level_up();
+			temp_hero->set_status(STATUS_NONE);
+			temp_hero->remove_ability("level-up");
+
 			auto health = temp_hero->get_health();
 			if (temp_hero->get_hero_class() == HC_PEON)
 			{
@@ -213,16 +225,14 @@ bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 				temp_hero->init_class(classes[i]);
 				health = temp_hero->get_health();
 			}
-			else
+			else // Generic alevel-up bonuses
 			{
 				if (i == 0) // Health
 					health.second += 3;
+				else if (i == 1) // Armored
+					temp_hero->set_status(STATUS_ARMORED);
 			}
 			temp_hero->set_health(health.second);
-
-			temp_hero->level_up();
-			temp_hero->set_status(STATUS_NONE);
-			temp_hero->remove_ability("level-up");
 
 			temp_hero->add_action(ACTION_INTERACT, temp_hero->get_grid_x(), temp_hero->get_grid_y());
 			//temp_hero->set_turn_done(true);

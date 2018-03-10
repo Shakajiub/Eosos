@@ -220,7 +220,7 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 }
 void GeneratorForest::next_turn(ActorManager *am, Level *level)
 {
-	if (current_wave > current_depth)
+	if (current_wave > current_depth + 1)
 		return;
 
 	current_turn += 1;
@@ -260,10 +260,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 					ui.get_message_log()->add_message(boss_desc, COLOR_MAIZE);
 				engine.get_sound_manager()->set_playlist(PT_BOSS);
 			}
-			dynamic_cast<Monster*>(monster)->init_class(mc);
-			spawned_mobs += 1;
-
-			if (mount_name.length() > 0 && engine.get_rng() % 20 == 0)
+			else if (mount_name.length() > 0 && engine.get_rng() % 20 == 0)
 			{
 				Actor *mount = am->spawn_actor(level, ACTOR_MOUNT, pos.first, pos.second, mount_name);
 				if (mount != nullptr)
@@ -272,6 +269,8 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 					monster->set_mount(dynamic_cast<Mount*>(mount));
 				}
 			}
+			dynamic_cast<Monster*>(monster)->init_class(mc);
+			spawned_mobs += 1;
 		}
 		if (spawned_mobs >= (current_wave * 5 + 5))
 		{
@@ -293,6 +292,9 @@ void GeneratorForest::init_wave()
 	current_turn = 0;
 	current_wave += 1;
 
+	if (current_wave > current_depth + 1)
+		return;
+
 	if (current_wave == 1)
 	{
 		if (current_depth == 1) // Tier 1 waves
@@ -303,7 +305,7 @@ void GeneratorForest::init_wave()
 				MONSTER_PEST_BEE
 			};
 			wave_boss = MONSTER_PEST_SCORPION;
-			boss_name = "Humongous Scorpion";
+			boss_name = "You must defeat it before it reaches your base!";
 			boss_desc = "The Humongous Scorpion has arrived!";
 			mount_name = "";
 		}
@@ -332,6 +334,10 @@ void GeneratorForest::init_wave()
 		else // Final waves
 		{
 			wave_class = WAVE_DEMON;
+			wave_boss = MONSTER_PLATINO;
+			boss_name = "The ancient dragon has had enough of you.";
+			boss_desc = "The ancient dragon, Platino, has arrived!";
+			mount_name = "core/texture/actor/toad.png";
 		}
 	}
 	if (wave_class == WAVE_PEST)
@@ -359,6 +365,34 @@ void GeneratorForest::init_wave()
 	}
 	else if (wave_class == WAVE_DEMON)
 	{
+		if (current_wave == 1)
+			wave_monsters = {
+				MONSTER_DEMON_RED, MONSTER_DEMON_RED, MONSTER_DEMON_RED,
+				MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_FLYING
+			};
+		else if (current_wave == 2)
+			wave_monsters = {
+				MONSTER_DEMON_RED, MONSTER_DEMON_RED,
+				MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_FLYING,
+				MONSTER_DEMON_FIRE
+			};
+		else if (current_wave == 3)
+			wave_monsters = {
+				MONSTER_DEMON_RED, MONSTER_DEMON_RED,
+				MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_FLYING,
+				MONSTER_DEMON_FIRE, MONSTER_DEMON_FIRE,
+				MONSTER_DEMON_PLATINUM
+			};
+		else wave_monsters = {
+				MONSTER_DEMON_RED,
+				MONSTER_DEMON_HORNED, MONSTER_DEMON_HORNED,
+				MONSTER_DEMON_FLYING, MONSTER_DEMON_FLYING,
+				MONSTER_DEMON_FIRE, MONSTER_DEMON_FIRE,
+				MONSTER_DEMON_PLATINUM
+			};
 		engine.get_sound_manager()->set_playlist(PT_DEMON);
 	}
 	ui.spawn_message_box("Wave #" + std::to_string(current_wave), "placeholder text");

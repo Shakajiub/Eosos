@@ -90,6 +90,11 @@ void UI::render() const
 }
 void UI::init_background()
 {
+	if (ui_background != nullptr)
+	{
+		engine.get_texture_manager()->free_texture(ui_background->get_name());
+		ui_background = nullptr;
+	}
 	ui_background = engine.get_texture_manager()->load_texture(
 		"core/texture/ui/" + options.get_s("ui-image") + ".png"
 	);
@@ -103,6 +108,9 @@ bool UI::init_bitmap_font()
 }
 void UI::init_message_log()
 {
+	if (message_log != nullptr)
+		delete message_log;
+
 	message_log = new MessageLog;
 	message_log->set_position(0, camera.get_cam_h() - 128);
 	message_log->set_size(25, 4);

@@ -25,6 +25,12 @@ class Actor;
 class Level;
 class Texture;
 
+enum GameState
+{
+	GAME_IN_PROGRESS,
+	GAME_OVER,
+	GAME_BOSS_WON
+};
 class Overworld : public Scene
 {
 public:
@@ -43,6 +49,7 @@ public:
 
 private:
 	bool in_menu;
+	GameState state;
 
 	uint8_t base_health;
 	uint8_t anim_timer;

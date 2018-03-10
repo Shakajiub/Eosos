@@ -63,7 +63,8 @@ enum ProjectileType
 	PROJECTILE_ARROW,
 	PROJECTILE_SHURIKEN,
 	PROJECTILE_DART,
-	PROJECTILE_WITHER
+	PROJECTILE_WITHER,
+	PROJECTILE_FIREBALL
 };
 typedef struct
 {
@@ -134,6 +135,7 @@ public:
 	Mount* get_mount() const { return mount; }
 	std::pair<int8_t, int8_t> get_moves() const { return moves; }
 	std::pair<int8_t, int8_t> get_health() const { return health; }
+	//uint8_t get_combat_level() const { return combat_level; }
 
 	void set_x(uint16_t xpos) { x = xpos; }
 	void set_y(uint16_t ypos) { y = ypos; }
@@ -190,6 +192,7 @@ protected:
 	uint16_t proj_x, proj_y;
 	Texture *projectile;
 	ProjectileType proj_type;
+	SDL_Rect proj_rect;
 
 	static uint16_t ID;
 };
