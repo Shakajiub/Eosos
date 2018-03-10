@@ -57,6 +57,7 @@ void ActorManager::init()
 	ability_manager = new AbilityManager;
 	ability_manager->load_ability("sleep");
 	ability_manager->load_ability("shoot");
+	ability_manager->load_ability("dispel");
 	ability_manager->load_ability("dismount");
 	ability_manager->load_ability("level-up");
 }
@@ -238,7 +239,13 @@ void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_p
 	{
 		std::pair<uint8_t, uint8_t> spot;
 		if (a->get_actor_type() == ACTOR_HERO)
+		{
 			spot = find_spot(level, base_pos.first, base_pos.second);
+			Hero *herp = dynamic_cast<Hero*>(a);
+
+			herp->clear_pathfinder();
+			herp->reset_moves();
+		}
 		else spot = find_spot(level, a->get_grid_x(), a->get_grid_y());
 
 		if (spot.first != 0)

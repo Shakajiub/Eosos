@@ -70,13 +70,13 @@ void SoundManager::update()
 			Mix_VolumeMusic(volume_music);
 			current_song->fade_in(500);
 
-			MessageLog *ml = ui.get_message_log();
+			/*MessageLog *ml = ui.get_message_log();
 			if (ml != nullptr)
 			{
 				std::size_t split = next.rfind('/');
 				if (split != std::string::npos)
 					ml->add_message("Now playing '" + next.substr(split + 1) + "'", COLOR_CORNFLOWER);
-			}
+			}*/
 			prev_song = next_song;
 			next_song = -1;
 			/*next_song += 1;

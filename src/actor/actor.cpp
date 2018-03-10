@@ -413,7 +413,8 @@ bool Actor::action_shoot(Level *level)
 			if (grid_y < current_action.ypos) proj_y += ((current_action.ypos - grid_y) * 16) / 8;
 			else if (grid_y > current_action.ypos) proj_y -= ((grid_y - current_action.ypos) * 16) / 8;
 
-			proj_angle += facing_right ? 6.0 : -6.0;
+			const double increase = (proj_type == PROJECTILE_FIREBALL) ? 8.8 : 6.0;
+			proj_angle += facing_right ? increase : -increase;
 		}
 		anim_frames += 1;
 	}
@@ -515,7 +516,7 @@ void Actor::attack(Actor *other)
 		return;
 	}
 	uint8_t damage = get_damage();
-	if (status == STATUS_BUFF)
+	if (status == STATUS_WEAK)
 		damage += 1;
 
 	const bool crit = engine.get_rng() % 20 == 0;
@@ -530,7 +531,7 @@ void Actor::attack(Actor *other)
 		ml->add_message("The " + name + " kills the " + other->name + "! (%6" + std::to_string(damage) + "%F damage)");
 
 		experience += other->combat_level;
-		if (experience >= combat_level * 10)
+		//if (experience >= combat_level * 10)
 		{
 			set_status(STATUS_LEVELUP);
 			add_ability("level-up");
@@ -591,7 +592,7 @@ void Actor::set_status(StatusType st)
 		case STATUS_ARMORED:
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/armored.png");
 			break;
-		case STATUS_BUFF:
+		case STATUS_WEAK:
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/buff.png");
 			break;
 		case STATUS_REGEN:

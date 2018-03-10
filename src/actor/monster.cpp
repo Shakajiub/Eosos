@@ -132,7 +132,7 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 				}
 			}
 		}
-		if (moves.first > 0 && has_ability("bloodlust") && spell_timer == 0)
+		if (moves.first > 0 && has_ability("weakness") && spell_timer == 0)
 		{
 			std::vector<Actor*> targets;
 			for (int8_t ypos = -2; ypos < 3; ypos++)
@@ -140,9 +140,9 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 				for (int8_t xpos = -2; xpos < 3; xpos++)
 				{
 					Actor *temp_actor = level->get_actor(grid_x + xpos, grid_y + ypos);
-					if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
+					if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_HERO)
 					{
-						if (temp_actor->get_status() != STATUS_BUFF)
+						if (temp_actor->get_status() != STATUS_WEAK)
 							targets.push_back(temp_actor);
 					}
 				}
@@ -150,14 +150,14 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 			if (targets.size() > 0)
 			{
 				Actor *temp_actor = targets[targets.size() - 1];
-				temp_actor->set_status(STATUS_BUFF);
+				temp_actor->set_status(STATUS_WEAK);
 
 				add_action(ACTION_INTERACT, grid_x, grid_y);
 				spell_timer = 5;
 				moves.first = 0;
 
 				if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message("The " + name + " casts %6Bloodlust%9!", COLOR_OCHER);
+					ui.get_message_log()->add_message("The " + name + " casts %6Weakness%9!", COLOR_OCHER);
 			}
 		}
 		if (moves.first > 0 && has_ability("necromancy") && spell_timer == 0)
@@ -228,6 +228,11 @@ bool Monster::init_class(MonsterClass mc)
 			name = "Giant Ant";
 			class_texture = "core/texture/actor/pest_ant.png";
 			break;
+		case MONSTER_PEST_BUG:
+			name = "Big Bug";
+			class_texture = "core/texture/actor/pest_bug.png";
+			set_status(STATUS_ARMORED);
+			break;
 		case MONSTER_PEST_BEE:
 			name = "Massive Bee";
 			class_texture = "core/texture/actor/pest_bee.png";
@@ -252,7 +257,7 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_KOBOLD_MAGE:
 			name = "Kobold Mage";
 			class_texture = "core/texture/actor/kobold_mage.png";
-			add_ability("bloodlust");
+			add_ability("weakness");
 			spell_timer = 2;
 			break;
 		case MONSTER_KOBOLD_DEMONIAC:

@@ -52,6 +52,7 @@ public:
 	bool init_pathfinder();
 	bool init_class(HeroClass hc);
 
+	void reset_moves();
 	void step_pathfinder(Level *level);
 	void clear_pathfinder();
 	void clear_ui_texture();

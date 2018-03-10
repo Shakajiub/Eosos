@@ -77,10 +77,10 @@ bool LevelUpBox::init(Hero *hero)
 			"Barbarian", "Ninja", "Mage", "Juggernaut"
 		};
 		const std::string messages[4] = {
-			"Damage equals the amount of moves left",
-			"Can attack from a distance with shuriken",
-			"TODO",
-			"Receive +1 Heart"
+			"Damage - Damage equals the amount of moves left",
+			"Ranged - Attacks from a distance with shuriken",
+			"Support - Can cast various spells",
+			"Tank - Receives +1 Heart instantly"
 		};
 		for (uint8_t i = 0; i < 4; i++)
 		{
@@ -225,13 +225,14 @@ bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 				temp_hero->init_class(classes[i]);
 				health = temp_hero->get_health();
 			}
-			else // Generic alevel-up bonuses
+			else // Generic level-up bonuses
 			{
 				if (i == 0) // Health
 					health.second += 3;
 				else if (i == 1) // Armored
 					temp_hero->set_status(STATUS_ARMORED);
 			}
+			temp_hero->set_health_max(health.second);
 			temp_hero->set_health(health.second);
 
 			temp_hero->add_action(ACTION_INTERACT, temp_hero->get_grid_x(), temp_hero->get_grid_y());

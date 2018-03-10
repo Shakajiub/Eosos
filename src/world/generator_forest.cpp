@@ -300,10 +300,6 @@ void GeneratorForest::init_wave()
 		if (current_depth == 1) // Tier 1 waves
 		{
 			wave_class = WAVE_PEST;
-			wave_monsters = {
-				MONSTER_PEST_ANT, MONSTER_PEST_ANT, MONSTER_PEST_ANT,
-				MONSTER_PEST_BEE
-			};
 			wave_boss = MONSTER_PEST_SCORPION;
 			boss_name = "You must defeat it before it reaches your base!";
 			boss_desc = "The Humongous Scorpion has arrived!";
@@ -343,7 +339,16 @@ void GeneratorForest::init_wave()
 	std::string wave_desc = "placeholder text";
 	if (wave_class == WAVE_PEST)
 	{
-		//engine.get_sound_manager()->set_playlist(PT_PEST);
+		if (current_wave == 1)
+			wave_monsters = {
+				MONSTER_PEST_ANT, MONSTER_PEST_ANT, MONSTER_PEST_ANT,
+				MONSTER_PEST_BEE
+			};
+		else wave_monsters = {
+				MONSTER_PEST_ANT, MONSTER_PEST_ANT, MONSTER_PEST_ANT,
+				MONSTER_PEST_BEE,
+				MONSTER_PEST_BUG
+			};
 		wave_desc = "Enlarged pests!";
 	}
 	else if (wave_class == WAVE_KOBOLD)

@@ -119,7 +119,6 @@ void Overworld::init()
 
 		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "core/sound/music/Boss_01.mid");
 
-		//engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_02.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_03.mid");
 
@@ -143,6 +142,7 @@ void Overworld::init()
 		(((current_level->get_map_height() - 1) * 32) / 2) - 240,
 		true
 	);
+	ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 }
 bool Overworld::update()
 {
@@ -336,12 +336,12 @@ bool Overworld::update()
 					if (base_health == 0)
 					{
 						const std::string defeats[1] = {
-							"Better luck next time..",
+							"Press %A[Escape]%F to continue",
 						};
 						ui.spawn_message_box("Defeat", defeats[engine.get_rng() % 1], true);
 						if (actor_manager != nullptr)
 							actor_manager->clear_heroes(current_level);
-						engine.get_sound_manager()->set_playlist(PT_DEFEAT);
+						//engine.get_sound_manager()->set_playlist(PT_DEFEAT);
 						state = GAME_OVER;
 					}
 				}
@@ -350,11 +350,12 @@ bool Overworld::update()
 			else if (current_level->get_victory())
 			{
 				current_level->set_victory(false);
-				//current_depth += 1;
-				//current_level->create(actor_manager, current_depth);
-				state = GAME_BOSS_WON;
-				ui.spawn_message_box("Boss defeated!", "Press %A[Enter]%F to continue");
-				engine.get_sound_manager()->set_playlist(PT_VICTORY);
+				if (state != GAME_OVER)
+				{
+					state = GAME_BOSS_WON;
+					ui.spawn_message_box("Boss defeated!", "Press %A[Enter]%F to continue");
+					engine.get_sound_manager()->set_playlist(PT_VICTORY);
+				}
 			}
 		}
 		ui.update();

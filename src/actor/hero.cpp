@@ -144,9 +144,7 @@ void Hero::start_turn()
 	if (sleep_timer == 0)
 	{
 		turn_done = false;
-
-		const uint8_t temp_moves = (mount != nullptr) ? max_moves + 1 : max_moves;
-		moves = std::make_pair(temp_moves, temp_moves);
+		reset_moves();
 
 		if (!get_auto_move())
 			camera.update_position(grid_x * 32, grid_y * 32);
@@ -213,10 +211,15 @@ void Hero::end_turn()
 }
 uint8_t Hero::get_damage() const
 {
-	if (hero_class == HC_BARBARIAN)
-		return current_action.action_value;
+	uint8_t dmg = 1;
 
-	return 1;
+	if (hero_class == HC_BARBARIAN)
+		dmg = current_action.action_value;
+
+	if (status == STATUS_WEAK)
+		dmg -= 1;
+
+	return dmg;
 }
 bool Hero::init_ui_texture()
 {
@@ -295,6 +298,7 @@ bool Hero::init_class(HeroClass hc)
 		case HC_MAGE:
 			name = "Mage";
 			class_texture = "core/texture/actor/orc_mage.png";
+			add_ability("dispel");
 			break;
 		case HC_JUGGERNAUT:
 			name = "Juggernaut";
@@ -313,6 +317,11 @@ bool Hero::init_class(HeroClass hc)
 	if (texture != nullptr)
 		return init_ui_texture();
 	else return false;
+}
+void Hero::reset_moves()
+{
+	const uint8_t temp_moves = (mount != nullptr) ? max_moves + 1 : max_moves;
+	moves = std::make_pair(temp_moves, temp_moves);
 }
 void Hero::step_pathfinder(Level *level)
 {

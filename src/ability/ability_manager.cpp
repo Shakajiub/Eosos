@@ -21,6 +21,7 @@
 #include "hero.hpp"
 
 #include "ability_dismount.hpp"
+#include "ability_dispel.hpp"
 #include "ability_levelup.hpp"
 #include "ability_shoot.hpp"
 #include "ability_sleep.hpp"
@@ -81,6 +82,8 @@ void AbilityManager::load_ability(const std::string &ability)
 		new_ability = new AbilityLevelUp;
 	else if (ability == "dismount")
 		new_ability = new AbilityDismount;
+	else if (ability == "dispel")
+		new_ability = new AbilityDispel;
 
 	if (new_ability != nullptr)
 	{

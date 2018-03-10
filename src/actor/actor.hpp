@@ -55,7 +55,7 @@ enum StatusType
 	STATUS_POISON,
 	STATUS_WITHER,
 	STATUS_ARMORED,
-	STATUS_BUFF,
+	STATUS_WEAK,
 	STATUS_REGEN
 };
 enum ProjectileType
