@@ -132,7 +132,7 @@ void Hero::render_ui(uint16_t xpos, uint16_t ypos) const
 	}
 	if (moves.first > 0)
 	{
-		if (moves.second > 2)
+		if (moves.second < 3)
 			ui.get_bitmap_font()->render_text(camera.get_cam_w() - 96, 16,
 				"Moves: " + std::to_string(moves.first) + "/" + std::to_string(moves.second)
 			);
@@ -273,6 +273,7 @@ bool Hero::init_ui_texture()
 			ui.get_background()->render(i * 48, 16, &corners[2]);
 			ui.get_background()->render(i * 48 + 16, 32, &corners[3]);
 
+			frame_rect = { 0, 0, 16, 16 };
 			if (texture != nullptr)
 				texture->render(i * 48 + 8, 8, &frame_rect, 2, SDL_FLIP_HORIZONTAL);
 		}

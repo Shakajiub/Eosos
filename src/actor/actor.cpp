@@ -199,7 +199,11 @@ void Actor::end_turn()
 	if (status == STATUS_POISON)
 	{
 		if (health.first > 1)
+		{
 			health.first -= 1;
+			if (ui.get_message_log() != nullptr)
+				ui.get_message_log()->add_message("The %Bpoison%F does %61%F damage to the " + name + "!");
+		}
 	}
 	else if (status == STATUS_WITHER)
 	{
@@ -496,6 +500,9 @@ void Actor::attack(Actor *other)
 
 	if (other->get_actor_type() == ACTOR_PROP)
 	{
+		if (other->get_status() == STATUS_POISON) // This was a nice side-effect for allowing any actor to be targeted
+			set_status(STATUS_POISON); // by abilities and not having time to make non-actor (object) class for the crops
+
 		other->set_delete(true);
 		ml->add_message("The " + name + " pillages the fields!", COLOR_PEACH);
 		add_health(1);
@@ -581,14 +588,18 @@ void Actor::set_status(StatusType st)
 		engine.get_texture_manager()->free_texture(status_icon->get_name());
 		status_icon = nullptr;
 	}
-	status = st;
-	switch (status)
+	switch (st)
 	{
 		case STATUS_LEVELUP:
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/level_up.png");
 			break;
 		case STATUS_POISON:
-			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/poison.png");
+			if (proj_type == PROJECTILE_DART)
+			{
+				st = STATUS_NONE;
+				ui.get_message_log()->add_message("The " + name + " is immune to %Bpoison%F!");
+			}
+			else status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/poison.png");
 			break;
 		case STATUS_WITHER:
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/wither.png");
@@ -604,6 +615,7 @@ void Actor::set_status(StatusType st)
 			break;
 		default: break;
 	}
+	status = st;
 }
 void Actor::set_mount(Mount *m)
 {
