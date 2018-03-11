@@ -25,6 +25,7 @@
 #include "ability_levelup.hpp"
 #include "ability_shoot.hpp"
 #include "ability_sleep.hpp"
+#include "ability_sprout.hpp"
 
 #include "camera.hpp"
 
@@ -84,6 +85,8 @@ void AbilityManager::load_ability(const std::string &ability)
 		new_ability = new AbilityDismount;
 	else if (ability == "dispel")
 		new_ability = new AbilityDispel;
+	else if (ability == "sprout")
+		new_ability = new AbilitySprout;
 
 	if (new_ability != nullptr)
 	{

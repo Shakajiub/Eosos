@@ -302,6 +302,7 @@ bool Hero::init_class(HeroClass hc)
 			name = "Mage";
 			class_texture = "core/texture/actor/orc_mage.png";
 			add_ability("dispel");
+			add_ability("sprout");
 			break;
 		case HC_JUGGERNAUT:
 			name = "Juggernaut";

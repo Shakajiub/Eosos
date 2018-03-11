@@ -101,7 +101,7 @@ bool LevelUpBox::init(Hero *hero)
 	{
 		const std::string bonuses[2] = {
 			"core/texture/ui/icon/heart.png",
-			"core/texture/ui/icon/shield.png"
+			"core/texture/ui/icon/defense.png"
 		};
 		const std::string titles[2] = {
 			"Health",
@@ -227,9 +227,13 @@ bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 			}
 			else // Generic level-up bonuses
 			{
-				if (i == 0) // Health
+				uint8_t it = 0;
+				if (health.second > 3)
+					it = 1;
+
+				if (i + it == 0) // Health
 					health.second += 3;
-				else if (i == 1) // Armored
+				else if (i + it == 1) // Armored
 					temp_hero->set_status(STATUS_ARMORED);
 			}
 			temp_hero->set_health_max(health.second);

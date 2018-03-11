@@ -45,6 +45,7 @@ public:
 
 	void next_turn();
 
+	ActorManager* get_actor_manager() const { return actor_manager; }
 	Level* get_level() const { return current_level; }
 
 private:
