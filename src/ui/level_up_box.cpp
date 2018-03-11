@@ -77,7 +77,7 @@ bool LevelUpBox::init(Hero *hero)
 			"Barbarian", "Ninja", "Mage", "Juggernaut"
 		};
 		const std::string messages[4] = {
-			"Damage - Damage equals the amount of moves left",
+			"Damage - Damage equals the amount of moves left -1",
 			"Ranged - Attacks from a distance with shuriken",
 			"Support - Can cast various spells",
 			"Tank - Receives +1 Heart instantly"
@@ -95,7 +95,7 @@ bool LevelUpBox::init(Hero *hero)
 				level_options.push_back(option);
 			}
 		}
-		ui.spawn_message_box("Level up!", "Choose class specialization:");
+		ui.spawn_message_box("Level up!", "Choose class specialization");
 	}
 	else // Other levels after class specialization just give generic upgrades
 	{
@@ -115,11 +115,11 @@ bool LevelUpBox::init(Hero *hero)
 			COLOR_BERRY,
 			COLOR_SKY
 		};
-		uint8_t it = 2;
+		uint8_t it = 0;
 		if (hero->get_health().second > 3)
 			it = 1;
 
-		for (uint8_t i = 0; i < it; i++)
+		for (uint8_t i = it; i < 2; i++)
 		{
 			Texture *temp = engine.get_texture_manager()->load_texture(bonuses[i], true);
 			if (temp != nullptr)
@@ -133,7 +133,7 @@ bool LevelUpBox::init(Hero *hero)
 				level_options.push_back(option);
 			}
 		}
-		ui.spawn_message_box("Level up!", "Choose upgrade (you will also heal to max health):");
+		ui.spawn_message_box("Level up!", "Choose upgrade (you will also heal to max health)");
 	}
 	SDL_SetRenderTarget(engine.get_renderer(), selection_box);
 

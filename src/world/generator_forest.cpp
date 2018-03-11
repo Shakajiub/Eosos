@@ -255,10 +255,13 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			if (current_wave == current_depth + 1 && spawned_mobs == (current_wave * 5 + 4))
 			{
 				mc = (MonsterClass)wave_boss;
-				ui.spawn_message_box("BOSS", boss_name);
-				if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message(boss_desc, COLOR_MAIZE);
-				engine.get_sound_manager()->set_playlist(PT_BOSS);
+				if (mc != MONSTER_KOBOLD_DEMONIAC)
+				{
+					ui.spawn_message_box("BOSS", boss_name);
+					if (ui.get_message_log() != nullptr)
+						ui.get_message_log()->add_message(boss_desc, COLOR_MAIZE);
+					engine.get_sound_manager()->set_playlist(PT_BOSS);
+				}
 			}
 			else if (mount_name.length() > 0 && engine.get_rng() % 20 == 0)
 			{
@@ -274,7 +277,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 		}
 		if (spawned_mobs >= (current_wave * 5 + 5))
 		{
-			calm_timer = 10;
+			calm_timer = 10 - current_depth;
 		}
 	}
 	else if (current_turn == 2)

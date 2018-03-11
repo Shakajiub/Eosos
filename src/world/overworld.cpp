@@ -142,6 +142,7 @@ void Overworld::init()
 		(((current_level->get_map_height() - 1) * 32) / 2) - 240,
 		true
 	);
+	ui.clear_message_box();
 	ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 }
 bool Overworld::update()
@@ -216,10 +217,11 @@ bool Overworld::update()
 					}
 					else if (state == GAME_BOSS_WON)
 					{
-						ui.clear_message_box();
 						state = GAME_IN_PROGRESS;
 						current_depth += 1;
 						current_level->create(actor_manager, current_depth);
+						ui.clear_message_box();
+						ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 						return true;
 					}
 					break;
@@ -232,6 +234,8 @@ bool Overworld::update()
 					{
 						current_depth += 1;
 						current_level->create(actor_manager, current_depth);
+						ui.clear_message_box();
+						ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 					}
 					break;
 				case SDLK_c: case SDLK_AUDIONEXT: case SDLK_AUDIOPLAY:
@@ -275,6 +279,7 @@ bool Overworld::update()
 			}
 		}
 	}
+	//SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
 	SDL_GetMouseState(&mouse_x, &mouse_y);
 	if (!in_menu)
 	{

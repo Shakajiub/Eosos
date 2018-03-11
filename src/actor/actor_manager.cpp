@@ -66,6 +66,7 @@ bool ActorManager::update(Level *level)
 	bool actors_deleted = false;
 	if (current_actor != nullptr && !next_turn)
 	{
+		Actor *prev_actor = current_actor;
 		while (current_actor->take_turn(level, this))
 		{
 			current_actor->end_turn();
@@ -105,7 +106,7 @@ bool ActorManager::update(Level *level)
 			if (current_actor != nullptr)
 				current_actor->start_turn();
 
-			if (heroes.size() == 0)
+			if (heroes.size() == 0 || current_actor == prev_actor)
 				break;
 		}
 		for (Actor * a : actors)
@@ -187,7 +188,7 @@ void ActorManager::clear_heroes(Level *level)
 Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name, bool place)
 {
 	if (level == nullptr)
-		return false;
+		return nullptr;
 
 	auto spot = find_spot(level, xpos, ypos);
 	if (spot.first != 0)
@@ -366,5 +367,6 @@ void ActorManager::delete_actor(Level *level, Actor *actor)
 	if (actor->get_actor_type() == ACTOR_HERO && heroes.size() == 0)
 		level->set_damage_base(20);
 
+	actor->death(this, level);
 	delete actor;
 }

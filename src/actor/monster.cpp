@@ -23,6 +23,7 @@
 
 #include "mount.hpp"
 #include "camera.hpp"
+#include "sound_manager.hpp"
 #include "texture.hpp"
 #include "texture_manager.hpp"
 #include "message_log.hpp"
@@ -78,6 +79,19 @@ void Monster::render() const
 		);
 	}
 }
+void Monster::death(ActorManager *am, Level *level)
+{
+	if (monster_class == MONSTER_KOBOLD_DEMONIAC)
+	{
+		Actor * temp = am->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
+		dynamic_cast<Monster*>(temp)->init_class(MONSTER_KOBOLD_TRUEFORM);
+
+		ui.spawn_message_box("BOSS", "Kobold Trueform");
+		if (ui.get_message_log() != nullptr)
+			ui.get_message_log()->add_message("The Kobold Demoniac transforms!", COLOR_MAIZE);
+		engine.get_sound_manager()->set_playlist(PT_BOSS);
+	}
+}
 void Monster::start_turn()
 {
 	turn_done = false;
@@ -95,15 +109,15 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 {
 	if (turn_done)
 	{
-		if (pathfinder != nullptr && pathfinder->get_path_found())
+		/*if (pathfinder != nullptr && pathfinder->get_path_found())
 		{
 			if (grid_x == pathfinder->get_goto_x() && grid_y == pathfinder->get_goto_y())
 				pathfinder->step();
-		}
+		}*/
 		if (moves.first > 0)
 			turn_done = false;
 	}
-	if (actions_empty())
+	if (action_queue.empty())
 	{
 		if (moves.first > 0 && has_ability("shoot"))
 		{
@@ -268,7 +282,10 @@ bool Monster::init_class(MonsterClass mc)
 		case MONSTER_KOBOLD_TRUEFORM:
 			name = "Kobold Trueform";
 			class_texture = "core/texture/actor/kobold_trueform.png";
+			proj_type = PROJECTILE_FIREBALL;
 			health = std::make_pair(8, 8);
+			add_ability("shoot");
+			max_moves = 2;
 			break;
 		case MONSTER_DWARF_WARRIOR:
 			name = "Dwarven Warrior";
@@ -279,7 +296,7 @@ bool Monster::init_class(MonsterClass mc)
 			name = "Dwarven Necromancer";
 			class_texture = "core/texture/actor/dwarf_necromancer.png";
 			add_ability("necromancy");
-			spell_timer = 4;
+			spell_timer = 2;
 			break;
 		case MONSTER_DWARF_BEASTMASTER:
 			name = "Dwarven Beastmaster";
@@ -369,8 +386,9 @@ void Monster::step_pathfinder(Level *level)
 		{
 			if (mount == nullptr)
 			{
-				add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
 				set_mount(dynamic_cast<Mount*>(temp_actor));
+				add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+				pathfinder->step();
 			}
 			else turn_done = true;
 		}
@@ -381,5 +399,6 @@ void Monster::step_pathfinder(Level *level)
 	{
 		moves.first -= 1;
 		add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
+		pathfinder->step();
 	}
 }

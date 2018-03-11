@@ -26,6 +26,7 @@
 Ability::Ability() : activated(false), hovered(false), ability_texture(nullptr)
 {
 	cooldown = std::make_pair(0, 0);
+	ability_desc = "Description";
 }
 Ability::~Ability()
 {
@@ -61,6 +62,9 @@ void Ability::render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const
 		}
 		else ui.get_bitmap_font()->render_char(xpos + 30, ypos + 28, hotkey_name[0]);
 		ui.get_bitmap_font()->set_scale(1);
+
+		if (hovered)
+			ui.get_bitmap_font()->render_text(xpos - (ability_desc.length() * 8) - 8, ypos + 8, ability_desc);
 	}
 }
 bool Ability::get_click(uint16_t mouse_x, uint16_t mouse_y)

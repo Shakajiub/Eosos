@@ -169,6 +169,10 @@ void Actor::render_ui(uint16_t xpos, uint16_t ypos) const
 		);
 	}
 }
+void Actor::death(ActorManager *am, Level *level)
+{
+
+}
 void Actor::start_turn()
 {
 	// Called when our turn to move begins.
@@ -531,7 +535,7 @@ void Actor::attack(Actor *other)
 		ml->add_message("The " + name + " kills the " + other->name + "! (%6" + std::to_string(damage) + "%F damage)");
 
 		experience += other->combat_level;
-		//if (experience >= combat_level * 10)
+		if (experience >= combat_level * 10)
 		{
 			set_status(STATUS_LEVELUP);
 			add_ability("level-up");
@@ -593,7 +597,7 @@ void Actor::set_status(StatusType st)
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/armored.png");
 			break;
 		case STATUS_WEAK:
-			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/buff.png");
+			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/weakened.png");
 			break;
 		case STATUS_REGEN:
 			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/regeneration.png");

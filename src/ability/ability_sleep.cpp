@@ -21,7 +21,7 @@
 
 AbilitySleep::AbilitySleep()
 {
-
+	ability_desc = "Sleep for 10 turns";
 }
 AbilitySleep::~AbilitySleep()
 {

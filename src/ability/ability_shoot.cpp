@@ -29,6 +29,7 @@
 AbilityShoot::AbilityShoot() : target_texture(nullptr), temp_hero(nullptr)
 {
 	valid_nodes.clear();
+	ability_desc = "Ranged attack";
 }
 AbilityShoot::~AbilityShoot()
 {

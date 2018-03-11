@@ -29,6 +29,7 @@
 AbilityDispel::AbilityDispel() : target_texture(nullptr), temp_hero(nullptr)
 {
 	valid_nodes.clear();
+	ability_desc = "Dispel status from nearby creature";
 }
 AbilityDispel::~AbilityDispel()
 {

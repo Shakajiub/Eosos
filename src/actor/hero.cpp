@@ -211,13 +211,16 @@ void Hero::end_turn()
 }
 uint8_t Hero::get_damage() const
 {
-	uint8_t dmg = 1;
+	int8_t dmg = 1;
 
 	if (hero_class == HC_BARBARIAN)
-		dmg = current_action.action_value;
+		dmg = current_action.action_value - 1;
 
 	if (status == STATUS_WEAK)
 		dmg -= 1;
+
+	if (dmg < 0)
+		dmg = 0;
 
 	return dmg;
 }
@@ -386,7 +389,7 @@ void Hero::clear_ui_texture()
 }
 void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 {
-	if (!actions_empty() || moves.first <= 0 || ability_activated)
+	if (!action_queue.empty() || moves.first <= 0 || ability_activated)
 		return;
 
 	int8_t offset_x = 0, offset_y = 0;

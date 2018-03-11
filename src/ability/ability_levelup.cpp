@@ -23,7 +23,7 @@
 
 AbilityLevelUp::AbilityLevelUp()
 {
-
+	ability_desc = "Level up!";
 }
 AbilityLevelUp::~AbilityLevelUp()
 {

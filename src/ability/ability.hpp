@@ -48,6 +48,7 @@ protected:
 
 	SDL_Texture *ability_texture;
 	std::string ability_name;
+	std::string ability_desc;
 
 	std::pair<uint8_t, uint8_t> cooldown;
 };

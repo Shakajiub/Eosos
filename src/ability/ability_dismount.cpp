@@ -29,6 +29,7 @@
 AbilityDismount::AbilityDismount() : target_texture(nullptr), temp_hero(nullptr)
 {
 	valid_nodes.clear();
+	ability_desc = "Dismount";
 }
 AbilityDismount::~AbilityDismount()
 {
