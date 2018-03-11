@@ -22,16 +22,7 @@
 
 #include <vector>
 
-class Actor;
 class Texture;
-
-typedef struct
-{
-	uint8_t xpos;
-	uint8_t ypos;
-	Actor *target;
-}
-TargetNode;
 
 class AbilityDispel : public Ability
 {

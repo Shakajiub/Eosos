@@ -132,10 +132,14 @@ void Hero::render_ui(uint16_t xpos, uint16_t ypos) const
 	}
 	if (moves.first > 0)
 	{
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 96, 16,
-			"Moves: " + std::to_string(moves.first) + "/" + std::to_string(moves.second)
-		);
-		const std::string xp = "XP: " + std::to_string(experience) + "/" + std::to_string(combat_level * 10);
+		if (moves.second > 2)
+			ui.get_bitmap_font()->render_text(camera.get_cam_w() - 96, 16,
+				"Moves: " + std::to_string(moves.first) + "/" + std::to_string(moves.second)
+			);
+		else ui.get_bitmap_font()->render_text(camera.get_cam_w() - 96, 16,
+				"Moves: " + std::to_string(moves.first) + "/%D" + std::to_string(moves.second)
+			);
+		const std::string xp = "%FXP: " + std::to_string(experience) + "/" + std::to_string(combat_level * 10);
 		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 16 - (xp.length() * 8), 27, xp);
 	}
 }
@@ -213,8 +217,10 @@ uint8_t Hero::get_damage() const
 {
 	int8_t dmg = 1;
 
-	if (hero_class == HC_BARBARIAN)
-		dmg = current_action.action_value - 1;
+	if (hero_class == HC_JUGGERNAUT)
+		dmg += current_action.action_value / 2;
+	else if (hero_class == HC_BARBARIAN)
+		dmg += (health.second - health.first) / 2;
 
 	if (status == STATUS_WEAK)
 		dmg -= 1;
@@ -303,11 +309,11 @@ bool Hero::init_class(HeroClass hc)
 			class_texture = "core/texture/actor/orc_mage.png";
 			add_ability("dispel");
 			add_ability("sprout");
+			add_ability("poison");
 			break;
 		case HC_JUGGERNAUT:
 			name = "Juggernaut";
 			class_texture = "core/texture/actor/orc_juggernaut.png";
-			health = std::make_pair(hp + 3, hp + 3);
 			break;
 		default: hero_class = HC_PEON; break;
 	}

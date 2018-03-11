@@ -15,51 +15,33 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ABILITY_HPP
-#define ABILITY_HPP
+#ifndef ABILITY_POISON_HPP
+#define ABILITY_POISON_HPP
 
-class Actor;
-class Hero;
-class Level;
+#include "ability.hpp"
 
-typedef struct
-{
-	uint8_t xpos;
-	uint8_t ypos;
-	Actor *target;
-}
-TargetNode;
+#include <vector>
 
-class Ability
+class Texture;
+
+class AbilityPoison : public Ability
 {
 public:
-	Ability();
-	~Ability();
+	AbilityPoison();
+	~AbilityPoison();
 
 	void free();
 
-	virtual bool init() = 0;
-	virtual void apply(Hero *hero) = 0;
+	virtual bool init();
+	virtual void apply(Hero *hero);
 	virtual void render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const;
 	virtual bool get_click(uint16_t mouse_x, uint16_t mouse_y);
 	virtual void clear(Hero *hero);
 
-	bool init_texture(const std::string &icon, SDL_Color color);
-
-	std::string get_ability_name() const { return ability_name; }
-
-	bool get_hovered() const { return hovered; }
-	void set_hovered(bool h) { hovered = h; }
-
-protected:
-	bool activated;
-	bool hovered;
-
-	SDL_Texture *ability_texture;
-	std::string ability_name;
-	std::string ability_desc;
-
-	std::pair<uint8_t, uint8_t> cooldown;
+private:
+	std::vector<TargetNode> valid_nodes;
+	Texture *target_texture;
+	Hero *temp_hero;
 };
 
-#endif // ABILITY_HPP
+#endif // ABILITY_POISON_HPP

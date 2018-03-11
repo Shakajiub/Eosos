@@ -59,6 +59,7 @@ void ActorManager::init()
 	ability_manager->load_ability("shoot");
 	ability_manager->load_ability("dispel");
 	ability_manager->load_ability("sprout");
+	ability_manager->load_ability("poison");
 	ability_manager->load_ability("dismount");
 	ability_manager->load_ability("level-up");
 }

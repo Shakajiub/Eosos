@@ -77,10 +77,10 @@ bool LevelUpBox::init(Hero *hero)
 			"Barbarian", "Ninja", "Mage", "Juggernaut"
 		};
 		const std::string messages[4] = {
-			"Damage - Damage equals the amount of moves left -1",
-			"Ranged - Attacks from a distance with shuriken",
-			"Support - Can cast various spells",
-			"Tank - Receives +1 Heart instantly"
+			"%7[Damage]%F +1 for every 2 points of health lost",
+			"%7[Ranged]%F Attacks from a distance with shuriken",
+			"%7[Support]%F Can cast various spells",
+			"%7[Tank]%F +1 damage for every 2 unused moves"
 		};
 		for (uint8_t i = 0; i < 4; i++)
 		{

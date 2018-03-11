@@ -23,6 +23,7 @@
 #include "ability_dismount.hpp"
 #include "ability_dispel.hpp"
 #include "ability_levelup.hpp"
+#include "ability_poison.hpp"
 #include "ability_shoot.hpp"
 #include "ability_sleep.hpp"
 #include "ability_sprout.hpp"
@@ -87,6 +88,8 @@ void AbilityManager::load_ability(const std::string &ability)
 		new_ability = new AbilityDispel;
 	else if (ability == "sprout")
 		new_ability = new AbilitySprout;
+	else if (ability == "poison")
+		new_ability = new AbilityPoison;
 
 	if (new_ability != nullptr)
 	{
