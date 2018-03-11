@@ -49,9 +49,12 @@ public:
 	virtual std::pair<uint8_t, uint8_t> get_base_pos() const { return base_pos; }
 	virtual std::pair<uint8_t, uint8_t> get_spawn_pos() const;
 
+	virtual void set_turn(uint8_t turn) { current_turn = turn; }
+
 private:
 	void init_wave();
 
+	bool peon;
 	uint8_t width;
 	uint8_t height;
 	AStar *pathfinder;

@@ -90,37 +90,36 @@ void Overworld::init()
 
 	if (engine.get_sound_manager() != nullptr)
 	{
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Opening_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Menu_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Menu_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "core/sound/music/Menu_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Battle_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_04.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Dungeon_05.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Menu_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Menu_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "core/sound/music/Menu_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Desert_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Kobold_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Kobold_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "core/sound/music/Kobold_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Battle_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Battle_04.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Dungeon_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Dwarf_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Dwarf_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "core/sound/music/Dwarf_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Evil_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Demon_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Demon_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Demon_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "core/sound/music/Demon_04.mid");
 
 		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Battle_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "core/sound/music/Boss_03.mid");
 
 		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "core/sound/music/Boss_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "core/sound/music/Boss_02.mid");
 
+		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_01.mid");
 		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "core/sound/music/Fanfare_03.mid");
 
 		engine.get_sound_manager()->set_playlist(PT_MENU);
 	}
@@ -142,7 +141,7 @@ void Overworld::init()
 		(((current_level->get_map_height() - 1) * 32) / 2) - 240,
 		true
 	);
-	ui.clear_message_box();
+	ui.clear_message_box(true);
 	ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 }
 bool Overworld::update()
@@ -190,16 +189,6 @@ bool Overworld::update()
 						init();
 						engine.get_sound_manager()->set_playlist(PT_MENU);
 						return true;
-						/*in_menu = true;
-						engine.get_sound_manager()->set_playlist(PT_MENU);
-						camera.update_position(
-							((current_level->get_map_width() - 2) * 32) / 2,
-							(((current_level->get_map_height() - 1) * 32) / 2) - 240,
-							true
-						);
-						current_depth = 1;
-						actor_manager->clear_actors(current_level, true);
-						current_level->create(actor_manager, current_depth);*/
 					}
 					else return false;
 					break;
@@ -215,28 +204,24 @@ bool Overworld::update()
 							);
 						}
 					}
-					else if (state == GAME_BOSS_WON)
+					else if (state == GAME_BOSS_WON || state == GAME_END)
 					{
-						state = GAME_IN_PROGRESS;
 						current_depth += 1;
 						current_level->create(actor_manager, current_depth);
-						ui.clear_message_box();
-						ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
+						ui.clear_message_box(true);
+						if (state == GAME_END)
+						{
+							ui.spawn_message_box("You may continue", "But the enemies won't get stronger");
+							ui.get_message_log()->add_message("Maybe in a later version?");
+						}
+						else ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
+						state = GAME_IN_PROGRESS;
 						return true;
 					}
 					break;
 				case SDLK_d:
 					if (SDL_GetModState() & KMOD_CTRL)
 						options.load();
-					break;
-				case SDLK_g:
-					if (SDL_GetModState() & KMOD_CTRL && current_level != nullptr)
-					{
-						current_depth += 1;
-						current_level->create(actor_manager, current_depth);
-						ui.clear_message_box();
-						ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
-					}
 					break;
 				case SDLK_c: case SDLK_AUDIONEXT: case SDLK_AUDIOPLAY:
 					if (engine.get_sound_manager() != nullptr)
@@ -357,9 +342,19 @@ bool Overworld::update()
 				current_level->set_victory(false);
 				if (state != GAME_OVER)
 				{
-					state = GAME_BOSS_WON;
-					ui.spawn_message_box("Boss defeated!", "Press %A[Enter]%F to continue");
-					engine.get_sound_manager()->set_playlist(PT_VICTORY);
+					if (current_depth == 4)
+					{
+						state = GAME_END;
+						ui.spawn_message_box("Victory!", "By defeating %APlatino%F you have won the game!");
+						ui.get_message_log()->add_message("Victory! Press %A[Escape]%F to continue");
+						engine.get_sound_manager()->set_playlist(PT_VICTORY);
+					}
+					else
+					{
+						state = GAME_BOSS_WON;
+						ui.spawn_message_box("Boss defeated!", "Press %A[Enter]%F to continue");
+						engine.get_sound_manager()->set_playlist(PT_VICTORY);
+					}
 				}
 			}
 		}

@@ -85,6 +85,7 @@ void Monster::death(ActorManager *am, Level *level)
 	{
 		Actor * temp = am->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
 		dynamic_cast<Monster*>(temp)->init_class(MONSTER_KOBOLD_TRUEFORM);
+		level->set_turn(0);
 
 		ui.spawn_message_box("BOSS", "Kobold Trueform");
 		if (ui.get_message_log() != nullptr)
@@ -109,11 +110,18 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 {
 	if (turn_done)
 	{
-		/*if (pathfinder != nullptr && pathfinder->get_path_found())
+		if (level->get_wall_type(current_action.xpos, current_action.ypos) == NT_BASE)
 		{
-			if (grid_x == pathfinder->get_goto_x() && grid_y == pathfinder->get_goto_y())
-				pathfinder->step();
-		}*/
+			if (monster_class == MONSTER_PEST_SCORPION || monster_class == MONSTER_KOBOLD_TRUEFORM ||
+				monster_class == MONSTER_DWARF_KING || monster_class == MONSTER_PLATINO)
+				level->set_damage_base(20);
+			else level->set_damage_base(1);
+
+			turn_done = true;
+			delete_me = true;
+			moves.first = 0;
+			return true;
+		}
 		if (moves.first > 0)
 			turn_done = false;
 	}
@@ -186,7 +194,7 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 					else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_SKELETON_DISEASED);
 
 					add_action(ACTION_INTERACT, grid_x, grid_y);
-					spell_timer = 8;
+					spell_timer = 4;
 					moves.first = 0;
 
 					if (ui.get_message_log() != nullptr)
@@ -196,16 +204,6 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 		}
 		if (moves.first > 0 && pathfinder != nullptr)
 		{
-			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
-			{
-				if (monster_class == MONSTER_PEST_SCORPION || monster_class == MONSTER_KOBOLD_TRUEFORM ||
-					monster_class == MONSTER_DWARF_KING || monster_class == MONSTER_PLATINO)
-					level->set_damage_base(20);
-				else level->set_damage_base(1);
-
-				delete_me = true;
-				return true;
-			}
 			if (!pathfinder->get_path_found())
 			{
 				auto base_pos = level->get_base_pos();

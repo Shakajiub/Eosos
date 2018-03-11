@@ -57,9 +57,9 @@ bool AbilityShoot::init()
 	}
 	return false;
 }
-void AbilityShoot::apply(Hero *hero)
+void AbilityShoot::apply(Hero *hero, bool cancel)
 {
-	if (!activated)
+	if (!activated && !cancel)
 	{
 		Overworld *scene = engine.get_scene_manager()->get_scene("test");
 		Level *level = nullptr;

@@ -114,10 +114,8 @@ void AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
 		if (hero->has_ability(a->get_ability_name()))
 		{
 			if (key == hotkeys[i])
-			{
 				a->apply(hero);
-				return;
-			}
+			else a->apply(hero, true);
 			i += 1;
 		}
 	}

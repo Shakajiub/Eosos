@@ -148,9 +148,11 @@ bool UI::spawn_message_box(const std::string &title, const std::string &message,
 	delete mb;
 	return false;
 }
-void UI::clear_message_box()
+void UI::clear_message_box(bool pass_lock)
 {
-	if (mb_lock) return;
+	if (mb_lock && !pass_lock)
+		return;
+
 	while (!message_queue.empty())
 	{
 		MessageBox *mb = message_queue.front();
@@ -158,7 +160,9 @@ void UI::clear_message_box()
 		delete mb;
 	}
 	delete message_box;
+
 	message_box = nullptr;
+	mb_lock = false;
 }
 void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight) const
 {

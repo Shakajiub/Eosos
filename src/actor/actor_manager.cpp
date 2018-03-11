@@ -246,6 +246,7 @@ void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_p
 			spot = find_spot(level, base_pos.first, base_pos.second);
 			Hero *herp = dynamic_cast<Hero*>(a);
 
+			herp->clear_status();
 			herp->clear_pathfinder();
 			herp->reset_moves();
 		}

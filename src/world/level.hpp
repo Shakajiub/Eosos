@@ -85,6 +85,7 @@ public:
 	void set_damage_base(uint8_t dmg) { dmg_base = dmg; }
 	void set_actor(uint8_t xpos, uint8_t ypos, Actor *actor, bool jump = true);
 	void set_node(uint8_t xpos, uint8_t ypos, MapNode node);
+	void set_turn(uint8_t turn);
 
 private:
 	void init_map_texture();

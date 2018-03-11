@@ -500,12 +500,18 @@ void Actor::attack(Actor *other)
 
 	if (other->get_actor_type() == ACTOR_PROP)
 	{
-		if (other->get_status() == STATUS_POISON) // This was a nice side-effect for allowing any actor to be targeted
-			set_status(STATUS_POISON); // by abilities and not having time to make non-actor (object) class for the crops
-
 		other->set_delete(true);
 		ml->add_message("The " + name + " pillages the fields!", COLOR_PEACH);
 		add_health(1);
+
+		if (other->get_status() == STATUS_POISON) // This was a nice side-effect for allowing any actor to be targeted
+			set_status(STATUS_POISON); // by abilities and not having time to make non-actor (object) class for the crops
+
+		return;
+	}
+	else if (other->get_actor_type() == ACTOR_MOUNT)
+	{
+		other->set_delete(true);
 		return;
 	}
 	if (other->get_status() == STATUS_ARMORED)
@@ -527,8 +533,6 @@ void Actor::attack(Actor *other)
 		return;
 	}
 	uint8_t damage = get_damage();
-	if (status == STATUS_WEAK)
-		damage += 1;
 
 	const bool crit = engine.get_rng() % 20 == 0;
 	if (crit) damage *= 2;

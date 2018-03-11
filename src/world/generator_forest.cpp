@@ -33,7 +33,8 @@
 #include <unordered_map>
 
 GeneratorForest::GeneratorForest() :
-	pathfinder(nullptr), wave_class(WAVE_NONE), wave_boss(MONSTER_NONE), boss_name("???"), boss_desc("???")
+	pathfinder(nullptr), wave_class(WAVE_NONE), wave_boss(MONSTER_NONE),
+	boss_name("???"), boss_desc("???"), peon(false)
 {
 
 }
@@ -75,6 +76,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	current_turn = 0;
 	current_depth = depth;
 	wave_monsters.clear();
+	peon = false;
 
 	bool map_fine = false;
 	while (!map_fine)
@@ -226,8 +228,9 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 	current_turn += 1;
 	if (calm_timer > 0)
 	{
-		if (current_turn == 1)
+		if (current_turn == 1 && !peon)
 		{
+			peon = true;
 			if (current_depth < 4)
 			{
 				Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
@@ -334,7 +337,7 @@ void GeneratorForest::init_wave()
 		{
 			wave_class = WAVE_DEMON;
 			wave_boss = MONSTER_PLATINO;
-			boss_name = "The ancient dragon has had enough of you.";
+			boss_name = "The ancient dragon has had enough of you";
 			boss_desc = "The ancient dragon, Platino, has arrived!";
 			mount_name = "core/texture/actor/toad.png";
 		}

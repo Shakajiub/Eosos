@@ -34,6 +34,8 @@ public:
 
 	virtual std::pair<uint8_t, uint8_t> get_base_pos() const = 0;
 	virtual std::pair<uint8_t, uint8_t> get_spawn_pos() const = 0;
+
+	virtual void set_turn(uint8_t turn) = 0;
 };
 
 #endif // GENERATOR_HPP

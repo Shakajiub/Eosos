@@ -45,7 +45,7 @@ public:
 
 	bool spawn_level_up_box(Hero *hero);
 	bool spawn_message_box(const std::string &title, const std::string &message, bool lock = false);
-	void clear_message_box();
+	void clear_message_box(bool pass_lock = false);
 
 	void draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight = false) const;
 

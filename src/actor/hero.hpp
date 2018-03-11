@@ -47,6 +47,7 @@ public:
 	virtual void end_turn();
 
 	virtual uint8_t get_damage() const;
+	void clear_status();
 
 	bool init_ui_texture();
 	bool init_pathfinder();
@@ -63,6 +64,7 @@ public:
 	HeroClass get_hero_class() const { return hero_class; }
 	AStar* get_pathfinder() const { return pathfinder; }
 	bool get_auto_move() const;
+	bool get_ability_activated() const { return ability_activated; }
 
 	void set_sleep_timer(uint8_t timer);
 	void set_ability_activated(bool a) { ability_activated = a; }
@@ -71,6 +73,7 @@ private:
 	bool auto_move_path;
 	bool command_this_turn;
 	bool ability_activated;
+	bool random_move;
 
 	HeroClass hero_class;
 

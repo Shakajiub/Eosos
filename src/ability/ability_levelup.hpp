@@ -29,7 +29,7 @@ public:
 	void free();
 
 	virtual bool init();
-	virtual void apply(Hero *hero);
+	virtual void apply(Hero *hero, bool cancel);
 };
 
 #endif // ABILITY_LEVELUP_HPP

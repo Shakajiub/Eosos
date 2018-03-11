@@ -38,8 +38,8 @@ bool AbilityLevelUp::init()
 	if (init_texture("core/texture/ui/icon/arrow_up.png", COLOR_SKY))
 		ability_name = "level-up";
 }
-void AbilityLevelUp::apply(Hero *hero)
+void AbilityLevelUp::apply(Hero *hero, bool cancel)
 {
-	if (hero != nullptr)
+	if (hero != nullptr && !cancel)
 		ui.spawn_level_up_box(hero);
 }

@@ -58,9 +58,9 @@ bool AbilitySprout::init()
 	}
 	return false;
 }
-void AbilitySprout::apply(Hero *hero)
+void AbilitySprout::apply(Hero *hero, bool cancel)
 {
-	if (!activated)
+	if (!activated && !cancel)
 	{
 		Overworld *scene = engine.get_scene_manager()->get_scene("test");
 		Level *level = nullptr;

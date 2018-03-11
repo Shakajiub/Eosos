@@ -29,7 +29,8 @@ enum GameState
 {
 	GAME_IN_PROGRESS,
 	GAME_OVER,
-	GAME_BOSS_WON
+	GAME_BOSS_WON,
+	GAME_END
 };
 class Overworld : public Scene
 {

@@ -36,8 +36,8 @@ bool AbilitySleep::init()
 	if (init_texture("core/texture/ui/icon/sleep.png", COLOR_MIDNIGHT))
 		ability_name = "sleep";
 }
-void AbilitySleep::apply(Hero *hero)
+void AbilitySleep::apply(Hero *hero, bool cancel)
 {
-	if (hero != nullptr)
+	if (hero != nullptr && !cancel)
 		hero->set_sleep_timer(10);
 }

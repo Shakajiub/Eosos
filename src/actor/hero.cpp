@@ -29,8 +29,9 @@
 #include "ui.hpp"
 
 Hero::Hero() :
-	auto_move_path(false), command_this_turn(false), hero_class(HC_PEON), hp_shake(0), hb_timer(100),
-	pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr), sleep_timer(0), ability_activated(false)
+	auto_move_path(false), command_this_turn(false), random_move(false), hero_class(HC_PEON),
+	hp_shake(0), hb_timer(100), pathfinder(nullptr), ui_texture(nullptr), health_texture(nullptr),
+	sleep_timer(0), ability_activated(false)
 {
 	health = std::make_pair(3, 3);
 	prev_health = health.first;
@@ -140,7 +141,7 @@ void Hero::render_ui(uint16_t xpos, uint16_t ypos) const
 				"Moves: " + std::to_string(moves.first) + "/%D" + std::to_string(moves.second)
 			);
 		const std::string xp = "%FXP: " + std::to_string(experience) + "/" + std::to_string(combat_level * 10);
-		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 16 - (xp.length() * 8), 27, xp);
+		ui.get_bitmap_font()->render_text(camera.get_cam_w() - (xp.length() * 8), 27, xp);
 	}
 }
 void Hero::start_turn()
@@ -152,6 +153,9 @@ void Hero::start_turn()
 
 		if (!get_auto_move())
 			camera.update_position(grid_x * 32, grid_y * 32);
+
+		if (mount != nullptr && engine.get_rng() % 25 == 0)
+			random_move = true;
 	}
 	if (grid_x > 20 && ui.get_message_log() != nullptr)
 	{
@@ -190,7 +194,24 @@ bool Hero::take_turn(Level *level, ActorManager *am)
 	}
 	if (actions_empty() && moves.first > 0)
 	{
-		if (auto_move_path && pathfinder != nullptr)
+		if (random_move)
+		{
+			const int8_t offset_x[8] = { 0, 0, -1, 1, -1, 1, -1, 1 };
+			const int8_t offset_y[8] = { -1, 1, 0, 0, -1, -1, 1, 1 };
+			const uint8_t i = engine.get_rng() % 8;
+
+			if (!level->get_wall(grid_x + offset_x[i], grid_y + offset_y[i], true))
+				add_action(ACTION_MOVE, grid_x + offset_x[i], grid_y + offset_y[i]);
+			else turn_done = true;
+
+			if (ui.get_message_log() != nullptr)
+				ui.get_message_log()->add_message("The " + name + "'s mount moves wildly!");
+
+			moves.first = 0;
+			random_move = false;
+			pathfinder->clear_path();
+		}
+		else if (auto_move_path && pathfinder != nullptr)
 		{
 			step_pathfinder(level);
 			if (!pathfinder->get_path_found())
@@ -229,6 +250,13 @@ uint8_t Hero::get_damage() const
 		dmg = 0;
 
 	return dmg;
+}
+void Hero::clear_status()
+{
+	health.first = health.second;
+	if (status != STATUS_NONE)
+		set_status(STATUS_NONE);
+	moves = std::make_pair(0, 0);
 }
 bool Hero::init_ui_texture()
 {

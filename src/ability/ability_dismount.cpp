@@ -57,9 +57,9 @@ bool AbilityDismount::init()
 	}
 	return false;
 }
-void AbilityDismount::apply(Hero *hero)
+void AbilityDismount::apply(Hero *hero, bool cancel)
 {
-	if (!activated)
+	if (!activated && !cancel)
 	{
 		Overworld *scene = engine.get_scene_manager()->get_scene("test");
 		Level *level = nullptr;

@@ -53,10 +53,13 @@ void SoundManager::free()
 }
 void SoundManager::update()
 {
+	if (volume_music <= 0)
+		return;
+
 	if (silence_timer > 0)
 		silence_timer -= engine.get_dt();
 
-	else if (volume_music > 0 && next_song >= 0 && playlists[current_playlist].size() > 0 &&
+	else if (next_song >= 0 && playlists[current_playlist].size() > 0 &&
 		Mix_PlayingMusic() == 0 && Mix_FadingMusic() == MIX_NO_FADING)
 	{
 		if (current_song != nullptr)
@@ -126,6 +129,9 @@ void SoundManager::stop_music()
 }
 Sound* SoundManager::load_sound(const std::string &sound_name, bool music)
 {
+	if (volume_music <= 0)
+		return nullptr;
+
 	auto it = sound_map.find(sound_name);
 	if (it == sound_map.end())
 	{

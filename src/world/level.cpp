@@ -272,6 +272,10 @@ void Level::set_node(uint8_t xpos, uint8_t ypos, MapNode node)
 		return;
 	map_data[ypos][xpos] = node;
 }
+void Level::set_turn(uint8_t turn)
+{
+	map_generator->set_turn(turn);
+}
 void Level::init_map_texture()
 {
 	map_texture = SDL_CreateTexture(engine.get_renderer(),

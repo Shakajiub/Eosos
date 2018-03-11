@@ -57,9 +57,9 @@ bool AbilityPoison::init()
 	}
 	return false;
 }
-void AbilityPoison::apply(Hero *hero)
+void AbilityPoison::apply(Hero *hero, bool cancel)
 {
-	if (!activated)
+	if (!activated && !cancel)
 	{
 		Overworld *scene = engine.get_scene_manager()->get_scene("test");
 		Level *level = nullptr;

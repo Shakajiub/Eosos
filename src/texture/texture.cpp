@@ -18,6 +18,8 @@
 #include "engine.hpp"
 #include "texture.hpp"
 
+#include <cstring>
+
 Texture::Texture() : texture_pitch(0), name(""), texture(nullptr), texture_pixels(nullptr)
 {
 
@@ -79,7 +81,7 @@ bool Texture::load_from_file(const std::string &path, bool greyscale, bool outli
 	}
 	SDL_SetTextureBlendMode(new_texture, SDL_BLENDMODE_BLEND);
 	SDL_LockTexture(new_texture, &formatted_surface->clip_rect, &texture_pixels, &texture_pitch);
-	memcpy(texture_pixels, formatted_surface->pixels, formatted_surface->pitch * formatted_surface->h);
+	std::memcpy(texture_pixels, formatted_surface->pixels, formatted_surface->pitch * formatted_surface->h);
 
 	texture_width = formatted_surface->w;
 	texture_height = formatted_surface->h;

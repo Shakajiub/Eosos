@@ -57,9 +57,9 @@ bool AbilityDispel::init()
 	}
 	return false;
 }
-void AbilityDispel::apply(Hero *hero)
+void AbilityDispel::apply(Hero *hero, bool cancel)
 {
-	if (!activated)
+	if (!activated && !cancel)
 	{
 		Overworld *scene = engine.get_scene_manager()->get_scene("test");
 		Level *level = nullptr;
