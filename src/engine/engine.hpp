@@ -33,22 +33,22 @@
 #include <random>
 
 // DawnBringer palette colors
-const SDL_Color COLOR_BLACK = { 20, 12, 28 };
-const SDL_Color COLOR_PLUM = { 68, 36, 52 };
-const SDL_Color COLOR_MIDNIGHT = { 48, 52, 109 };
-const SDL_Color COLOR_IRON = { 78, 74, 78 };
-const SDL_Color COLOR_EARTH = { 133, 76, 48 };
-const SDL_Color COLOR_MOSS = { 52, 101, 36 };
-const SDL_Color COLOR_BERRY = { 208, 70, 72 };
-const SDL_Color COLOR_OLIVE = { 117, 113, 97 };
-const SDL_Color COLOR_CORNFLOWER = { 89, 125, 206 };
-const SDL_Color COLOR_OCHER = { 210, 125, 44 };
-const SDL_Color COLOR_SLATE = { 133, 149, 161 };
-const SDL_Color COLOR_LEAF = { 109, 170, 44 };
-const SDL_Color COLOR_PEACH = { 210, 170, 153 };
-const SDL_Color COLOR_SKY = { 109, 194, 202 };
-const SDL_Color COLOR_MAIZE = { 218, 212, 94 };
-const SDL_Color COLOR_PEPPERMINT = { 222, 238, 214 };
+const SDL_Color DAWN_BLACK = { 20, 12, 28 };
+const SDL_Color DAWN_PLUM = { 68, 36, 52 };
+const SDL_Color DAWN_MIDNIGHT = { 48, 52, 109 };
+const SDL_Color DAWN_IRON = { 78, 74, 78 };
+const SDL_Color DAWN_EARTH = { 133, 76, 48 };
+const SDL_Color DAWN_MOSS = { 52, 101, 36 };
+const SDL_Color DAWN_BERRY = { 208, 70, 72 };
+const SDL_Color DAWN_OLIVE = { 117, 113, 97 };
+const SDL_Color DAWN_CORNFLOWER = { 89, 125, 206 };
+const SDL_Color DAWN_OCHER = { 210, 125, 44 };
+const SDL_Color DAWN_SLATE = { 133, 149, 161 };
+const SDL_Color DAWN_LEAF = { 109, 170, 44 };
+const SDL_Color DAWN_PEACH = { 210, 170, 153 };
+const SDL_Color DAWN_SKY = { 109, 194, 202 };
+const SDL_Color DAWN_MAIZE = { 218, 212, 94 };
+const SDL_Color DAWN_PEPPERMINT = { 222, 238, 214 };
 
 class SceneManager;
 class SoundManager;

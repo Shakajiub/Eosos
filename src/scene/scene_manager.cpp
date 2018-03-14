@@ -39,6 +39,9 @@ void SceneManager::free()
 }
 void SceneManager::init()
 {
+	// Must initialize the bitmap font here in case we fail to load a scene
+	ui.init_bitmap_font();
+
 	load_scene<Overworld>("test");
 	set_scene("test");
 }

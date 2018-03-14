@@ -54,7 +54,7 @@ void Ability::render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const
 		SDL_RenderCopyEx(engine.get_renderer(), ability_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);
 
 		ui.get_bitmap_font()->set_scale(2);
-		ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
+		ui.get_bitmap_font()->set_color(DAWN_PEPPERMINT);
 		if (cooldown.first > 0)
 		{
 			const uint8_t c = (cooldown.first > 4) ? 155 : 160 - cooldown.first;

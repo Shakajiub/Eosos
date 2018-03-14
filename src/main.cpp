@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 			engine.render();
 		engine.close();
 	}
-	else std::cout << "failed to initialize!" << std::endl;
+	else std::cerr << "Failed to initialize!" << std::endl;
 
 	return 0;
 }

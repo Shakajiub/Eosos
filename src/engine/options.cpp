@@ -19,6 +19,7 @@
 #include "options.hpp"
 
 #include "camera.hpp"
+#include "logging.hpp"
 #include "scene_manager.hpp"
 #include "sound_manager.hpp"
 #include "bitmap_font.hpp"
@@ -77,7 +78,7 @@ void Options::load()
 			// Lines starting with a square bracket declare the category
 			if (line[0] == '[')
 			{
-				category = line.substr(1, line.length() - 2);
+				category = line.substr(1, line.length() - 3);
 			}
 			else if (line[0] != '\n' && line[0] != ';') // Other lines define the options
 			{
@@ -98,21 +99,21 @@ void Options::load()
 					if (split != std::string::npos)
 						value = value.substr(0, split);
 
-					std::cout << "setting option '" << category << "-" << key << "': " << value << std::endl;
+					logging.cout(std::string("Settin option '") + category + "-" + key + "': " + value);
 					if (value_type == 'b')
 						set_b(category + "-" + key, std::stoi(value));
 					else if (value_type == 'i')
 						set_i(category + "-" + key, std::stoi(value));
 					else if (value_type == 's')
 						set_s(category + "-" + key, value);
-					else std::cout << "invalid option identifier '" << value_type << "_'!" << std::endl;
+					else logging.cerr(std::string("Invalid option identifier '") + value_type + "_'!");
 				}
 			}
 		}
 		options_file.close();
 		apply(); // Apply any major changes immediately
 	}
-	else std::cout << "could not find 'options.ini'!" << std::endl;
+	else logging.cerr("Could not find 'options.ini'!");
 }
 void Options::apply()
 {
@@ -120,7 +121,6 @@ void Options::apply()
 
 	if (options_i["display-width"] < 1024) options_i["display-width"] = 1024;
 	if (options_i["display-height"] < 576) options_i["display-height"] = 576;
-	if (options_i["display-fps_cap"] < 1) options_i["display-fps_cap"] = 1;
 
 	if (options_i["camera-scroll_speed"] < 1)
 		options_i["camera-scroll_speed"] = 1;
@@ -153,7 +153,7 @@ const bool& Options::get_b(const std::string &option)
 	if (options_b.find(option) != options_b.end())
 		return options_b[option];
 
-	std::cout << "could not get option '" << option << "'!" << std::endl;
+	logging.cerr(std::string("Could not get option '" + option + "'!"));
 	return false;
 }
 const int16_t& Options::get_i(const std::string &option)
@@ -161,7 +161,7 @@ const int16_t& Options::get_i(const std::string &option)
 	if (options_i.find(option) != options_i.end())
 		return options_i[option];
 
-	std::cout << "could not get option '" << option << "'!" << std::endl;
+	logging.cerr(std::string("Could not get option '" + option + "'!"));
 	return 0;
 }
 const std::string& Options::get_s(const std::string &option)
@@ -169,7 +169,7 @@ const std::string& Options::get_s(const std::string &option)
 	if (options_s.find(option) != options_s.end())
 		return options_s[option];
 
-	std::cout << "could not get option '" << option << "'!" << std::endl;
+	logging.cerr(std::string("Could not get option '" + option + "'!"));
 	return "err";
 }
 void Options::set_b(const std::string &option, const bool &value)

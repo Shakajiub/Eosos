@@ -69,7 +69,7 @@ bool MessageBox::init(const std::string &title, const std::string &message, uint
 
 	//ui.draw_box(0, 0, width, height);
 
-	ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
+	ui.get_bitmap_font()->set_color(DAWN_PEPPERMINT);
 	ui.get_bitmap_font()->set_scale(3);
 	ui.get_bitmap_font()->render_text(((width * 32) / 2) - ((box_title.length() * 16) / 2), 16, box_title);
 	ui.get_bitmap_font()->set_scale(2);
@@ -88,7 +88,7 @@ void MessageBox::render() const
 
 		SDL_RenderCopyEx(engine.get_renderer(), box_background, &clip, &quad, 0.0, nullptr, SDL_FLIP_NONE);
 	}*/
-	ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
+	ui.get_bitmap_font()->set_color(DAWN_PEPPERMINT);
 	ui.get_bitmap_font()->set_scale(3);
 	ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - ((box_title.length() * 24) / 2), 64, box_title);
 	ui.get_bitmap_font()->set_scale(2);

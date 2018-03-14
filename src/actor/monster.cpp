@@ -89,7 +89,7 @@ void Monster::death(ActorManager *am, Level *level)
 
 		ui.spawn_message_box("BOSS", "Kobold Trueform");
 		if (ui.get_message_log() != nullptr)
-			ui.get_message_log()->add_message("The Kobold Demoniac transforms!", COLOR_MAIZE);
+			ui.get_message_log()->add_message("The Kobold Demoniac transforms!", DAWN_MAIZE);
 		engine.get_sound_manager()->set_playlist(PT_BOSS);
 	}
 }
@@ -179,7 +179,7 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 				moves.first = 0;
 
 				if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message("The " + name + " casts %6Weakness%9!", COLOR_OCHER);
+					ui.get_message_log()->add_message("The " + name + " casts %6Weakness%9!", DAWN_OCHER);
 			}
 		}
 		if (moves.first > 0 && has_ability("necromancy") && spell_timer == 0)
@@ -198,7 +198,7 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 					moves.first = 0;
 
 					if (ui.get_message_log() != nullptr)
-						ui.get_message_log()->add_message("The " + name + " summons a minion!", COLOR_OCHER);
+						ui.get_message_log()->add_message("The " + name + " summons a minion!", DAWN_OCHER);
 				}
 			}
 		}

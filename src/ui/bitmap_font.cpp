@@ -26,14 +26,14 @@ SDL_Color char_to_color(char hex)
 {
 	switch (hex)
 	{
-		case '0': return COLOR_BLACK; case '1': return COLOR_PLUM;  case '2': return COLOR_MIDNIGHT;
-		case '3': return COLOR_IRON;  case '4': return COLOR_EARTH; case '5': return COLOR_MOSS;
-		case '6': return COLOR_BERRY; case '7': return COLOR_OLIVE; case '8': return COLOR_CORNFLOWER;
-		case '9': return COLOR_OCHER; case 'A': return COLOR_SLATE; case 'B': return COLOR_LEAF;
-		case 'C': return COLOR_PEACH; case 'D': return COLOR_SKY;   case 'E': return COLOR_MAIZE;
-		default:  return COLOR_PEPPERMINT;
+		case '0': return DAWN_BLACK; case '1': return DAWN_PLUM;  case '2': return DAWN_MIDNIGHT;
+		case '3': return DAWN_IRON;  case '4': return DAWN_EARTH; case '5': return DAWN_MOSS;
+		case '6': return DAWN_BERRY; case '7': return DAWN_OLIVE; case '8': return DAWN_CORNFLOWER;
+		case '9': return DAWN_OCHER; case 'A': return DAWN_SLATE; case 'B': return DAWN_LEAF;
+		case 'C': return DAWN_PEACH; case 'D': return DAWN_SKY;   case 'E': return DAWN_MAIZE;
+		default:  return DAWN_PEPPERMINT;
 	}
-	return COLOR_BLACK; // Should not ever get here
+	return DAWN_BLACK; // Should not ever get here
 }
 BitmapFont::BitmapFont() : font_width(0), font_height(0), font_scale(1), font_bitmap(nullptr)
 {
@@ -77,7 +77,7 @@ bool BitmapFont::build(const std::string &texture_name)
 		}
 	}
 	font_bitmap->unlock_texture();
-	font_bitmap->set_color(COLOR_PEPPERMINT);
+	font_bitmap->set_color(DAWN_PEPPERMINT);
 
 	std::cout << "font loaded, size: " << std::to_string(font_width) << ", " << std::to_string(font_height) << std::endl;
 	return true;

@@ -115,7 +115,7 @@ void UI::init_message_log()
 	message_log->set_position(0, camera.get_cam_h() - 128);
 	message_log->set_size(25, 4);
 	message_log->init();
-	//message_log->add_message("Welcome to HELL.", COLOR_BERRY);
+	//message_log->add_message("Welcome to HELL.", DAWN_BERRY);
 }
 bool UI::spawn_level_up_box(Hero *hero)
 {

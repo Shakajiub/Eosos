@@ -21,6 +21,7 @@
 #include "texture_manager.hpp"
 
 #include "camera.hpp"
+#include "logging.hpp"
 #include "options.hpp"
 #include "ui.hpp"
 
@@ -36,87 +37,96 @@ Engine::~Engine()
 }
 bool Engine::init()
 {
-	// Initialize SDL
+	//
+	//    Initialize core SDL
+	//
+
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 	{
-		std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
+		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
 	char *temp_path = SDL_GetBasePath();
-	base_path = temp_path; base_path += "data/";
+	base_path = std::string(temp_path) + "data/";
 	SDL_free(temp_path);
 
-	// Load options from ini file
+	// Initialize custom logging system && load game options
+
+	logging.init(base_path);
 	options.load();
 
-	// Set up flags for initializing the main SDL_Window
+	//
+	//    Initialize main SDL_Window
+	//
+
 	uint32_t flags = SDL_WINDOW_SHOWN;
 	if (options.get_b("display-fullscreen"))
 		flags = flags | SDL_WINDOW_FULLSCREEN_DESKTOP;
 	if (options.get_b("display-borderless"))
 		flags = flags | SDL_WINDOW_BORDERLESS;
 
-	// Create main window
-	main_window = SDL_CreateWindow("Eosos - 7DRL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	main_window = SDL_CreateWindow("Eosos", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		options.get_i("display-width"), options.get_i("display-height"), flags
 	);
 	if (main_window == NULL)
 	{
 		main_window = nullptr;
-		std::cout << "window could not be created! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Could not create main window! SDL Error: ") + SDL_GetError());
 		return false;
 	}
-	// Set up flags for initializing main SDL_Renderer
+
+	//
+	//    Initialize main SDL_Renderer
+	//
+
 	flags = SDL_RENDERER_ACCELERATED;
 	if (options.get_b("display-vsync"))
 		flags = flags | SDL_RENDERER_PRESENTVSYNC;
 
-	// Create main renderer
 	main_renderer = SDL_CreateRenderer(main_window, -1, flags);
 	if (main_renderer == NULL)
 	{
 		main_renderer = nullptr;
-		std::cout << "renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Could not create main renderer! SDL Error: ") + SDL_GetError());
 		return false;
 	}
+
 	// Additional SDL settings
-	SDL_SetRenderDrawColor(main_renderer, 20, 12, 28, 255);
+
+	SDL_SetRenderDrawColor(main_renderer, DAWN_BLACK.r, DAWN_BLACK.g, DAWN_BLACK.b, DAWN_BLACK.a);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	// Initialize SDL_image
+	//
+	//    Initialize SDL_image
+	//
+
 	const uint32_t img_flags = IMG_INIT_PNG;
 	if (!(IMG_Init(img_flags) & img_flags))
 	{
-		std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
+		logging.cerr(std::string("SDL_image could not initialize! SDL_image Error: ") + IMG_GetError());
 		return false;
 	}
-	// Initialize SDL_mixer
+
+	//
+	//    Initialize SDL_mixer
+	//
+
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 	{
-		std::cout << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
+		logging.cerr(std::string("SDL_mixer could not initialize! SDL_mixer Error: ") + Mix_GetError());
 		return false;
 	}
-	//Mix_ReserveChannels(4);
 
-	// Initialize randomization features
-	//generator.seed(std::random_device{}());
+	// Initialize other custom engine objects
 
-	std::random_device device;
-	std::seed_seq seq{device(), device(), device(), device()};
-	generator.seed(seq);
+	// TODO - The random seed doesn't seem to work on Windows
+	generator.seed(std::random_device{}());
 
-	// Create the main engine managers
 	scene_manager = new SceneManager;
 	sound_manager = new SoundManager;
 	texture_manager = new TextureManager;
 
 	camera.init();
-
-	// Initialize bitmap_font
-	if (!ui.init_bitmap_font())
-		return false;
-
-	// Load the main game_scene
 	scene_manager->init();
 
 	return true;
@@ -138,6 +148,8 @@ void Engine::close()
 	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
+
+	logging.free();
 }
 bool Engine::update()
 {
@@ -151,9 +163,13 @@ void Engine::render() const
 {
 	scene_manager->render();
 
-	const uint8_t frame_delta_time = SDL_GetTicks() - current_time;
-	const uint8_t ticks_per_frame = 1000 / options.get_i("display-fps_cap");
+	const int16_t fps_cap = options.get_i("display-fps_cap");
+	if (fps_cap > 0) // Apply custom fps cap at the end of the game loop
+	{
+		const uint8_t frame_delta_time = SDL_GetTicks() - current_time;
+		const uint8_t ticks_per_frame = 1000 / fps_cap;
 
-	if (frame_delta_time < ticks_per_frame) // Apply fps cap at the end of the entire game loop
-		SDL_Delay(ticks_per_frame - frame_delta_time);
+		if (frame_delta_time < ticks_per_frame)
+			SDL_Delay(ticks_per_frame - frame_delta_time);
+	}
 }

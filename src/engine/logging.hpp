@@ -15,43 +15,29 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MESSAGE_LOG_HPP
-#define MESSAGE_LOG_HPP
+#ifndef LOGGING_HPP
+#define LOGGING_HPP
 
-#include <vector>
+#include <fstream> // std::ofstream
 
-typedef struct
-{
-	std::string text;
-	SDL_Color color;
-}
-Message;
-
-class MessageLog
+class Logging
 {
 public:
-	MessageLog();
-	~MessageLog();
+	Logging();
+	~Logging();
 
+	void init(const std::string &base_path);
 	void free();
-	void init();
-	void render() const;
 
-	void add_message(const std::string &message, SDL_Color color = DAWN_PEPPERMINT);
-	void clear_log();
-
-	void set_position(int16_t xpos, int16_t ypos) { x = xpos; y = ypos; }
-	void set_size(uint8_t new_width, uint8_t new_height);
+	void cout(const std::string &text);
+	void cerr(const std::string &text);
 
 private:
-	void refresh_texture();
+	bool initialized;
 
-	int16_t x, y;
-	uint8_t width, height;
-	uint8_t max_messages;
-
-	std::vector<Message> message_log;
-	SDL_Texture *log_texture;
+	std::ofstream out;
+	std::ofstream err;
 };
+extern Logging logging;
 
-#endif // MESSAGE_LOG_HPP
+#endif // LOGGING_HPP

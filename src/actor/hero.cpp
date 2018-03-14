@@ -160,8 +160,8 @@ void Hero::start_turn()
 	if (grid_x > 20 && ui.get_message_log() != nullptr)
 	{
 		load_bubble("exclamation", 1);
-		ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", COLOR_BERRY);
-		ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", COLOR_BERRY);
+		ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", DAWN_BERRY);
+		ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", DAWN_BERRY);
 	}
 }
 bool Hero::take_turn(Level *level, ActorManager *am)
@@ -186,8 +186,8 @@ bool Hero::take_turn(Level *level, ActorManager *am)
 			if (grid_x > 20 && ui.get_message_log() != nullptr)
 			{
 				load_bubble("exclamation", 1);
-				ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", COLOR_BERRY);
-				ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", COLOR_BERRY);
+				ui.get_message_log()->add_message("The " + name + " is too close to the mountains!", DAWN_BERRY);
+				ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", DAWN_BERRY);
 			}
 			turn_done = false;
 		}
@@ -382,7 +382,7 @@ void Hero::step_pathfinder(Level *level)
 				moves.first = 0;
 			}
 			else if (ui.get_message_log() != nullptr)
-				ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", COLOR_LEAF);
+				ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", DAWN_LEAF);
 		}
 		else
 		{
@@ -390,7 +390,7 @@ void Hero::step_pathfinder(Level *level)
 			{
 				load_bubble("failure", 1);
 				if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message(name + ": \"My path is blocked!\"", COLOR_LEAF);
+					ui.get_message_log()->add_message(name + ": \"My path is blocked!\"", DAWN_LEAF);
 			}
 			camera.update_position(grid_x * 32, grid_y * 32);
 		}
@@ -471,7 +471,7 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 					moves.first = 0;
 				}
 				else if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", COLOR_LEAF);
+					ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", DAWN_LEAF);
 			}
 		}
 		else if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))

@@ -90,13 +90,13 @@ bool Texture::load_from_file(const std::string &path, bool greyscale, bool outli
 	{
 		uint32_t *pixels = (uint32_t*)texture_pixels;
 		const uint16_t pixel_count = (texture_pitch / 4) * texture_height;
-		const uint32_t color_key = SDL_MapRGB(formatted_surface->format, 25, 25, 25);
+		const uint32_t DAWN_key = SDL_MapRGB(formatted_surface->format, 25, 25, 25);
 		const uint32_t outline_key = SDL_MapRGB(formatted_surface->format, 0, 0, 0);
 		const uint32_t transparent = SDL_MapRGBA(formatted_surface->format, 0, 0, 0, 0);
 
 		for (uint16_t i = 0; i < pixel_count; ++i)
 		{
-			if (pixels[i] == color_key || (!outline && pixels[i] == outline_key))
+			if (pixels[i] == DAWN_key || (!outline && pixels[i] == outline_key))
 				pixels[i] = transparent;
 		}
 	}

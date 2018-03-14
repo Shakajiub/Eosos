@@ -78,7 +78,7 @@ void SoundManager::update()
 			{
 				std::size_t split = next.rfind('/');
 				if (split != std::string::npos)
-					ml->add_message("Now playing '" + next.substr(split + 1) + "'", COLOR_CORNFLOWER);
+					ml->add_message("Now playing '" + next.substr(split + 1) + "'", DAWN_CORNFLOWER);
 			}*/
 			prev_song = next_song;
 			next_song = -1;
@@ -114,14 +114,14 @@ void SoundManager::pause_music(bool msg_log)
 	Mix_PauseMusic();
 
 	if (msg_log && ui.get_message_log() != nullptr)
-		ui.get_message_log()->add_message("Music paused", COLOR_CORNFLOWER);
+		ui.get_message_log()->add_message("Music paused", DAWN_CORNFLOWER);
 }
 void SoundManager::resume_music(bool msg_log)
 {
 	Mix_ResumeMusic();
 
 	if (msg_log && ui.get_message_log() != nullptr)
-		ui.get_message_log()->add_message("Music resumed", COLOR_CORNFLOWER);
+		ui.get_message_log()->add_message("Music resumed", DAWN_CORNFLOWER);
 }
 void SoundManager::stop_music()
 {

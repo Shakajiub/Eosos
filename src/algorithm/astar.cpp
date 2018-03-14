@@ -51,7 +51,7 @@ bool AStar::init()
 	if (path_marker == nullptr)
 		path_marker = engine.get_texture_manager()->load_texture("core/texture/ui/path.png", true);
 	if (path_marker != nullptr)
-		path_marker->set_color(COLOR_BERRY);
+		path_marker->set_color(DAWN_BERRY);
 	return path_marker != nullptr;
 }
 bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, uint8_t finder)
@@ -236,14 +236,14 @@ void AStar::render(uint8_t good_length) const
 		return;
 	if (path_marker != nullptr)
 	{
-		path_marker->set_color(COLOR_BERRY);
+		path_marker->set_color(DAWN_BERRY);
 		uint8_t length = path.size();
 
 		for (std::shared_ptr<ASNode> n : path)
 		{
 			length -= 1;
 			if (length < good_length)
-				path_marker->set_color(COLOR_LEAF);
+				path_marker->set_color(DAWN_LEAF);
 
 			if (camera.get_in_camera_grid(n->x, n->y))
 				path_marker->render(

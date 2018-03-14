@@ -125,7 +125,7 @@ void Overworld::init()
 	}
 	node_highlight = engine.get_texture_manager()->load_texture("core/texture/ui/highlight.png", true);
 	if (node_highlight != nullptr)
-		node_highlight->set_color(COLOR_BERRY);
+		node_highlight->set_color(DAWN_BERRY);
 
 	base_healthbar = engine.get_texture_manager()->load_texture("core/texture/ui/health_boss.png");
 
@@ -370,7 +370,7 @@ void Overworld::render() const
 
 	if (in_menu)
 	{
-		ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
+		ui.get_bitmap_font()->set_color(DAWN_PEPPERMINT);
 		ui.get_bitmap_font()->set_scale(3);
 		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 144, 64, "Eosos - 7DRL");
 		ui.get_bitmap_font()->set_scale(2);
@@ -384,7 +384,7 @@ void Overworld::render() const
 		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 38, "    Beau Buckley");
 		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 27, " fantasymusica.org");
 
-		ui.get_bitmap_font()->set_color(COLOR_SLATE);
+		ui.get_bitmap_font()->set_color(DAWN_SLATE);
 		ui.get_bitmap_font()->render_text(16, camera.get_cam_h() - 60, "      Art");
 		ui.get_bitmap_font()->render_text((camera.get_cam_w() / 2) - 80, camera.get_cam_h() - 38, "Design & Programming");
 		ui.get_bitmap_font()->render_text(camera.get_cam_w() - 160, camera.get_cam_h() - 60, "       Music");
@@ -415,7 +415,7 @@ void Overworld::render() const
 			node_highlight->render(map_x * 32 - camera.get_cam_x(), map_y * 32 - camera.get_cam_y());
 		}
 	}
-	ui.get_bitmap_font()->set_color(COLOR_PEPPERMINT);
+	ui.get_bitmap_font()->set_color(DAWN_PEPPERMINT);
 
 	if (actor_manager != nullptr)
 		actor_manager->render_ui();

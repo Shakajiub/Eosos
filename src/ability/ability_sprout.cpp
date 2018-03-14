@@ -47,13 +47,13 @@ void AbilitySprout::free()
 }
 bool AbilitySprout::init()
 {
-	if (init_texture("core/texture/ui/icon/crop.png", COLOR_MAIZE))
+	if (init_texture("core/texture/ui/icon/crop.png", DAWN_MAIZE))
 		ability_name = "sprout";
 
 	target_texture = engine.get_texture_manager()->load_texture("core/texture/ui/target.png", true);
 	if (target_texture != nullptr)
 	{
-		target_texture->set_color(COLOR_BERRY);
+		target_texture->set_color(DAWN_BERRY);
 		return true;
 	}
 	return false;

@@ -501,7 +501,7 @@ void Actor::attack(Actor *other)
 	if (other->get_actor_type() == ACTOR_PROP)
 	{
 		other->set_delete(true);
-		ml->add_message("The " + name + " pillages the fields!", COLOR_PEACH);
+		ml->add_message("The " + name + " pillages the fields!", DAWN_PEACH);
 		add_health(1);
 
 		if (other->get_status() == STATUS_POISON) // This was a nice side-effect for allowing any actor to be targeted

@@ -262,7 +262,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 				{
 					ui.spawn_message_box("BOSS", boss_name);
 					if (ui.get_message_log() != nullptr)
-						ui.get_message_log()->add_message(boss_desc, COLOR_MAIZE);
+						ui.get_message_log()->add_message(boss_desc, DAWN_MAIZE);
 					engine.get_sound_manager()->set_playlist(PT_BOSS);
 				}
 			}

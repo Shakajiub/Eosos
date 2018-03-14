@@ -112,8 +112,8 @@ bool LevelUpBox::init(Hero *hero)
 			"Receive the %AArmored%F buff"
 		};
 		const SDL_Color colors[2] = {
-			COLOR_BERRY,
-			COLOR_SKY
+			DAWN_BERRY,
+			DAWN_SKY
 		};
 		uint8_t it = 0;
 		if (hero->get_health().second > 3)

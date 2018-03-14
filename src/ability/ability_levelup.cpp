@@ -35,7 +35,7 @@ void AbilityLevelUp::free()
 }
 bool AbilityLevelUp::init()
 {
-	if (init_texture("core/texture/ui/icon/arrow_up.png", COLOR_SKY))
+	if (init_texture("core/texture/ui/icon/arrow_up.png", DAWN_SKY))
 		ability_name = "level-up";
 }
 void AbilityLevelUp::apply(Hero *hero, bool cancel)

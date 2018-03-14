@@ -46,13 +46,13 @@ void AbilityDismount::free()
 }
 bool AbilityDismount::init()
 {
-	if (init_texture("core/texture/ui/icon/horse.png", COLOR_EARTH))
+	if (init_texture("core/texture/ui/icon/horse.png", DAWN_EARTH))
 		ability_name = "dismount";
 
 	target_texture = engine.get_texture_manager()->load_texture("core/texture/ui/target.png", true);
 	if (target_texture != nullptr)
 	{
-		target_texture->set_color(COLOR_BERRY);
+		target_texture->set_color(DAWN_BERRY);
 		return true;
 	}
 	return false;
