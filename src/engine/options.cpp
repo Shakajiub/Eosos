@@ -37,15 +37,11 @@ Options::Options()
 }
 Options::~Options()
 {
-	options_b.clear();
-	options_i.clear();
-	options_s.clear();
+	free();
 }
 void Options::init()
 {
-	options_b.clear();
-	options_i.clear();
-	options_s.clear();
+	free();
 
 	options_b["display-fullscreen"] = false;
 	options_b["display-borderless"] = false;
@@ -64,63 +60,72 @@ void Options::init()
 	options_s["ui-image"] = "background";
 	options_s["ui-font"] = "font";
 }
-void Options::load()
+void Options::free()
 {
-	init(); // Setup defaults
+	options_b.clear();
+	options_i.clear();
+	options_s.clear();
+}
+bool Options::load()
+{
+	init(); // Initialize default options
 
 	std::string line, category;
 	std::ifstream options_file(engine.get_base_path() + "../options.ini");
 
-	if (options_file.is_open())
+	if (!options_file.is_open())
 	{
-		while (std::getline(options_file, line))
+		logging.cerr("Could not find 'options.ini'!");
+		return false;
+	}
+	while (std::getline(options_file, line))
+	{
+		if (line[0] == '[') // Lines starting with a square bracket declare a category
 		{
-			// Lines starting with a square bracket declare the category
-			if (line[0] == '[')
-			{
-				category = line.substr(1, line.length() - 3);
-			}
-			else if (line[0] != '\n' && line[0] != ';') // Other lines define the options
-			{
-				// Remove all spaces and find the delimiter
-				const std::string::iterator end_pos = std::remove(line.begin(), line.end(), ' ');
-				line.erase(end_pos, line.end());
-				std::size_t split = line.find('=');
+			category = line.substr(1, line.length() - 3); // -3 for Windows-style line endings
+		}
+		else if (line[0] != '\n' && line[0] != ';') // Other lines define the options
+		{
+			// Remove all spaces and find the delimiter
+			const std::string::iterator end_pos = std::remove(line.begin(), line.end(), ' ');
+			line.erase(end_pos, line.end());
+			std::size_t split = line.find('=');
 
+			if (split != std::string::npos)
+			{
+				// Split the line into a key and a value
+				const char value_type = line[0];
+				const std::string key = line.substr(2, split - 2);
+				std::string value = line.substr(split + 1);
+
+				// Remove possible comment at the end of the line
+				split = value.find(';');
 				if (split != std::string::npos)
-				{
-					// Split the line into key and value
-					const char value_type = line[0];
-					const std::string key = line.substr(2, split - 2);
-					std::string value = line.substr(split + 1);
+					value = value.substr(0, split);
 
-					// Remove possible comment at the end of the line
-					split = value.find(';');
-					if (split != std::string::npos)
-						value = value.substr(0, split);
-
-					logging.cout(std::string("Settin option '") + category + "-" + key + "': " + value);
-					if (value_type == 'b')
-						set_b(category + "-" + key, std::stoi(value));
-					else if (value_type == 'i')
-						set_i(category + "-" + key, std::stoi(value));
-					else if (value_type == 's')
-						set_s(category + "-" + key, value);
-					else logging.cerr(std::string("Invalid option identifier '") + value_type + "_'!");
-				}
+				logging.cout(std::string("Setting option '") + category + "-" + key + "': " + value);
+				if (value_type == 'b')
+					set_b(category + "-" + key, std::stoi(value));
+				else if (value_type == 'i')
+					set_i(category + "-" + key, std::stoi(value));
+				else if (value_type == 's')
+					set_s(category + "-" + key, value);
+				else logging.cerr(std::string("Invalid option identifier '") + value_type + "_'!");
 			}
 		}
-		options_file.close();
-		apply(); // Apply any major changes immediately
 	}
-	else logging.cerr("Could not find 'options.ini'!");
+	options_file.close();
+	//logging.cout(std::endl);
+
+	apply(); // Apply any major changes immediately
+	return true;
 }
 void Options::apply()
 {
-	// Make sure the options are reasonable
-
-	if (options_i["display-width"] < 1024) options_i["display-width"] = 1024;
-	if (options_i["display-height"] < 576) options_i["display-height"] = 576;
+	if (options_i["display-width"] < 1024)
+		options_i["display-width"] = 1024;
+	if (options_i["display-height"] < 576)
+		options_i["display-height"] = 576;
 
 	if (options_i["camera-scroll_speed"] < 1)
 		options_i["camera-scroll_speed"] = 1;
@@ -170,7 +175,7 @@ const std::string& Options::get_s(const std::string &option)
 		return options_s[option];
 
 	logging.cerr(std::string("Could not get option '" + option + "'!"));
-	return "err";
+	return "error";
 }
 void Options::set_b(const std::string &option, const bool &value)
 {

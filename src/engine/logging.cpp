@@ -36,7 +36,8 @@ void Logging::init(const std::string &base_path)
 	// Clear previous logs
 	out.open(base_path + "logs/output.txt", std::ofstream::out | std::ofstream::trunc);
 	err.open(base_path + "logs/error.txt", std::ofstream::out | std::ofstream::trunc);
-	out.close(); err.close();
+	out.close();
+	err.close();
 
 	// Set up ofstreams for cout and cerr
 	out = std::ofstream(base_path + "logs/output.txt");
@@ -45,10 +46,11 @@ void Logging::init(const std::string &base_path)
 	// Print current date and time to both cout and cerr
 	std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
 	std::time_t t = std::chrono::system_clock::to_time_t(p);
-	cout(std::ctime(&t));
-	cerr(std::ctime(&t));
 
 	initialized = true;
+
+	cout(std::ctime(&t));
+	cerr(std::ctime(&t));
 }
 void Logging::free()
 {
@@ -63,11 +65,11 @@ void Logging::cout(const std::string &text)
 {
 	if (initialized)
 		out << text << std::endl;
-	else std::cerr << "Warning! Logging uninitialized!" << std::endl;
+	else std::cerr << "Logging::cout() Warning! Logging uninitialized!" << std::endl;
 }
 void Logging::cerr(const std::string &text)
 {
 	if (initialized)
 		err << text << std::endl;
-	else std::cerr << "Warning! Logging uninitialized!" << std::endl;
+	else std::cerr << "Logging::cerr() Warning! Logging uninitialized!" << std::endl;
 }

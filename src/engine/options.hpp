@@ -27,10 +27,10 @@ public:
 	~Options();
 
 	void init();
-	void load();
-	void apply();
+	void free();
 
-	// TODO - Maybe combine these into single templated get/set functions?
+	bool load();
+	void apply();
 
 	const bool& get_b(const std::string &option);
 	const int16_t& get_i(const std::string &option);

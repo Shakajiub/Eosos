@@ -47,12 +47,15 @@ bool Engine::init()
 		return false;
 	}
 	char *temp_path = SDL_GetBasePath();
-	base_path = std::string(temp_path) + "data/";
-	SDL_free(temp_path);
+	base_path = std::string(temp_path);
 
 	// Initialize custom logging system && load game options
 
 	logging.init(base_path);
+
+	base_path += "data/";
+	SDL_free(temp_path);
+
 	options.load();
 
 	//

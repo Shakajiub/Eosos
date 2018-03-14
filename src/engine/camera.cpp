@@ -23,8 +23,8 @@
 Camera camera;
 
 Camera::Camera() :
-	locked(false), free_move(false), scroll_speed(0.0f), follow_speed(0.0f), camera_x(0.0f), camera_y(0.0f),
-	camera_shake(0), camera_w(0), camera_h(0), offset_x(0), offset_y(0), center_x(0), center_y(0)
+	locked(false), free_move(false), scroll_speed(0.0f), follow_speed(0.0f), camera_x(0.0f),
+	camera_y(0.0f), camera_w(0), camera_h(0), center_x(0), center_y(0), offset_x(0), offset_y(0)
 {
 
 }
@@ -45,11 +45,10 @@ void Camera::init()
 }
 void Camera::update()
 {
-	//if (camera_shake > 0) shake();
-	if (locked || free_move) return;
+	if (locked || free_move)
+		return;
 
 	float t = engine.get_dt() / 100.0f * follow_speed;
-
 	if (t < 0.01f)      t = 0.01f;
 	else if (t > 0.99f) t = 0.99f;
 
@@ -61,14 +60,13 @@ void Camera::update()
 	camera_y = ((1.0f-t) * camera_y) + (t * (center_y - offset_y));
 
 	if (std::abs(camera_x - desired_x) < 2.0f && std::abs(camera_y - desired_y) < 2.0f)
-		free_move = true; // Once we're close enough stop calculating this
+		free_move = true; // Once we're close enough, just stop updating
 }
 void Camera::update_position(int16_t desired_x, int16_t desired_y, bool jump)
 {
 	free_move = false;
 	center_x = desired_x;
 	center_y = desired_y;
-	camera_shake = 0;
 
 	if (jump) // Pass true here to jump immediately to the new position
 	{
@@ -88,36 +86,6 @@ void Camera::move_camera(uint8_t direction, uint8_t map_width, uint8_t map_heigh
 		default: break;
 	}
 	free_move = true;
-	camera_shake = 0;
-}
-void Camera::shake(uint8_t intensity)
-{
-	// This is broken
-
-	/*if (intensity != 0)
-	{
-		if (!options.get_b("camera-apply_shake"))
-			return;
-
-		camera_shake = intensity;
-		shake_ox = camera_x;
-		shake_oy = camera_y;
-		return;
-	}
-	if (camera_shake % 2 == 0) // Reset position every other frame
-	{
-		camera_x = shake_ox;
-		camera_y = shake_oy;
-	}
-	else // Offset the camera a little bit (duration of the shake is also directly the intensity)
-	{
-		shake_ox = camera_x;
-		shake_oy = camera_y;
-
-		camera_x += engine.get_rng() % camera_shake;
-		camera_y += engine.get_rng() % camera_shake;
-	}
-	camera_shake -= 1;*/
 }
 bool Camera::get_in_camera_grid(uint8_t xpos, uint8_t ypos) const
 {
