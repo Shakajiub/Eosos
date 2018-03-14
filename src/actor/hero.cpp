@@ -262,7 +262,7 @@ bool Hero::init_ui_texture()
 {
 	clear_ui_texture();
 
-	health_texture = engine.get_texture_manager()->load_texture("core/texture/ui/health_hearts.png");
+	health_texture = engine.get_texture_manager()->load_texture("ui/health_hearts.png");
 	if (health_texture == nullptr)
 		return false;
 
@@ -318,31 +318,31 @@ bool Hero::init_pathfinder()
 bool Hero::init_class(HeroClass hc)
 {
 	const uint8_t hp = health.second;
-	std::string class_texture = "core/texture/actor/orc_peon.png";
+	std::string class_texture = "actor/orc_peon.png";
 	hero_class = hc;
 
 	switch (hero_class)
 	{
 		case HC_BARBARIAN:
 			name = "Barbarian";
-			class_texture = "core/texture/actor/orc_barbarian.png";
+			class_texture = "actor/orc_barbarian.png";
 			break;
 		case HC_NINJA:
 			name = "Ninja";
-			class_texture = "core/texture/actor/orc_ninja.png";
+			class_texture = "actor/orc_ninja.png";
 			proj_type = PROJECTILE_SHURIKEN;
 			add_ability("shoot");
 			break;
 		case HC_MAGE:
 			name = "Mage";
-			class_texture = "core/texture/actor/orc_mage.png";
+			class_texture = "actor/orc_mage.png";
 			add_ability("dispel");
 			add_ability("sprout");
 			add_ability("poison");
 			break;
 		case HC_JUGGERNAUT:
 			name = "Juggernaut";
-			class_texture = "core/texture/actor/orc_juggernaut.png";
+			class_texture = "actor/orc_juggernaut.png";
 			break;
 		default: hero_class = HC_PEON; break;
 	}

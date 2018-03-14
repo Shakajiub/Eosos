@@ -378,16 +378,16 @@ bool Actor::action_shoot(Level *level)
 			if (projectile == nullptr) switch (proj_type)
 			{
 				case PROJECTILE_SHURIKEN:
-					projectile = engine.get_texture_manager()->load_texture("core/texture/item/shuriken.png");
+					projectile = engine.get_texture_manager()->load_texture("item/shuriken.png");
 					break;
 				case PROJECTILE_DART:
-					projectile = engine.get_texture_manager()->load_texture("core/texture/item/dart.png");
+					projectile = engine.get_texture_manager()->load_texture("item/dart.png");
 					break;
 				case PROJECTILE_FIREBALL:
-					projectile = engine.get_texture_manager()->load_texture("core/texture/item/fireball.png");
+					projectile = engine.get_texture_manager()->load_texture("item/fireball.png");
 					break;
 				default:
-					projectile = engine.get_texture_manager()->load_texture("core/texture/item/arrow.png");
+					projectile = engine.get_texture_manager()->load_texture("item/arrow.png");
 					break;
 			}
 			if (grid_x != current_action.xpos)
@@ -573,7 +573,7 @@ void Actor::load_bubble(const std::string &bubble_name, uint8_t timer)
 	if (bubble != nullptr)
 		engine.get_texture_manager()->free_texture(bubble->get_name());
 
-	bubble = engine.get_texture_manager()->load_texture("core/texture/ui/bubble/" + bubble_name + ".png");
+	bubble = engine.get_texture_manager()->load_texture("ui/bubble/" + bubble_name + ".png");
 	if (bubble != nullptr)
 		bubble_timer = timer;
 }
@@ -595,7 +595,7 @@ void Actor::set_status(StatusType st)
 	switch (st)
 	{
 		case STATUS_LEVELUP:
-			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/level_up.png");
+			status_icon = engine.get_texture_manager()->load_texture("ui/status/level_up.png");
 			break;
 		case STATUS_POISON:
 			if (proj_type == PROJECTILE_DART)
@@ -603,19 +603,19 @@ void Actor::set_status(StatusType st)
 				st = STATUS_NONE;
 				ui.get_message_log()->add_message("The " + name + " is immune to %Bpoison%F!");
 			}
-			else status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/poison.png");
+			else status_icon = engine.get_texture_manager()->load_texture("ui/status/poison.png");
 			break;
 		case STATUS_WITHER:
-			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/wither.png");
+			status_icon = engine.get_texture_manager()->load_texture("ui/status/wither.png");
 			break;
 		case STATUS_ARMORED:
-			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/armored.png");
+			status_icon = engine.get_texture_manager()->load_texture("ui/status/armored.png");
 			break;
 		case STATUS_WEAK:
-			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/weakened.png");
+			status_icon = engine.get_texture_manager()->load_texture("ui/status/weakened.png");
 			break;
 		case STATUS_REGEN:
-			status_icon = engine.get_texture_manager()->load_texture("core/texture/ui/status/regeneration.png");
+			status_icon = engine.get_texture_manager()->load_texture("ui/status/regeneration.png");
 			break;
 		default: break;
 	}

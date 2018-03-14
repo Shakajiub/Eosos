@@ -220,7 +220,7 @@ void Monster::end_turn()
 }
 bool Monster::init_class(MonsterClass mc)
 {
-	std::string class_texture = "core/texture/actor/missing.png";
+	std::string class_texture = "actor/missing.png";
 	monster_class = mc;
 
 	// Ideally this stuff should be loaded from an external monster definion file,
@@ -231,55 +231,55 @@ bool Monster::init_class(MonsterClass mc)
 	{
 		case MONSTER_PLATINO:
 			name = "Platino";
-			class_texture = "core/texture/actor/dragon_de_platino.png";
+			class_texture = "actor/dragon_de_platino.png";
 			health = std::make_pair(20, 20);
 			proj_type = PROJECTILE_WITHER;
 			max_damage = 3;
 			break;
 		case MONSTER_PEST_ANT:
 			name = "Giant Ant";
-			class_texture = "core/texture/actor/pest_ant.png";
+			class_texture = "actor/pest_ant.png";
 			break;
 		case MONSTER_PEST_BUG:
 			name = "Big Bug";
-			class_texture = "core/texture/actor/pest_bug.png";
+			class_texture = "actor/pest_bug.png";
 			set_status(STATUS_ARMORED);
 			break;
 		case MONSTER_PEST_BEE:
 			name = "Massive Bee";
-			class_texture = "core/texture/actor/pest_bee.png";
+			class_texture = "actor/pest_bee.png";
 			max_moves = 2;
 			break;
 		case MONSTER_PEST_SCORPION:
 			name = "Humongous Scorpion";
-			class_texture = "core/texture/actor/pest_scorpion.png";
+			class_texture = "actor/pest_scorpion.png";
 			proj_type = PROJECTILE_DART;
 			health = std::make_pair(8, 8);
 			break;
 		case MONSTER_KOBOLD_WARRIOR:
 			name = "Kobold Warrior";
-			class_texture = "core/texture/actor/kobold_warrior.png";
+			class_texture = "actor/kobold_warrior.png";
 			break;
 		case MONSTER_KOBOLD_ARCHER:
 			name = "Kobold Archer";
-			class_texture = "core/texture/actor/kobold_archer.png";
+			class_texture = "actor/kobold_archer.png";
 			proj_type = PROJECTILE_ARROW;
 			add_ability("shoot");
 			break;
 		case MONSTER_KOBOLD_MAGE:
 			name = "Kobold Mage";
-			class_texture = "core/texture/actor/kobold_mage.png";
+			class_texture = "actor/kobold_mage.png";
 			add_ability("weakness");
 			spell_timer = 2;
 			break;
 		case MONSTER_KOBOLD_DEMONIAC:
 			name = "Kobold Demoniac";
-			class_texture = "core/texture/actor/kobold_demoniac.png";
+			class_texture = "actor/kobold_demoniac.png";
 			proj_type = PROJECTILE_WITHER;
 			break;
 		case MONSTER_KOBOLD_TRUEFORM:
 			name = "Kobold Trueform";
-			class_texture = "core/texture/actor/kobold_trueform.png";
+			class_texture = "actor/kobold_trueform.png";
 			proj_type = PROJECTILE_FIREBALL;
 			health = std::make_pair(8, 8);
 			add_ability("shoot");
@@ -287,57 +287,57 @@ bool Monster::init_class(MonsterClass mc)
 			break;
 		case MONSTER_DWARF_WARRIOR:
 			name = "Dwarven Warrior";
-			class_texture = "core/texture/actor/dwarf_warrior.png";
+			class_texture = "actor/dwarf_warrior.png";
 			set_status(STATUS_ARMORED);
 			break;
 		case MONSTER_DWARF_NECROMANCER:
 			name = "Dwarven Necromancer";
-			class_texture = "core/texture/actor/dwarf_necromancer.png";
+			class_texture = "actor/dwarf_necromancer.png";
 			add_ability("necromancy");
 			spell_timer = 2;
 			break;
 		case MONSTER_DWARF_BEASTMASTER:
 			name = "Dwarven Beastmaster";
-			class_texture = "core/texture/actor/dwarf_beastmaster.png";
+			class_texture = "actor/dwarf_beastmaster.png";
 			proj_type = PROJECTILE_DART;
 			add_ability("shoot");
 			break;
 		case MONSTER_DWARF_KING:
 			name = "Dwarven King";
-			class_texture = "core/texture/actor/dwarf_king.png";
+			class_texture = "actor/dwarf_king.png";
 			health = std::make_pair(12, 12);
 			max_damage = 2;
 			break;
 		case MONSTER_DEMON_RED:
 			name = "Demon";
-			class_texture = "core/texture/actor/demon_red.png";
+			class_texture = "actor/demon_red.png";
 			health = std::make_pair(4, 4);
 			set_status(STATUS_REGEN);
 			max_damage = 2;
 			break;
 		case MONSTER_DEMON_HORNED:
 			name = "Horned Demon";
-			class_texture = "core/texture/actor/demon_horned.png";
+			class_texture = "actor/demon_horned.png";
 			health = std::make_pair(4, 4);
 			max_damage = 2;
 			break;
 		case MONSTER_DEMON_PLATINUM:
 			name = "Platinum Demon";
-			class_texture = "core/texture/actor/demon_platinum.png";
+			class_texture = "actor/demon_platinum.png";
 			health = std::make_pair(5, 5);
 			proj_type = PROJECTILE_WITHER;
 			max_damage = 2;
 			break;
 		case MONSTER_DEMON_FLYING:
 			name = "Flying Demon";
-			class_texture = "core/texture/actor/demon_flying.png";
+			class_texture = "actor/demon_flying.png";
 			health = std::make_pair(4, 4);
 			max_damage = 2;
 			max_moves = 2;
 			break;
 		case MONSTER_DEMON_FIRE:
 			name = "Fire Demon";
-			class_texture = "core/texture/actor/demon_fire.png";
+			class_texture = "actor/demon_fire.png";
 			health = std::make_pair(4, 4);
 			proj_type = PROJECTILE_FIREBALL;
 			add_ability("shoot");
@@ -345,11 +345,11 @@ bool Monster::init_class(MonsterClass mc)
 			break;
 		case MONSTER_SKELETON:
 			name = "Skeleton";
-			class_texture = "core/texture/actor/skeleton.png";
+			class_texture = "actor/skeleton.png";
 			break;
 		case MONSTER_SKELETON_DISEASED:
 			name = "Diseased Skeleton";
-			class_texture = "core/texture/actor/skeleton_diseased.png";
+			class_texture = "actor/skeleton_diseased.png";
 			proj_type = PROJECTILE_DART;
 			break;
 		default: monster_class = MONSTER_NONE; break;
@@ -364,7 +364,7 @@ bool Monster::init_class(MonsterClass mc)
 }
 bool Monster::init_healthbar()
 {
-	healthbar = engine.get_texture_manager()->load_texture("core/texture/ui/health_bar.png");
+	healthbar = engine.get_texture_manager()->load_texture("ui/health_bar.png");
 	return healthbar != nullptr;
 }
 bool Monster::init_pathfinder()

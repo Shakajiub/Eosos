@@ -75,7 +75,7 @@ bool Options::load()
 
 	if (!options_file.is_open())
 	{
-		logging.cerr("Could not find 'options.ini'!");
+		logging.cerr("Could not find 'options.ini'!", LOG_OPTIONS);
 		return false;
 	}
 	while (std::getline(options_file, line))
@@ -103,20 +103,18 @@ bool Options::load()
 				if (split != std::string::npos)
 					value = value.substr(0, split);
 
-				logging.cout(std::string("Setting option '") + category + "-" + key + "': " + value);
+				logging.cout(std::string("Setting option '") + category + "-" + key + "': " + value, LOG_OPTIONS);
 				if (value_type == 'b')
 					set_b(category + "-" + key, std::stoi(value));
 				else if (value_type == 'i')
 					set_i(category + "-" + key, std::stoi(value));
 				else if (value_type == 's')
 					set_s(category + "-" + key, value);
-				else logging.cerr(std::string("Invalid option identifier '") + value_type + "_'!");
+				else logging.cerr(std::string("Invalid option identifier '") + value_type + "_'!", LOG_OPTIONS);
 			}
 		}
 	}
 	options_file.close();
-	//logging.cout(std::endl);
-
 	apply(); // Apply any major changes immediately
 	return true;
 }
@@ -158,7 +156,7 @@ const bool& Options::get_b(const std::string &option)
 	if (options_b.find(option) != options_b.end())
 		return options_b[option];
 
-	logging.cerr(std::string("Could not get option '" + option + "'!"));
+	logging.cerr(std::string("Could not get option '") + option + "'!", LOG_OPTIONS);
 	return false;
 }
 const int16_t& Options::get_i(const std::string &option)
@@ -166,7 +164,7 @@ const int16_t& Options::get_i(const std::string &option)
 	if (options_i.find(option) != options_i.end())
 		return options_i[option];
 
-	logging.cerr(std::string("Could not get option '" + option + "'!"));
+	logging.cerr(std::string("Could not get option '") + option + "'!", LOG_OPTIONS);
 	return 0;
 }
 const std::string& Options::get_s(const std::string &option)
@@ -174,7 +172,7 @@ const std::string& Options::get_s(const std::string &option)
 	if (options_s.find(option) != options_s.end())
 		return options_s[option];
 
-	logging.cerr(std::string("Could not get option '" + option + "'!"));
+	logging.cerr(std::string("Could not get option '") + option + "'!", LOG_OPTIONS);
 	return "error";
 }
 void Options::set_b(const std::string &option, const bool &value)

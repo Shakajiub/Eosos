@@ -18,9 +18,11 @@
 #include "engine.hpp"
 #include "texture.hpp"
 
-#include <cstring>
+#include "logging.hpp"
 
-Texture::Texture() : texture_pitch(0), name(""), texture(nullptr), texture_pixels(nullptr)
+#include <cstring> // for std::memcpy
+
+Texture::Texture() : texture(nullptr), texture_name("???")
 {
 
 }
@@ -54,21 +56,22 @@ void Texture::render(int16_t x, int16_t y, const SDL_Rect *clip, uint8_t scale, 
 bool Texture::load_from_file(const std::string &path, bool greyscale, bool outline)
 {
 	free();
-	const std::string fullpath = engine.get_base_path() + path;
+
+	const std::string full_path = engine.get_base_path() + "texture/" + path;
 
 	SDL_Texture *new_texture = nullptr;
-	SDL_Surface *loaded_surface = IMG_Load(fullpath.c_str());
+	SDL_Surface *loaded_surface = IMG_Load(full_path.c_str());
 
 	if (loaded_surface == NULL)
 	{
-		std::cout << "unable to load image '" << path << "'! SDL_image Error: " << IMG_GetError() << std::endl;
+		logging.cerr(std::string("Unable to load texture '") + path + "'! SDL_Image Error: " + IMG_GetError(), LOG_TEXTURE);
 		return false;
 	}
 	SDL_Surface *formatted_surface = SDL_ConvertSurfaceFormat(loaded_surface, SDL_PIXELFORMAT_RGBA8888, 0);
 	if (formatted_surface == NULL)
 	{
 		SDL_FreeSurface(loaded_surface);
-		std::cout << "unable to convert loaded surface to display format! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to convert loaded surface to display format! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return false;
 	}
 	new_texture = SDL_CreateTexture(engine.get_renderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, formatted_surface->w, formatted_surface->h);
@@ -76,9 +79,12 @@ bool Texture::load_from_file(const std::string &path, bool greyscale, bool outli
 	{
 		SDL_FreeSurface(formatted_surface);
 		SDL_FreeSurface(loaded_surface);
-		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to create blank texture! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return false;
 	}
+	void* texture_pixels;
+	int texture_pitch;
+
 	SDL_SetTextureBlendMode(new_texture, SDL_BLENDMODE_BLEND);
 	SDL_LockTexture(new_texture, &formatted_surface->clip_rect, &texture_pixels, &texture_pitch);
 	std::memcpy(texture_pixels, formatted_surface->pixels, formatted_surface->pitch * formatted_surface->h);
@@ -89,14 +95,15 @@ bool Texture::load_from_file(const std::string &path, bool greyscale, bool outli
 	if (greyscale) // Apply manual transparency to greyscale textures
 	{
 		uint32_t *pixels = (uint32_t*)texture_pixels;
+
 		const uint16_t pixel_count = (texture_pitch / 4) * texture_height;
-		const uint32_t DAWN_key = SDL_MapRGB(formatted_surface->format, 25, 25, 25);
+		const uint32_t color_key = SDL_MapRGB(formatted_surface->format, 25, 25, 25);
 		const uint32_t outline_key = SDL_MapRGB(formatted_surface->format, 0, 0, 0);
 		const uint32_t transparent = SDL_MapRGBA(formatted_surface->format, 0, 0, 0, 0);
 
 		for (uint16_t i = 0; i < pixel_count; ++i)
 		{
-			if (pixels[i] == DAWN_key || (!outline && pixels[i] == outline_key))
+			if (pixels[i] == color_key || (!outline && pixels[i] == outline_key))
 				pixels[i] = transparent;
 		}
 	}
@@ -105,26 +112,7 @@ bool Texture::load_from_file(const std::string &path, bool greyscale, bool outli
 	SDL_FreeSurface(loaded_surface);
 
 	texture = new_texture;
-	name = path;
+	texture_name = path;
 
 	return true;
-}
-bool Texture::lock_texture()
-{
-	if (texture_pixels == nullptr)
-		return false;
-	else if (SDL_LockTexture(texture, nullptr, &texture_pixels, &texture_pitch) != 0)
-		return false;
-	return true;
-}
-bool Texture::unlock_texture()
-{
-	if (texture_pixels != nullptr)
-	{
-		SDL_UnlockTexture(texture);
-		texture_pixels = nullptr;
-		texture_pitch = 0;
-		return true;
-	}
-	else return false;
 }

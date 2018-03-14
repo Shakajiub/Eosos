@@ -29,24 +29,20 @@ public:
 
 	bool load_from_file(const std::string &path, bool greyscale = false, bool outline = true);
 
-	bool lock_texture();
-	bool unlock_texture();
-
-	std::string get_name() const { return name; }
 	uint16_t get_width() const { return texture_width; }
 	uint16_t get_height() const { return texture_height; }
 	uint8_t get_tiles_horizontal() const { return texture_width > 16 ? texture_width / 16 : 1; }
 	uint8_t get_tiles_vertical() const { return texture_height > 16 ? texture_height / 16 : 1; }
+	std::string get_name() const { return texture_name; }
 
 	void set_color(SDL_Color color) { SDL_SetTextureColorMod(texture, color.r, color.g, color.b); }
 
 private:
-	uint16_t texture_width, texture_height;
-	int texture_pitch;
-	std::string name;
+	uint16_t texture_width;
+	uint16_t texture_height;
 
 	SDL_Texture *texture;
-	void* texture_pixels;
+	std::string texture_name;
 };
 
 #endif // TEXTURE_HPP

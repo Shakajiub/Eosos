@@ -299,7 +299,7 @@ void Level::refresh_map_texture(bool animated_only)
 	SDL_SetRenderTarget(engine.get_renderer(), map_texture);
 	SDL_Rect default_rect = { 0, 0, 16, 16 };
 
-	//Texture *grass = engine.get_texture_manager()->load_texture("core/texture/level/decor/grass.png");
+	//Texture *grass = engine.get_texture_manager()->load_texture("level/decor/grass.png");
 	for (uint8_t y = 0; y < map_height; y++)
 	{
 		for (uint8_t x = 0; x < map_width; x++)
@@ -331,7 +331,7 @@ void Level::refresh_map_texture(bool animated_only)
 }
 void Level::load_neighbor_rules()
 {
-	std::ifstream rules_file(engine.get_base_path() + "core/texture/level/rules.txt");
+	std::ifstream rules_file(engine.get_base_path() + "level/rules.txt");
 	if (rules_file.is_open())
 	{
 		uint8_t line_num;
@@ -458,8 +458,6 @@ void Level::correct_frame(uint8_t xpos, uint8_t ypos, NodeType node_type)
 }
 NodeType Level::get_node_type(const std::string &texture_name) const
 {
-	// This is terrible, but at least it's only called once per each node definition
-
 	if (texture_name.find("invis") != std::string::npos) return NT_INVISIBLE;
 	else if (texture_name.find("/tree/") != std::string::npos) return NT_TREE;
 	else if (texture_name.find("/hill/") != std::string::npos) return NT_HILL;

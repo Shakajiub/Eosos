@@ -25,28 +25,28 @@ Attribution 3.0 Unported (CC BY 3.0):
 https://creativecommons.org/licenses/by/3.0/
 
 
-Main tileset by @DragonDePlatino (CC BY-SA 3.0):
+Main tileset by DragonDePlatino (CC BY-SA 3.0):
 https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181
 
 Music by Beau Buckley (CC BY 3.0):
 https://www.fantasymusica.org/
 
 Font and ability icons by Quale (CC BY 3.0):
-	build/data/core/texture/ui/icon/*
-	build/data/core/texture/ui/font.png
+	build/data/texture/ui/icon/*
+	build/data/texture/ui/font.png
 https://www.reddit.com/r/roguelikedev/comments/1dmbxr/art_scrollosprites/
 
 Other textures by Jere Oikarinen (CC BY-SA 3.0):
-	build/data/core/texture/ui/font.png
-	build/data/core/texture/ui/health_bar.png
-	build/data/core/texture/ui/highlight.png
-	build/data/core/texture/ui/path.png
-	build/data/core/texture/ui/pointer.png
-	build/data/core/texture/ui/pointer_sword.png
-	build/data/core/texture/ui/target.png
+	build/data/texture/ui/font.png
+	build/data/texture/ui/health_bar.png
+	build/data/texture/ui/highlight.png
+	build/data/texture/ui/path.png
+	build/data/texture/ui/pointer.png
+	build/data/texture/ui/pointer_sword.png
+	build/data/texture/ui/target.png
 
 The original tileset by Andrew Rios has been split into multiple files by Jere Oikarinen.
-Missing characters added to "./build/data/core/texture/ui/font.png" by Jere Oikarinen.
+Missing characters added to "./build/data/texture/ui/font.png" by Jere Oikarinen.
 Special thanks to DawnBringer for the amazing palette which the main tileset is based on.
 
 

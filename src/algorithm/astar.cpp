@@ -35,6 +35,14 @@ AStar::~AStar()
 {
 	free();
 }
+bool AStar::init()
+{
+	if (path_marker == nullptr)
+		path_marker = engine.get_texture_manager()->load_texture("ui/path.png", true);
+	if (path_marker != nullptr)
+		path_marker->set_color(DAWN_BERRY);
+	return path_marker != nullptr;
+}
 void AStar::free()
 {
 	path.clear();
@@ -45,14 +53,6 @@ void AStar::free()
 		engine.get_texture_manager()->free_texture(path_marker->get_name());
 		path_marker = nullptr;
 	}
-}
-bool AStar::init()
-{
-	if (path_marker == nullptr)
-		path_marker = engine.get_texture_manager()->load_texture("core/texture/ui/path.png", true);
-	if (path_marker != nullptr)
-		path_marker->set_color(DAWN_BERRY);
-	return path_marker != nullptr;
 }
 bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, uint8_t finder)
 {

@@ -19,6 +19,8 @@
 #include "texture_manager.hpp"
 #include "texture.hpp"
 
+#include "logging.hpp"
+
 TextureManager::TextureManager()
 {
 
@@ -32,11 +34,10 @@ void TextureManager::free()
 	texture_map.clear();
 	reference_count.clear();
 
-	std::cout << "all textures erased" << std::endl;
+	logging.cout("All textures erased", LOG_TEXTURE);
 }
 Texture* TextureManager::load_texture(const std::string &texture_name, bool grayscale, bool outline)
 {
-	// If we haven't already loaded the texture, do so
 	auto it = texture_map.find(texture_name);
 	if (it == texture_map.end())
 	{
@@ -49,15 +50,13 @@ Texture* TextureManager::load_texture(const std::string &texture_name, bool gray
 		else texture_map[texture_name] = std::move(temp_texture);
 		reference_count[texture_name] = 1;
 
-		std::cout << "texture loaded: " << texture_name << std::endl;
+		logging.cout(std::string("Texture loaded: ") + texture_name, LOG_TEXTURE);
 	}
-	// Otherwise, just increase it's reference count
 	else reference_count[texture_name] += 1;
 	return texture_map[texture_name].get();
 }
 void TextureManager::free_texture(const std::string &texture_name)
 {
-	// If given texture exists and nothing else is using it, delete it
 	auto it = texture_map.find(texture_name);
 	if (it != texture_map.end())
 	{
@@ -67,7 +66,7 @@ void TextureManager::free_texture(const std::string &texture_name)
 			it->second.reset();
 			texture_map.erase(it);
 
-			std::cout << "texture freed: " << texture_name << std::endl;
+			logging.cout(std::string("Texture freed: ") + texture_name, LOG_TEXTURE);
 		}
 	}
 }

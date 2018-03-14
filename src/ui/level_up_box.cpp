@@ -68,10 +68,10 @@ bool LevelUpBox::init(Hero *hero)
 	if (hero->get_hero_class() == HC_PEON)
 	{
 		const std::string classes[4] = {
-			"core/texture/actor/orc_barbarian.png",
-			"core/texture/actor/orc_ninja.png",
-			"core/texture/actor/orc_mage.png",
-			"core/texture/actor/orc_juggernaut.png"
+			"actor/orc_barbarian.png",
+			"actor/orc_ninja.png",
+			"actor/orc_mage.png",
+			"actor/orc_juggernaut.png"
 		};
 		const std::string titles[4] = {
 			"Barbarian", "Ninja", "Mage", "Juggernaut"
@@ -100,8 +100,8 @@ bool LevelUpBox::init(Hero *hero)
 	else // Other levels after class specialization just give generic upgrades
 	{
 		const std::string bonuses[2] = {
-			"core/texture/ui/icon/heart.png",
-			"core/texture/ui/icon/defense.png"
+			"ui/icon/heart.png",
+			"ui/icon/defense.png"
 		};
 		const std::string titles[2] = {
 			"Health",

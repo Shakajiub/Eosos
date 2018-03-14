@@ -96,13 +96,13 @@ void UI::init_background()
 		ui_background = nullptr;
 	}
 	ui_background = engine.get_texture_manager()->load_texture(
-		"core/texture/ui/" + options.get_s("ui-image") + ".png"
+		"ui/" + options.get_s("ui-image") + ".png"
 	);
 }
 bool UI::init_bitmap_font()
 {
 	main_font = new BitmapFont;
-	if (!main_font->build("core/texture/ui/" + options.get_s("ui-font") + ".png"))
+	if (!main_font->build("ui/" + options.get_s("ui-font") + ".png"))
 		return false;
 	return true;
 }

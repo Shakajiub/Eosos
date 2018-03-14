@@ -46,10 +46,10 @@ void AbilityShoot::free()
 }
 bool AbilityShoot::init()
 {
-	if (init_texture("core/texture/ui/icon/bow.png", DAWN_EARTH))
+	if (init_texture("ui/icon/bow.png", DAWN_EARTH))
 		ability_name = "shoot";
 
-	target_texture = engine.get_texture_manager()->load_texture("core/texture/ui/target.png", true);
+	target_texture = engine.get_texture_manager()->load_texture("ui/target.png", true);
 	if (target_texture != nullptr)
 	{
 		target_texture->set_color(DAWN_BERRY);

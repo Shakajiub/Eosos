@@ -58,8 +58,6 @@ bool BitmapFont::build(const std::string &texture_name)
 	font_bitmap = new Texture;
 	if (!font_bitmap->load_from_file(texture_name, true))
 		return false;
-	if (!font_bitmap->lock_texture())
-		return false;
 
 	font_width = font_bitmap->get_width() / 16;
 	font_height = font_bitmap->get_height() / 16;
@@ -76,7 +74,6 @@ bool BitmapFont::build(const std::string &texture_name)
 			current_char += 1;
 		}
 	}
-	font_bitmap->unlock_texture();
 	font_bitmap->set_color(DAWN_PEPPERMINT);
 
 	std::cout << "font loaded, size: " << std::to_string(font_width) << ", " << std::to_string(font_height) << std::endl;

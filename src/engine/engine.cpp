@@ -74,7 +74,7 @@ bool Engine::init()
 	if (main_window == NULL)
 	{
 		main_window = nullptr;
-		logging.cerr(std::string("Could not create main window! SDL Error: ") + SDL_GetError());
+		logging.cerr(std::string("Could not create main window! SDL Error: ") + SDL_GetError(), LOG_ENGINE);
 		return false;
 	}
 
@@ -90,7 +90,7 @@ bool Engine::init()
 	if (main_renderer == NULL)
 	{
 		main_renderer = nullptr;
-		logging.cerr(std::string("Could not create main renderer! SDL Error: ") + SDL_GetError());
+		logging.cerr(std::string("Could not create main renderer! SDL Error: ") + SDL_GetError(), LOG_ENGINE);
 		return false;
 	}
 
@@ -106,7 +106,7 @@ bool Engine::init()
 	const uint32_t img_flags = IMG_INIT_PNG;
 	if (!(IMG_Init(img_flags) & img_flags))
 	{
-		logging.cerr(std::string("SDL_image could not initialize! SDL_image Error: ") + IMG_GetError());
+		logging.cerr(std::string("SDL_image could not initialize! SDL_image Error: ") + IMG_GetError(), LOG_ENGINE);
 		return false;
 	}
 
@@ -116,7 +116,7 @@ bool Engine::init()
 
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 	{
-		logging.cerr(std::string("SDL_mixer could not initialize! SDL_mixer Error: ") + Mix_GetError());
+		logging.cerr(std::string("SDL_mixer could not initialize! SDL_mixer Error: ") + Mix_GetError(), LOG_ENGINE);
 		return false;
 	}
 

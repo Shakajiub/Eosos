@@ -18,8 +18,15 @@
 #ifndef LOGGING_HPP
 #define LOGGING_HPP
 
-#include <fstream> // std::ofstream
+#include <fstream> // for std::ofstream
 
+enum LogCategory
+{
+	LOG_NONE,
+	LOG_ENGINE,
+	LOG_OPTIONS,
+	LOG_TEXTURE
+};
 class Logging
 {
 public:
@@ -29,11 +36,12 @@ public:
 	void init(const std::string &base_path);
 	void free();
 
-	void cout(const std::string &text);
-	void cerr(const std::string &text);
+	void cout(const std::string &text, LogCategory category = LOG_NONE);
+	void cerr(const std::string &text, LogCategory category = LOG_NONE);
 
 private:
 	bool initialized;
+	LogCategory prev_category;
 
 	std::ofstream out;
 	std::ofstream err;

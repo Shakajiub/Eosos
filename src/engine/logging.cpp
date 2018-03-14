@@ -23,7 +23,7 @@
 
 Logging logging;
 
-Logging::Logging() : initialized(false)
+Logging::Logging() : initialized(false), prev_category(LOG_NONE)
 {
 
 }
@@ -61,15 +61,29 @@ void Logging::free()
 	}
 	initialized = false;
 }
-void Logging::cout(const std::string &text)
+void Logging::cout(const std::string &text, LogCategory category)
 {
 	if (initialized)
+	{
+		if (category != prev_category)
+		{
+			prev_category = category;
+			out << std::endl;
+		}
 		out << text << std::endl;
+	}
 	else std::cerr << "Logging::cout() Warning! Logging uninitialized!" << std::endl;
 }
-void Logging::cerr(const std::string &text)
+void Logging::cerr(const std::string &text, LogCategory category)
 {
 	if (initialized)
+	{
+		if (category != prev_category)
+		{
+			prev_category = category;
+			out << std::endl;
+		}
 		err << text << std::endl;
+	}
 	else std::cerr << "Logging::cerr() Warning! Logging uninitialized!" << std::endl;
 }

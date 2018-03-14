@@ -119,14 +119,14 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	const std::string woods = (depth % 2 == 0) ? "spruce_dead" : "oak_dead";
 	const std::string bases[4] = { "base_camp", "base_outpost", "base_garrison", "base_fort" };
 	std::string level =
-		"l-0-core/texture/level/floor/dark2_base.png\n"
-		"l-1-core/texture/level/floor/dark2_grass.png\n"
-		"l-2-core/texture/level/floor/dark2_hill.png\n"
-		"l-3-core/texture/level/floor/dark2_field.png\n"
-		"l-M-core/texture/level/hill/dark_blue.png\n"
-		"l-#-core/texture/level/map/road_dark2.png\n";
-	level += "l-T-core/texture/level/tree/" + woods +  ".png\n";
-	level += "l-B-core/texture/level/map/" + ((depth < 5) ? bases[depth-1] : bases[3]) + ".png\n";
+		"l-0-level/floor/dark2_base.png\n"
+		"l-1-level/floor/dark2_grass.png\n"
+		"l-2-level/floor/dark2_hill.png\n"
+		"l-3-level/floor/dark2_field.png\n"
+		"l-M-level/hill/dark_blue.png\n"
+		"l-#-level/map/road_dark2.png\n";
+	level += "l-T-level/tree/" + woods +  ".png\n";
+	level += "l-B-level/map/" + ((depth < 5) ? bases[depth-1] : bases[3]) + ".png\n";
 
 	const uint8_t field_probability = (depth < 5) ? 11 - depth : 7;
 	for (uint8_t y = 0; y < height; y++)
@@ -212,10 +212,10 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 			{
 				if (engine.get_rng() % 4 != 0)
 				{
-					const std::string crop_name = "core/texture/level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
+					const std::string crop_name = "level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
 					am->spawn_actor(level, ACTOR_PROP, x, y, crop_name, false);
 				}
-				else am->spawn_actor(level, ACTOR_MOUNT, x, y, "core/texture/actor/sheep_white.png", false);
+				else am->spawn_actor(level, ACTOR_MOUNT, x, y, "actor/sheep_white.png", false);
 			}
 		}
 	}
@@ -233,7 +233,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			peon = true;
 			if (current_depth < 4)
 			{
-				Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "core/texture/actor/orc_peon.png");
+				Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "actor/orc_peon.png");
 				if (current_depth > 1)
 					ui.spawn_message_box("", "A new Peon has joined the party");
 			}
@@ -317,7 +317,7 @@ void GeneratorForest::init_wave()
 			wave_boss = MONSTER_KOBOLD_DEMONIAC;
 			boss_name = "Kobold Demoniac";
 			boss_desc = "The Kobold Demoniac has arrived!";
-			mount_name = "core/texture/actor/ape.png";
+			mount_name = "actor/ape.png";
 		}
 		else if (current_depth == 3) // Tier 3 waves
 		{
@@ -331,7 +331,7 @@ void GeneratorForest::init_wave()
 			wave_boss = MONSTER_DWARF_KING;
 			boss_name = "The Dwarven King";
 			boss_desc = "The Dwarven King has arrived!";
-			mount_name = "core/texture/actor/griffin.png";
+			mount_name = "actor/griffin.png";
 		}
 		else // Final waves
 		{
@@ -339,7 +339,7 @@ void GeneratorForest::init_wave()
 			wave_boss = MONSTER_PLATINO;
 			boss_name = "The ancient dragon has had enough of you";
 			boss_desc = "The ancient dragon, Platino, has arrived!";
-			mount_name = "core/texture/actor/toad.png";
+			mount_name = "actor/toad.png";
 		}
 	}
 	std::string wave_desc = "placeholder text";

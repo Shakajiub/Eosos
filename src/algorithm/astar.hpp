@@ -36,8 +36,8 @@ public:
 	AStar();
 	~AStar();
 
-	void free();
 	bool init();
+	void free();
 
 	bool find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, uint8_t finder);
 	void clear_path();

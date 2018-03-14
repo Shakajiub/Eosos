@@ -47,10 +47,10 @@ void AbilitySprout::free()
 }
 bool AbilitySprout::init()
 {
-	if (init_texture("core/texture/ui/icon/crop.png", DAWN_MAIZE))
+	if (init_texture("ui/icon/crop.png", DAWN_MAIZE))
 		ability_name = "sprout";
 
-	target_texture = engine.get_texture_manager()->load_texture("core/texture/ui/target.png", true);
+	target_texture = engine.get_texture_manager()->load_texture("ui/target.png", true);
 	if (target_texture != nullptr)
 	{
 		target_texture->set_color(DAWN_BERRY);
@@ -119,7 +119,7 @@ bool AbilitySprout::get_click(uint16_t mouse_x, uint16_t mouse_y)
 				return true;
 
 			const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
-			const std::string crop_name = "core/texture/level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
+			const std::string crop_name = "level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
 			am->spawn_actor(level, ACTOR_PROP, node.first, node.second, crop_name);
 
 			if (temp_hero != nullptr)
