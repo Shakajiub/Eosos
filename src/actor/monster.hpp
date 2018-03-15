@@ -20,7 +20,7 @@
 
 #include "actor.hpp"
 
-class AStar;
+//class AStar;
 
 enum MonsterClass
 {
@@ -65,13 +65,13 @@ public:
 
 	bool init_class(MonsterClass mc);
 	bool init_healthbar();
-	bool init_pathfinder();
-	void step_pathfinder(Level *level);
+	//bool init_pathfinder();
+	//void step_pathfinder(Level *level);
 
 	MonsterClass get_monster_class() const { return monster_class; }
 
 private:
-	AStar *pathfinder;
+	//AStar *pathfinder;
 	Texture *healthbar;
 
 	MonsterClass monster_class;

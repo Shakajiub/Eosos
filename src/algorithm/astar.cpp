@@ -27,6 +27,10 @@
 #include <cfloat> // for FLT_MAX
 #include <algorithm> // for std::find
 
+/*uint16_t distance(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
+{
+	return (uint16_t)SDL_sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+}*/
 AStar::AStar() : path_found(false), path_marker(nullptr)
 {
 
@@ -103,6 +107,7 @@ bool AStar::find_path(Level *level, Point start, Point end, uint8_t finder)
 
 			if (finder != 0)
 			{
+				// Path around anyone with the same ActorType
 				const Actor *temp_actor = level->get_actor(new_x, new_y);
 				if (temp_actor != nullptr && temp_actor->get_actor_type() == finder)
 					continue;
@@ -155,23 +160,13 @@ bool AStar::find_path(Level *level, Point start, Point end, uint8_t finder)
 				n->f = n->g + n->h;
 				open_list.push_back(n);
 
-				if (c == nullptr || n->x < c->x)
+				if (c == nullptr || n->h < c->h)
 					c = n;
 				n.reset();
 			}
 		}
 		q.reset();
 	}
-	/*c.reset();
-	// Find the last node
-	for (std::shared_ptr<ASNode> n : closed_list)
-	{
-		if (n->x == end.x && n->y == end.y)
-		{
-			c = n;
-			break;
-		}
-	}*/
 	if (c == nullptr)
 	{
 		open_list.clear();
@@ -219,6 +214,7 @@ void AStar::step()
 
 	if (path.size() == 0)
 		path_found = false;
+
 	else if (path.size() == 1)
 	{
 		goto_x = path[0]->x;
@@ -232,25 +228,23 @@ void AStar::step()
 }
 void AStar::render(uint8_t good_length) const
 {
-	if (!path_found || path.size() == 0)
+	if (!path_found || path.size() == 0 || path_marker == nullptr)
 		return;
-	if (path_marker != nullptr)
+
+	path_marker->set_color(DAWN_BERRY);
+	uint8_t length = path.size();
+
+	for (std::shared_ptr<ASNode> n : path)
 	{
-		path_marker->set_color(DAWN_BERRY);
-		uint8_t length = path.size();
+		length -= 1;
+		if (length < good_length)
+			path_marker->set_color(DAWN_LEAF);
 
-		for (std::shared_ptr<ASNode> n : path)
-		{
-			length -= 1;
-			if (length < good_length)
-				path_marker->set_color(DAWN_LEAF);
-
-			if (camera.get_in_camera_grid(n->x, n->y))
-				path_marker->render(
-					n->x * 32 - camera.get_cam_x(),
-					n->y * 32 - camera.get_cam_y()
-				);
-		}
+		if (camera.get_in_camera_grid(n->x, n->y))
+			path_marker->render(
+				n->x * 32 - camera.get_cam_x(),
+				n->y * 32 - camera.get_cam_y()
+			);
 	}
 }
 uint8_t AStar::get_last_x() const

@@ -23,6 +23,7 @@
 
 class ActorManager;
 class Actor;
+class Dijkstra;
 class Texture;
 class Generator;
 
@@ -77,6 +78,7 @@ public:
 
 	Actor* get_actor(uint8_t xpos, uint8_t ypos) const;
 	MapNode get_node(uint8_t xpos, uint8_t ypos) const;
+	Dijkstra* get_dijkstra() const { return dijkstra_map; }
 
 	std::pair<uint8_t, uint8_t> get_base_pos() const;
 	std::pair<uint8_t, uint8_t> get_spawn_pos() const;
@@ -111,6 +113,7 @@ private:
 
 	SDL_Texture *map_texture;
 	Generator *map_generator;
+	Dijkstra *dijkstra_map;
 };
 
 #endif // LEVEL_HPP

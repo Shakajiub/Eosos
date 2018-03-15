@@ -19,6 +19,7 @@
 #include "level.hpp"
 #include "actor_manager.hpp"
 #include "actor.hpp"
+#include "dijkstra.hpp"
 #include "texture.hpp"
 #include "generator_forest.hpp"
 
@@ -31,8 +32,8 @@
 #include <sstream> // for std::istringstream
 
 Level::Level() :
-	victory(false), dmg_base(0), map_created(false),
-	map_texture(nullptr), map_generator(nullptr), map_width(0), map_height(0)
+	victory(false), dmg_base(0), map_created(false), map_texture(nullptr),
+	map_generator(nullptr), map_width(0), map_height(0), dijkstra_map(nullptr)
 {
 
 }
@@ -65,6 +66,11 @@ void Level::free()
 	{
 		delete map_generator;
 		map_generator = nullptr;
+	}
+	if (dijkstra_map != nullptr)
+	{
+		delete dijkstra_map;
+		dijkstra_map = nullptr;
 	}
 	for (Texture *t : textures)
 		engine.get_texture_manager()->free_texture(t->get_name());
@@ -146,6 +152,9 @@ void Level::create(ActorManager *am, uint8_t depth)
 	if (am != nullptr)
 		am->place_actors(this, get_base_pos());
 
+	dijkstra_map = new Dijkstra;
+	dijkstra_map->build_map(this);
+
 	// Correct the frames for all map nodes (so that tiles connect to eachother nicely)
 	load_neighbor_rules();
 	for (uint8_t y = 0; y < map_height; y++)
@@ -175,6 +184,8 @@ void Level::render() const
 		};
 		SDL_RenderCopyEx(engine.get_renderer(), map_texture, &clip, &quad, 0.0, nullptr, SDL_FLIP_NONE);
 	}
+	//if (dijkstra_map != nullptr)
+		//dijkstra_map->render_map();
 }
 void Level::render_ui() const
 {

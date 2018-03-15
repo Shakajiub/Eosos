@@ -19,9 +19,9 @@
 #include "monster.hpp"
 #include "actor_manager.hpp"
 #include "level.hpp"
-#include "astar.hpp"
 
 #include "mount.hpp"
+#include "dijkstra.hpp"
 #include "camera.hpp"
 #include "sound_manager.hpp"
 #include "texture.hpp"
@@ -29,11 +29,7 @@
 #include "message_log.hpp"
 #include "ui.hpp"
 
-uint16_t distance(int16_t x1, int16_t y1, int16_t x2, int16_t y2)
-{
-	return (uint16_t)SDL_sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-}
-Monster::Monster() : pathfinder(nullptr), healthbar(nullptr), monster_class(MONSTER_NONE), spell_timer(0)
+Monster::Monster() : /*pathfinder(nullptr),*/ healthbar(nullptr), monster_class(MONSTER_NONE), spell_timer(0)
 {
 	health = std::make_pair(3, 3);
 	name = "???";
@@ -44,11 +40,11 @@ Monster::~Monster()
 }
 void Monster::free()
 {
-	if (pathfinder != nullptr)
+	/*if (pathfinder != nullptr)
 	{
 		delete pathfinder;
 		pathfinder = nullptr;
-	}
+	}*/
 	if (healthbar != nullptr)
 	{
 		engine.get_texture_manager()->free_texture(healthbar->get_name());
@@ -60,7 +56,7 @@ bool Monster::init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &
 	if (!Actor::init(at, xpos, ypos, texture_name))
 		return false;
 
-	return (init_pathfinder() && init_healthbar());
+	return init_healthbar();// (init_pathfinder() && init_healthbar());
 }
 void Monster::render() const
 {
@@ -100,8 +96,8 @@ void Monster::start_turn()
 	const uint8_t temp_moves = (mount != nullptr) ? max_moves + 1 : max_moves;
 	moves = std::make_pair(temp_moves, temp_moves);
 
-	if (pathfinder != nullptr)
-		pathfinder->clear_path();
+	//if (pathfinder != nullptr)
+		//pathfinder->clear_path();
 
 	if (spell_timer > 0)
 		spell_timer -= 1;
@@ -202,14 +198,38 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 				}
 			}
 		}
-		if (moves.first > 0 && pathfinder != nullptr)
+		if (moves.first > 0 && level->get_dijkstra() != nullptr)//pathfinder != nullptr)
 		{
-			if (!pathfinder->get_path_found())
+			Point step_pos = level->get_dijkstra()->get_node_downhill(level, Point(grid_x, grid_y));
+			Actor *temp_actor = level->get_actor(step_pos.x, step_pos.y);
+			if (temp_actor != nullptr)
+			{
+				if (temp_actor->get_actor_type() == ACTOR_HERO || temp_actor->get_actor_type() == ACTOR_PROP)
+					add_action(ACTION_ATTACK, step_pos.x, step_pos.y);
+
+				else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
+				{
+					if (mount == nullptr)
+					{
+						set_mount(dynamic_cast<Mount*>(temp_actor));
+						add_action(ACTION_MOVE, step_pos.x, step_pos.y);
+					}
+					else turn_done = true;
+				}
+				else turn_done = true;
+				moves.first = 0;
+			}
+			else
+			{
+				moves.first -= 1;
+				add_action(ACTION_MOVE, step_pos.x, step_pos.y);
+			}
+			/*if (!pathfinder->get_path_found())
 			{
 				auto base_pos = level->get_base_pos();
 				pathfinder->find_path(level, Point(grid_x, grid_y), Point(base_pos.first, base_pos.second), ACTOR_MONSTER);
 			}
-			step_pathfinder(level);
+			step_pathfinder(level);*/
 		}
 	}
 	return Actor::take_turn(level, am);
@@ -367,7 +387,7 @@ bool Monster::init_healthbar()
 	healthbar = engine.get_texture_manager()->load_texture("ui/health_bar.png");
 	return healthbar != nullptr;
 }
-bool Monster::init_pathfinder()
+/*bool Monster::init_pathfinder()
 {
 	pathfinder = new AStar;
 	return pathfinder->init();
@@ -399,4 +419,4 @@ void Monster::step_pathfinder(Level *level)
 		add_action(ACTION_MOVE, pathfinder->get_goto_x(), pathfinder->get_goto_y());
 		pathfinder->step();
 	}
-}
+}*/
