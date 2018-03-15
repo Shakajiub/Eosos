@@ -92,6 +92,7 @@ public:
 	virtual bool take_turn(Level *level, ActorManager *am);
 	virtual void end_turn();
 
+	virtual void interact(Level *level, Point pos);
 	virtual uint8_t get_damage() const;
 
 	void add_action(ActionType at, uint8_t xpos, uint8_t ypos, int8_t value = 0);
@@ -101,7 +102,7 @@ public:
 	bool action_move(Level *level);
 	bool action_attack(Level *level);
 	bool action_shoot(Level *level);
-	bool action_interact();
+	bool action_interact(Level *level);
 
 	void add_ability(const std::string &ability);
 	void remove_ability(const std::string &ability);

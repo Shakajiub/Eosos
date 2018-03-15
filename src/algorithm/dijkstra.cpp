@@ -141,12 +141,12 @@ Point Dijkstra::get_node_downhill(Level *level, Point pos) const
 	for (DNode n : neighbors)
 	{
 		Actor *temp_actor = level->get_actor(n.x, n.y);
-		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
+		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER && (n.x != pos.x || n.y != pos.y))
 			continue;
 
 		if (n.distance < final_node.distance)
 			final_node = n;
-		else if (n.distance == final_node.distance && engine.get_rng() % 2 == 0)
+		else if (n.distance == final_node.distance && n.x == pos.x)
 			final_node = n;
 	}
 	return Point(final_node.x, final_node.y);

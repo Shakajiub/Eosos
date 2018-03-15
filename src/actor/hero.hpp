@@ -46,7 +46,9 @@ public:
 	virtual bool take_turn(Level *level, ActorManager *am);
 	virtual void end_turn();
 
+	virtual void interact(Level *level, Point pos);
 	virtual uint8_t get_damage() const;
+
 	void clear_status();
 
 	bool init_ui_texture();

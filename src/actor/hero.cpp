@@ -234,6 +234,13 @@ void Hero::end_turn()
 			delete_me = true;
 	}
 }
+void Hero::interact(Level *level, Point pos)
+{
+	if (level->get_wall_type(pos.x, pos.y) == NT_BASE)
+	{
+		add_health(1);
+	}
+}
 uint8_t Hero::get_damage() const
 {
 	int8_t dmg = 1;
@@ -440,12 +447,8 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 		case SDLK_KP_1: case SDLK_b: offset_x = -1; offset_y = 1; break;
 		case SDLK_KP_3: case SDLK_n: offset_x = 1; offset_y = 1; break;
 		case SDLK_KP_5: case SDLK_SPACE:
-
-			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
-			{
-				add_health(1);
+			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 				add_action(ACTION_INTERACT, grid_x, grid_y);
-			}
 			else turn_done = true;
 			moves.first = 0;
 			break;
@@ -496,11 +499,8 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 				clear_bubble();
 				return;
 			}
-			if (level->get_wall_type(grid_x, grid_y) == NT_BASE && health.first < health.second)
-			{
-				add_health(1);
+			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 				add_action(ACTION_INTERACT, grid_x, grid_y);
-			}
 			else turn_done = true;
 			moves.first = 0;
 			return;

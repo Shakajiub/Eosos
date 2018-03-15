@@ -106,18 +106,6 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 {
 	if (turn_done)
 	{
-		if (level->get_wall_type(current_action.xpos, current_action.ypos) == NT_BASE)
-		{
-			if (monster_class == MONSTER_PEST_SCORPION || monster_class == MONSTER_KOBOLD_TRUEFORM ||
-				monster_class == MONSTER_DWARF_KING || monster_class == MONSTER_PLATINO)
-				level->set_damage_base(20);
-			else level->set_damage_base(1);
-
-			turn_done = true;
-			delete_me = true;
-			moves.first = 0;
-			return true;
-		}
 		if (moves.first > 0)
 			turn_done = false;
 	}
@@ -216,6 +204,10 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 					}
 					else turn_done = true;
 				}
+				else if (temp_actor == this)
+				{
+					add_action(ACTION_INTERACT, step_pos.x, step_pos.y);
+				}
 				else turn_done = true;
 				moves.first = 0;
 			}
@@ -237,6 +229,18 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 void Monster::end_turn()
 {
 	Actor::end_turn();
+}
+void Monster::interact(Level *level, Point pos)
+{
+	if (level->get_wall_type(pos.x, pos.y) == NT_BASE)
+	{
+		if (monster_class == MONSTER_PEST_SCORPION || monster_class == MONSTER_KOBOLD_TRUEFORM ||
+			monster_class == MONSTER_DWARF_KING || monster_class == MONSTER_PLATINO)
+			level->set_damage_base(20);
+		else level->set_damage_base(1);
+
+		delete_me = true;
+	}
 }
 bool Monster::init_class(MonsterClass mc)
 {

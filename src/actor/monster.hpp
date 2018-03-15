@@ -63,6 +63,8 @@ public:
 	virtual bool take_turn(Level *level, ActorManager *am);
 	virtual void end_turn();
 
+	virtual void interact(Level *level, Point pos);
+
 	bool init_class(MonsterClass mc);
 	bool init_healthbar();
 	//bool init_pathfinder();

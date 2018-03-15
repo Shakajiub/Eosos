@@ -115,7 +115,7 @@ void Actor::update(Level *level)
 			case ACTION_MOVE: clear_action = action_move(level); break;
 			case ACTION_ATTACK: clear_action = action_attack(level); break;
 			case ACTION_SHOOT: clear_action = action_shoot(level); break;
-			case ACTION_INTERACT: clear_action = action_interact(); break;
+			case ACTION_INTERACT: clear_action = action_interact(level); break;
 			default: clear_action = true; break;
 		}
 		if (clear_action)
@@ -220,6 +220,10 @@ void Actor::end_turn()
 				set_status(STATUS_NONE);
 		}
 	}
+}
+void Actor::interact(Level *level, Point pos)
+{
+	// Called at the end of action_interact()
 }
 uint8_t Actor::get_damage() const
 {
@@ -444,7 +448,7 @@ bool Actor::action_shoot(Level *level)
 	}
 	return false;
 }
-bool Actor::action_interact()
+bool Actor::action_interact(Level *level)
 {
 	anim_timer += engine.get_dt();
 	while (anim_timer > 18 || !in_camera)
@@ -468,6 +472,7 @@ bool Actor::action_interact()
 			anim_frames = 0;
 			x = grid_x * 32;
 			y = grid_y * 32;
+			interact(level, Point(current_action.xpos, current_action.ypos));
 			return true;
 		}
 	}
