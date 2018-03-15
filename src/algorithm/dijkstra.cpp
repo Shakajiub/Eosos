@@ -146,7 +146,7 @@ Point Dijkstra::get_node_downhill(Level *level, Point pos) const
 
 		if (n.distance < final_node.distance)
 			final_node = n;
-		else if (n.distance == final_node.distance && n.x == pos.x)
+		else if (n.distance == final_node.distance && n.y == pos.y)
 			final_node = n;
 	}
 	return Point(final_node.x, final_node.y);
