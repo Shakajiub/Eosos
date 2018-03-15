@@ -23,6 +23,7 @@
 #include "generator_forest.hpp"
 
 #include "camera.hpp"
+#include "logging.hpp"
 #include "texture_manager.hpp"
 #include "ui.hpp"
 
@@ -331,7 +332,7 @@ void Level::refresh_map_texture(bool animated_only)
 }
 void Level::load_neighbor_rules()
 {
-	std::ifstream rules_file(engine.get_base_path() + "level/rules.txt");
+	std::ifstream rules_file(engine.get_base_path() + "texture/level/rules.txt");
 	if (rules_file.is_open())
 	{
 		uint8_t line_num;
