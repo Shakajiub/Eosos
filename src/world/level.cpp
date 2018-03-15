@@ -24,6 +24,7 @@
 #include "generator_forest.hpp"
 
 #include "camera.hpp"
+#include "options.hpp"
 #include "logging.hpp"
 #include "texture_manager.hpp"
 #include "ui.hpp"
@@ -184,8 +185,8 @@ void Level::render() const
 		};
 		SDL_RenderCopyEx(engine.get_renderer(), map_texture, &clip, &quad, 0.0, nullptr, SDL_FLIP_NONE);
 	}
-	//if (dijkstra_map != nullptr)
-		//dijkstra_map->render_map();
+	if (dijkstra_map != nullptr && options.get_b("debug-render_dijkstra"))
+		dijkstra_map->render_map();
 }
 void Level::render_ui() const
 {

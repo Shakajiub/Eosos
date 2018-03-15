@@ -43,6 +43,8 @@ void Options::init()
 {
 	free();
 
+	options_b["debug-render_dijkstra"] = false;
+
 	options_b["display-fullscreen"] = false;
 	options_b["display-borderless"] = false;
 	options_i["display-width"] = 1024;
