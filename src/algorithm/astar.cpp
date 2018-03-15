@@ -54,17 +54,17 @@ void AStar::free()
 		path_marker = nullptr;
 	}
 }
-bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, uint8_t finder)
+bool AStar::find_path(Level *level, Point start, Point end, uint8_t finder)
 {
 	// Make sure we're not trying to path into a wall
-	if (level == nullptr || level->get_wall(end_x, end_y) || (end_x == start_x && end_y == start_y))
+	if (level == nullptr || level->get_wall(end.x, end.y) || (end.x == start.x && end.y == start.y))
 		return false;
 
 	std::vector<std::shared_ptr<ASNode> > open_list, closed_list, final_path;
 	std::shared_ptr<ASNode> c = std::make_shared<ASNode>();
 
 	c->f = 0; c->g = 0; c->h = 0;
-	c->x = start_x; c->y = start_y;
+	c->x = start.x; c->y = start.y;
 	open_list.push_back(c);
 
 	c.reset();
@@ -142,7 +142,7 @@ bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x
 				n->x = new_x; n->y = new_y;
 
 				// If we've found the end, stop the search
-				if (new_x == end_x && new_y == end_y)
+				if (new_x == end.x && new_y == end.y)
 				{
 					c = n;
 					closed_list.push_back(n);
@@ -151,7 +151,7 @@ bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x
 				}
 				// Heurestics, magic numbers
 				n->g = q->g + (i > 3 ? 1.4f : 1.0f);
-				n->h = (float)SDL_sqrt((end_x - new_x)*(end_x - new_x) + (end_y - new_y)*(end_y - new_y));
+				n->h = (float)SDL_sqrt((end.x - new_x)*(end.x - new_x) + (end.y - new_y)*(end.y - new_y));
 				n->f = n->g + n->h;
 				open_list.push_back(n);
 
@@ -166,7 +166,7 @@ bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x
 	// Find the last node
 	for (std::shared_ptr<ASNode> n : closed_list)
 	{
-		if (n->x == end_x && n->y == end_y)
+		if (n->x == end.x && n->y == end.y)
 		{
 			c = n;
 			break;
@@ -181,7 +181,7 @@ bool AStar::find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x
 	}
 	// Trace the path back from the last node
 	uint8_t xpos = c->x, ypos = c->y;
-	while (xpos != start_x || ypos != start_y)
+	while (xpos != start.x || ypos != start.y)
 	{
 		if (c == nullptr)
 			break;

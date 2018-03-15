@@ -39,7 +39,7 @@ public:
 	bool init();
 	void free();
 
-	bool find_path(Level *level, int8_t start_x, int8_t start_y, int8_t end_x, int8_t end_y, uint8_t finder);
+	bool find_path(Level *level, Point start, Point end, uint8_t finder);
 	void clear_path();
 
 	void step();
@@ -54,7 +54,8 @@ public:
 
 private:
 	bool path_found;
-	uint8_t goto_x, goto_y;
+	uint8_t goto_x;
+	uint8_t goto_y;
 
 	std::vector<std::shared_ptr<ASNode> > path;
 	Texture *path_marker;

@@ -207,7 +207,7 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 			if (!pathfinder->get_path_found())
 			{
 				auto base_pos = level->get_base_pos();
-				pathfinder->find_path(level, grid_x, grid_y, base_pos.first, base_pos.second, ACTOR_MONSTER);
+				pathfinder->find_path(level, Point(grid_x, grid_y), Point(base_pos.first, base_pos.second), ACTOR_MONSTER);
 			}
 			step_pathfinder(level);
 		}

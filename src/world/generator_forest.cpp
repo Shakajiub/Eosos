@@ -188,7 +188,7 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 	base_node.wall_animated = sub_nodes['B'].sub_animated;
 	base_node.wall_type = sub_nodes['B'].sub_type;
 
-	pathfinder->find_path(level, start_x, start_y, base_pos.first, base_pos.second, 0);
+	pathfinder->find_path(level, Point(start_x, start_y), Point(base_pos.first, base_pos.second), 0);
 	while (pathfinder->get_path_found())
 	{
 		level->set_node(pathfinder->get_goto_x(), pathfinder->get_goto_y(), new_node);

@@ -54,6 +54,17 @@ class SceneManager;
 class SoundManager;
 class TextureManager;
 
+struct Point
+{
+	uint8_t x;
+	uint8_t y;
+
+	Point(uint8_t xpos, uint8_t ypos)
+	{
+		x = xpos;
+		y = ypos;
+	}
+};
 class Engine
 {
 public:
