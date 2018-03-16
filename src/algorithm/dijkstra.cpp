@@ -137,17 +137,28 @@ Point Dijkstra::get_node_downhill(Level *level, Point pos) const
 		if (std::abs(n.x - pos.x) < 2 && std::abs(n.y - pos.y) < 2)
 			neighbors.push_back(n);
 	}
-	DNode final_node = { pos.x, pos.y, UINT8_MAX };
+	DNode next = { pos.x, pos.y, UINT8_MAX };
+	uint8_t prev_dist = UINT8_MAX;
+
 	for (DNode n : neighbors)
 	{
+		if (n.x == pos.x && n.y == pos.y)
+		{
+			if (n.distance > 0)
+			{
+				prev_dist = n.distance;
+				continue;
+			}
+			else return pos;
+		}
 		Actor *temp_actor = level->get_actor(n.x, n.y);
-		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER && (n.x != pos.x || n.y != pos.y))
+		if (temp_actor != nullptr && temp_actor->get_actor_type() == ACTOR_MONSTER)
 			continue;
 
-		if (n.distance < final_node.distance)
-			final_node = n;
-		else if (n.distance == final_node.distance && n.y == pos.y)
-			final_node = n;
+		if (n.distance < next.distance)
+			next = n;
+		else if (n.distance == next.distance && n.y == pos.y)
+			next = n;
 	}
-	return Point(final_node.x, final_node.y);
+	return (prev_dist < next.distance) ? pos : Point(next.x, next.y);
 }

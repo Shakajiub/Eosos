@@ -186,8 +186,22 @@ bool Monster::take_turn(Level *level)
 		if (moves.first > 0 && level->get_dijkstra() != nullptr)//pathfinder != nullptr)
 		{
 			Point step_pos = level->get_dijkstra()->get_node_downhill(level, Point(grid_x, grid_y));
+			if (step_pos.x == grid_x && step_pos.y == grid_y)
+			{
+				if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
+					add_action(ACTION_INTERACT, step_pos.x, step_pos.y);
+				else add_action(ACTION_MOVE, step_pos.x, step_pos.y);
+
+				moves.first = 0;
+				return false;
+			}
 			Actor *temp_actor = level->get_actor(step_pos.x, step_pos.y);
-			if (temp_actor != nullptr)
+			if (temp_actor == nullptr)
+			{
+				add_action(ACTION_MOVE, step_pos.x, step_pos.y);
+				moves.first -= 1;
+			}
+			else
 			{
 				if (temp_actor->get_actor_type() == ACTOR_HERO || temp_actor->get_actor_type() == ACTOR_PROP)
 					add_action(ACTION_ATTACK, step_pos.x, step_pos.y);
@@ -201,17 +215,8 @@ bool Monster::take_turn(Level *level)
 					}
 					else turn_done = true;
 				}
-				else if (temp_actor == this)
-				{
-					add_action(ACTION_INTERACT, step_pos.x, step_pos.y);
-				}
 				else turn_done = true;
 				moves.first = 0;
-			}
-			else
-			{
-				moves.first -= 1;
-				add_action(ACTION_MOVE, step_pos.x, step_pos.y);
 			}
 			/*if (!pathfinder->get_path_found())
 			{
