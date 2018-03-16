@@ -9,7 +9,7 @@ Tower Defense Roguelike game (what) made with SDL2 for 7DRL 2018 ([itch.io link]
 - `sudo apt-get install g++ libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev`
 
 #### Build the game:
-- `make linux`
+- `make all`
 
 #### (Optional) Install runtime dependencies
 - `sudo apt-get install freepats`
