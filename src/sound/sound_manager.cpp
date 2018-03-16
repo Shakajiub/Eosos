@@ -19,6 +19,7 @@
 #include "sound_manager.hpp"
 #include "sound.hpp"
 
+#include "logging.hpp"
 #include "options.hpp"
 #include "message_log.hpp"
 #include "ui.hpp"
@@ -49,7 +50,7 @@ void SoundManager::free()
 	sound_map.clear();
 	reference_count.clear();
 
-	std::cout << "all sounds erased" << std::endl;
+	logging.cout("All sounds erased", LOG_SOUND);
 }
 void SoundManager::update()
 {
@@ -88,7 +89,6 @@ void SoundManager::update()
 
 			previous_playlist = current_playlist;
 		}
-		// If we can't play the song, remove it from the playlist
 		else remove_from_playlist(current_playlist, next);
 	}
 	else silence_timer = 10000;
@@ -144,7 +144,7 @@ Sound* SoundManager::load_sound(const std::string &sound_name, bool music)
 		else sound_map[sound_name] = std::move(temp_sound);
 		reference_count[sound_name] = 1;
 
-		std::cout << "sound loaded: " << sound_name << std::endl;
+		logging.cout(std::string("Sound loaded: ") + sound_name, LOG_SOUND);
 	}
 	else reference_count[sound_name] += 1;
 	return sound_map[sound_name].get();
@@ -160,7 +160,7 @@ void SoundManager::free_sound(const std::string &sound_name)
 			it->second.reset();
 			sound_map.erase(it);
 
-			std::cout << "sound freed: " << sound_name << std::endl;
+			logging.cout(std::string("Sound freed: ") + sound_name, LOG_SOUND);
 		}
 	}
 }
@@ -194,7 +194,7 @@ void SoundManager::set_music_volume(uint8_t volume)
 		stop_music();
 	Mix_VolumeMusic(volume_music);
 
-	std::cout << "music volume set to: " << (int)volume_music << std::endl;
+	logging.cout(std::string("Music volume set to: ") + std::to_string((int)volume_music) + "/" + std::to_string(MIX_MAX_VOLUME), LOG_SOUND);
 }
 void SoundManager::set_playlist(PlaylistType playlist, bool instant)
 {

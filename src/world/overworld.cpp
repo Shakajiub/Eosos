@@ -86,36 +86,36 @@ void Overworld::init()
 
 	if (engine.get_sound_manager() != nullptr)
 	{
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "sound/music/Menu_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "sound/music/Menu_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_MENU, "sound/music/Menu_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "music/Menu_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "music/Menu_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_MENU, "music/Menu_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "sound/music/Menu_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "sound/music/Menu_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_PEST, "sound/music/Menu_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "music/Menu_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "music/Menu_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_PEST, "music/Menu_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "sound/music/Kobold_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "sound/music/Kobold_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "sound/music/Kobold_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "music/Kobold_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "music/Kobold_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_KOBOLD, "music/Kobold_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "sound/music/Dwarf_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "sound/music/Dwarf_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "sound/music/Dwarf_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "music/Dwarf_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "music/Dwarf_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DWARF, "music/Dwarf_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "sound/music/Demon_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "sound/music/Demon_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "sound/music/Demon_03.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "sound/music/Demon_04.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "music/Demon_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "music/Demon_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "music/Demon_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEMON, "music/Demon_04.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "sound/music/Boss_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "sound/music/Boss_02.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "sound/music/Boss_03.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "music/Boss_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "music/Boss_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_BOSS, "music/Boss_03.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "sound/music/Boss_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "sound/music/Boss_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "music/Boss_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_DEFEAT, "music/Boss_02.mid");
 
-		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "sound/music/Fanfare_01.mid");
-		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "sound/music/Fanfare_02.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "music/Fanfare_01.mid");
+		engine.get_sound_manager()->add_to_playlist(PT_VICTORY, "music/Fanfare_02.mid");
 
 		engine.get_sound_manager()->set_playlist(PT_MENU);
 	}

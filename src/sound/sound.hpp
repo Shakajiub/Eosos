@@ -27,13 +27,10 @@ public:
 	void free();
 	void play(int8_t channel = -1, int8_t repeat = 0);
 
-	void fade_in(uint16_t ms = 1000) { if (music_file != nullptr) Mix_FadeInMusic(music_file, 1, ms); }
-	//void fade_out(uint16_t ms) { if (music_file != nullptr) Mix_FadeOutMusic(ms); }
-
 	bool load_from_file(const std::string &path, bool music = false);
+	void fade_in(uint16_t ms = 1000);
 
 	std::string get_name() const { return name; }
-	//bool get_is_music() const { return music_file != nullptr; }
 
 private:
 	std::string name;

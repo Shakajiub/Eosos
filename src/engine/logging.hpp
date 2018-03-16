@@ -25,7 +25,8 @@ enum LogCategory
 	LOG_NONE,
 	LOG_ENGINE,
 	LOG_OPTIONS,
-	LOG_TEXTURE
+	LOG_TEXTURE,
+	LOG_SOUND
 };
 class Logging
 {

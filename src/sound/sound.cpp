@@ -18,7 +18,9 @@
 #include "engine.hpp"
 #include "sound.hpp"
 
-Sound::Sound() : name(""), sound_file(nullptr), music_file(nullptr)
+#include "logging.hpp"
+
+Sound::Sound() : name("???"), sound_file(nullptr), music_file(nullptr)
 {
 
 }
@@ -47,34 +49,39 @@ void Sound::play(int8_t channel, int8_t repeat)
 	if (music_file != nullptr)
 	{
 		if (Mix_PlayMusic(music_file, repeat) < 0)
-			std::cout << "could not play music! SDL_mixer Error: " << Mix_GetError() << std::endl;
+			logging.cerr(std::string("Could not play music! SDL_mixer Error: ") + Mix_GetError(), LOG_SOUND);
 	}
 }
 bool Sound::load_from_file(const std::string &path, bool music)
 {
 	free();
-	const std::string fullpath = engine.get_base_path() + path;
+	const std::string full_path = engine.get_base_path() + "sound/" + path;
 
-	if (!music) // This same class is used to load and play both music files and sound effects
+	if (!music) // This same class is used to load and play either music files or sound effects
 	{
-		sound_file = Mix_LoadWAV(fullpath.c_str());
+		sound_file = Mix_LoadWAV(full_path.c_str());
 		if (sound_file == NULL)
 		{
-			std::cout << "unable to load sound: '" << path << "'! SDL_mixer Error: " << Mix_GetError() << std::endl;
+			logging.cerr(std::string("Could not load sound: '") + path + "'! SDL_mixer Error: " + Mix_GetError(), LOG_SOUND);
 			sound_file = nullptr;
 			return false;
 		}
 	}
 	else // The default for this function is a sound file, down here is where we load music files
 	{
-		music_file = Mix_LoadMUS(fullpath.c_str());
+		music_file = Mix_LoadMUS(full_path.c_str());
 		if (music_file == NULL)
 		{
-			std::cout << "unable to load music: '" << path << "' SDL_mixer Error: " << Mix_GetError() << std::endl;
+			logging.cerr(std::string("Could not load music: '") + path + "'! SDL_mixer Error: " + Mix_GetError(), LOG_SOUND);
 			music_file = nullptr;
 			return false;
 		}
 	}
 	name = path;
 	return true;
+}
+void Sound::fade_in(uint16_t ms)
+{
+	if (music_file != nullptr)
+		Mix_FadeInMusic(music_file, 1, ms);
 }
