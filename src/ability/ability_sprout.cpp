@@ -20,8 +20,8 @@
 #include "hero.hpp"
 #include "texture.hpp"
 
-#include "camera.hpp"
 #include "actor_manager.hpp"
+#include "camera.hpp"
 #include "scene_manager.hpp"
 #include "texture_manager.hpp"
 #include "level.hpp"
@@ -106,21 +106,16 @@ bool AbilitySprout::get_click(uint16_t mouse_x, uint16_t mouse_y)
 		if (node.first == map_x && node.second == map_y)
 		{
 			Overworld *scene = engine.get_scene_manager()->get_scene("test");
-
-			ActorManager *am = nullptr;
 			Level *level = nullptr;
 
 			if (scene != nullptr)
-			{
-				am = scene->get_actor_manager();
 				level = scene->get_level();
-			}
-			if (am == nullptr || level == nullptr)
+			if (level == nullptr)
 				return true;
 
 			const std::string crops[6] = { "1", "2", "3", "4", "5", "6" };
 			const std::string crop_name = "level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
-			am->spawn_actor(level, ACTOR_PROP, node.first, node.second, crop_name);
+			engine.get_actor_manager()->spawn_actor(level, ACTOR_PROP, node.first, node.second, crop_name);
 
 			if (temp_hero != nullptr)
 			{

@@ -43,7 +43,7 @@ public:
 	virtual void render_ui(uint16_t xpos, uint16_t ypos) const;
 
 	virtual void start_turn();
-	virtual bool take_turn(Level *level, ActorManager *am);
+	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
 	virtual void interact(Level *level, Point pos);

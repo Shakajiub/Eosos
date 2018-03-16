@@ -54,7 +54,7 @@ public:
 	bool get_click(int16_t mouse_x, int16_t mouse_y) const;
 
 private:
-	std::pair<uint8_t, uint8_t> find_spot(Level *level, uint8_t xpos, uint8_t ypos) const;
+	Point find_spot(Level *level, Point pos) const;
 	void delete_actor(Level *level, Actor *actor);
 
 	bool next_turn;

@@ -18,7 +18,6 @@
 #ifndef GENERATOR_HPP
 #define GENERATOR_HPP
 
-class ActorManager;
 class Level;
 
 class Generator
@@ -29,8 +28,8 @@ public:
 	virtual void render_ui() = 0;
 
 	virtual const std::string generate(uint8_t depth) = 0;
-	virtual void post_process(ActorManager *am, Level *level) = 0;
-	virtual void next_turn(ActorManager *am, Level *level) = 0;
+	virtual void post_process(Level *level) = 0;
+	virtual void next_turn(Level *level) = 0;
 
 	virtual std::pair<uint8_t, uint8_t> get_base_pos() const = 0;
 	virtual std::pair<uint8_t, uint8_t> get_spawn_pos() const = 0;

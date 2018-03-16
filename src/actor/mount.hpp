@@ -36,7 +36,7 @@ public:
 
 	virtual void update(Level *level);
 	virtual void start_turn();
-	virtual bool take_turn(Level *level, ActorManager *am);
+	virtual bool take_turn(Level *level);
 
 	void set_rider(Actor *new_rider);
 

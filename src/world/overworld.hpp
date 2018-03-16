@@ -20,7 +20,6 @@
 
 #include "scene.hpp"
 
-class ActorManager;
 class Actor;
 class Level;
 class Texture;
@@ -46,7 +45,6 @@ public:
 
 	void next_turn();
 
-	ActorManager* get_actor_manager() const { return actor_manager; }
 	Level* get_level() const { return current_level; }
 
 private:
@@ -57,7 +55,6 @@ private:
 	uint8_t anim_timer;
 	uint8_t current_depth;
 
-	ActorManager *actor_manager;
 	Actor *hovered_actor;
 	Level *current_level;
 

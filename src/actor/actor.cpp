@@ -169,7 +169,7 @@ void Actor::render_ui(uint16_t xpos, uint16_t ypos) const
 		);
 	}
 }
-void Actor::death(ActorManager *am, Level *level)
+void Actor::death(Level *level)
 {
 
 }
@@ -178,7 +178,7 @@ void Actor::start_turn()
 	// Called when our turn to move begins.
 	turn_done = true;
 }
-bool Actor::take_turn(Level *level, ActorManager *am)
+bool Actor::take_turn(Level *level)
 {
 	// Called continuously every frame when it's our turn.
 	// Return true once we're done with our turn.

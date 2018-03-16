@@ -21,7 +21,6 @@
 #include <queue>
 #include <vector>
 
-class ActorManager;
 class Mount;
 class Level;
 class Texture;
@@ -86,10 +85,10 @@ public:
 	virtual void update(Level *level);
 	virtual void render() const;
 	virtual void render_ui(uint16_t xpos, uint16_t ypos) const;
-	virtual void death(ActorManager *am, Level *level);
+	virtual void death(Level *level);
 
 	virtual void start_turn();
-	virtual bool take_turn(Level *level, ActorManager *am);
+	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
 	virtual void interact(Level *level, Point pos);

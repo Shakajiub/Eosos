@@ -50,6 +50,7 @@ const SDL_Color DAWN_SKY = { 109, 194, 202 };
 const SDL_Color DAWN_MAIZE = { 218, 212, 94 };
 const SDL_Color DAWN_PEPPERMINT = { 222, 238, 214 };
 
+class ActorManager;
 class SceneManager;
 class SoundManager;
 class TextureManager;
@@ -80,6 +81,7 @@ public:
 	SDL_Window* get_window() const { return main_window; }
 	SDL_Renderer* get_renderer() const { return main_renderer; }
 
+	ActorManager* get_actor_manager() const { return actor_manager; }
 	SceneManager* get_scene_manager() const { return scene_manager; }
 	SoundManager* get_sound_manager() const { return sound_manager; }
 	TextureManager* get_texture_manager() const { return texture_manager; }
@@ -93,6 +95,7 @@ private:
 	SDL_Window *main_window;
 	SDL_Renderer *main_renderer;
 
+	ActorManager *actor_manager;
 	SceneManager *scene_manager;
 	SoundManager *sound_manager;
 	TextureManager *texture_manager;

@@ -43,8 +43,8 @@ public:
 	virtual void render_ui();
 
 	virtual const std::string generate(uint8_t depth);
-	virtual void post_process(ActorManager *am, Level *level);
-	virtual void next_turn(ActorManager *am, Level *level);
+	virtual void post_process(Level *level);
+	virtual void next_turn(Level *level);
 
 	virtual std::pair<uint8_t, uint8_t> get_base_pos() const { return base_pos; }
 	virtual std::pair<uint8_t, uint8_t> get_spawn_pos() const;

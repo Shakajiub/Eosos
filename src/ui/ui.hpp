@@ -20,7 +20,6 @@
 
 #include <queue>
 
-class ActorManager;
 class Hero;
 class Texture;
 class BitmapFont;
@@ -49,8 +48,8 @@ public:
 
 	void draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight = false) const;
 
-	bool get_overlap(ActorManager *at, int16_t xpos, int16_t ypos) const;
-	bool get_click(ActorManager *at, int16_t xpos, int16_t ypos);
+	bool get_overlap(int16_t xpos, int16_t ypos) const;
+	bool get_click(int16_t xpos, int16_t ypos);
 
 	Texture* get_background() const { return ui_background; }
 	BitmapFont* get_bitmap_font() const { return main_font; }

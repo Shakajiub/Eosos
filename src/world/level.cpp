@@ -17,12 +17,12 @@
 
 #include "engine.hpp"
 #include "level.hpp"
-#include "actor_manager.hpp"
 #include "actor.hpp"
 #include "dijkstra.hpp"
 #include "texture.hpp"
 #include "generator_forest.hpp"
 
+#include "actor_manager.hpp"
 #include "camera.hpp"
 #include "options.hpp"
 #include "logging.hpp"
@@ -79,12 +79,12 @@ void Level::free()
 	textures.clear();
 	sub_nodes.clear();
 }
-void Level::create(ActorManager *am, uint8_t depth)
+void Level::create(uint8_t depth)
 {
 	free();
 
-	if (depth > 1 && am != nullptr)
-		am->clear_actors(this);
+	if (depth > 1)
+		engine.get_actor_manager()->clear_actors(this);
 
 	map_generator = new GeneratorForest;
 	map_generator->init();
@@ -149,9 +149,8 @@ void Level::create(ActorManager *am, uint8_t depth)
 	map_height = (uint8_t)map_data.size();
 	map_created = true;
 
-	map_generator->post_process(am, this);
-	if (am != nullptr)
-		am->place_actors(this, get_base_pos());
+	map_generator->post_process(this);
+	engine.get_actor_manager()->place_actors(this, get_base_pos());
 
 	dijkstra_map = new Dijkstra;
 	dijkstra_map->build_map(this);
@@ -219,10 +218,10 @@ void Level::animate()
 	if (refresh_texture)
 		refresh_map_texture(true);
 }
-void Level::next_turn(ActorManager *am)
+void Level::next_turn()
 {
 	if (map_generator != nullptr)
-		map_generator->next_turn(am, this);
+		map_generator->next_turn(this);
 }
 bool Level::get_wall(int8_t xpos, int8_t ypos, bool check_occupying) const
 {

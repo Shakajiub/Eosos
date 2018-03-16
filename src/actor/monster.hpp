@@ -57,10 +57,10 @@ public:
 
 	virtual bool init(ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name);
 	virtual void render() const;
-	virtual void death(ActorManager *am, Level *level);
+	virtual void death(Level *level);
 
 	virtual void start_turn();
-	virtual bool take_turn(Level *level, ActorManager *am);
+	virtual bool take_turn(Level *level);
 	virtual void end_turn();
 
 	virtual void interact(Level *level, Point pos);

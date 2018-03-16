@@ -16,6 +16,7 @@
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
 #include "engine.hpp"
+#include "actor_manager.hpp"
 #include "scene_manager.hpp"
 #include "sound_manager.hpp"
 #include "texture_manager.hpp"
@@ -27,7 +28,7 @@
 
 Engine::Engine() :
 	main_window(nullptr), main_renderer(nullptr), delta_time(0), current_time(0),
-	scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr)
+	actor_manager(nullptr), scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr)
 {
 
 }
@@ -122,9 +123,9 @@ bool Engine::init()
 
 	// Initialize other custom engine objects
 
-	// TODO - The random seed doesn't seem to work on Windows
 	generator.seed(std::random_device{}());
 
+	actor_manager = new ActorManager;
 	scene_manager = new SceneManager;
 	sound_manager = new SoundManager;
 	texture_manager = new TextureManager;
@@ -138,6 +139,8 @@ void Engine::close()
 {
 	ui.free();
 
+	if (actor_manager != nullptr)
+		delete actor_manager;
 	if (sound_manager != nullptr)
 		delete sound_manager;
 	if (scene_manager != nullptr)

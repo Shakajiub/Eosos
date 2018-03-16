@@ -17,10 +17,10 @@
 
 #include "engine.hpp"
 #include "generator_forest.hpp"
-#include "actor_manager.hpp"
 #include "level.hpp"
 #include "astar.hpp"
 
+#include "actor_manager.hpp"
 #include "hero.hpp"
 #include "monster.hpp"
 #include "mount.hpp"
@@ -158,7 +158,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 	std::cout << level << std::endl;
 	return level;
 }
-void GeneratorForest::post_process(ActorManager *am, Level *level)
+void GeneratorForest::post_process(Level *level)
 {
 	if (pathfinder == nullptr)
 	{
@@ -208,19 +208,19 @@ void GeneratorForest::post_process(ActorManager *am, Level *level)
 				continue;
 
 			temp_node = level->get_node(x, y);
-			if (am != nullptr && temp_node.floor_texture->get_name().find("_field") != std::string::npos)
+			if (temp_node.floor_texture->get_name().find("_field") != std::string::npos)
 			{
 				if (engine.get_rng() % 4 != 0)
 				{
 					const std::string crop_name = "level/decor/crop_" + crops[engine.get_rng() % 6] + ".png";
-					am->spawn_actor(level, ACTOR_PROP, x, y, crop_name, false);
+					engine.get_actor_manager()->spawn_actor(level, ACTOR_PROP, x, y, crop_name, false);
 				}
-				else am->spawn_actor(level, ACTOR_MOUNT, x, y, "actor/sheep_white.png", false);
+				else engine.get_actor_manager()->spawn_actor(level, ACTOR_MOUNT, x, y, "actor/sheep_white.png", false);
 			}
 		}
 	}
 }
-void GeneratorForest::next_turn(ActorManager *am, Level *level)
+void GeneratorForest::next_turn(Level *level)
 {
 	if (current_wave > current_depth + 1)
 		return;
@@ -233,7 +233,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			peon = true;
 			if (current_depth < 4)
 			{
-				Actor *hero = am->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "actor/orc_peon.png");
+				Actor *hero = engine.get_actor_manager()->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "actor/orc_peon.png");
 				if (current_depth > 1)
 					ui.spawn_message_box("", "A new Peon has joined the party");
 			}
@@ -245,10 +245,10 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 		if (calm_timer == 0)
 			init_wave();
 	}
-	else if (am != nullptr && current_turn % 2 != 0)
+	else if (current_turn % 2 != 0)
 	{
 		auto pos = get_spawn_pos();
-		Actor *monster = am->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second);
+		Actor *monster = engine.get_actor_manager()->spawn_actor(level, ACTOR_MONSTER, pos.first, pos.second);
 
 		if (monster != nullptr && wave_monsters.size() > 1)
 		{
@@ -268,7 +268,7 @@ void GeneratorForest::next_turn(ActorManager *am, Level *level)
 			}
 			else if (mount_name.length() > 0 && engine.get_rng() % 20 == 0)
 			{
-				Actor *mount = am->spawn_actor(level, ACTOR_MOUNT, pos.first, pos.second, mount_name);
+				Actor *mount = engine.get_actor_manager()->spawn_actor(level, ACTOR_MOUNT, pos.first, pos.second, mount_name);
 				if (mount != nullptr)
 				{
 					level->set_actor(mount->get_grid_x(), mount->get_grid_y(), nullptr);

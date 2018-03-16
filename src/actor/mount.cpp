@@ -59,7 +59,7 @@ void Mount::start_turn()
 	}
 	else turn_done = true;
 }
-bool Mount::take_turn(Level *level, ActorManager *am)
+bool Mount::take_turn(Level *level)
 {
 	if (turn_done)
 		return true;

@@ -164,7 +164,7 @@ void Hero::start_turn()
 		ui.get_message_log()->add_message("Move left or you will take damage at the end of turn!", DAWN_BERRY);
 	}
 }
-bool Hero::take_turn(Level *level, ActorManager *am)
+bool Hero::take_turn(Level *level)
 {
 	if (sleep_timer > 0)
 	{
@@ -218,7 +218,7 @@ bool Hero::take_turn(Level *level, ActorManager *am)
 				auto_move_path = false;
 		}
 	}
-	return Actor::take_turn(level, am);
+	return Actor::take_turn(level);
 }
 void Hero::end_turn()
 {

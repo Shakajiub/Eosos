@@ -17,13 +17,13 @@
 
 #include "engine.hpp"
 #include "ui.hpp"
-#include "actor_manager.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
 #include "level_up_box.hpp"
 #include "message_box.hpp"
 #include "message_log.hpp"
 
+#include "actor_manager.hpp"
 #include "camera.hpp"
 #include "options.hpp"
 #include "texture_manager.hpp"
@@ -231,15 +231,15 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 		}
 	}
 }
-bool UI::get_overlap(ActorManager *at, int16_t xpos, int16_t ypos) const
+bool UI::get_overlap(int16_t xpos, int16_t ypos) const
 {
 	if (level_up_box != nullptr)
 		return level_up_box->get_overlap(xpos, ypos);
-	if (at != nullptr && at->get_overlap(xpos, ypos))
+	if (engine.get_actor_manager()->get_overlap(xpos, ypos))
 		return true;
 	return false;
 }
-bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos)
+bool UI::get_click(int16_t xpos, int16_t ypos)
 {
 	if (level_up_box != nullptr)
 	{
@@ -259,7 +259,7 @@ bool UI::get_click(ActorManager *at, int16_t xpos, int16_t ypos)
 		}
 		//return true;
 	}
-	if (at != nullptr && at->get_click(xpos, ypos))
+	if (engine.get_actor_manager()->get_click(xpos, ypos))
 		return true;
 	return false;
 }

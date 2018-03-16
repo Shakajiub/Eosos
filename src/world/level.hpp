@@ -21,7 +21,6 @@
 #include <vector>
 #include <unordered_map>
 
-class ActorManager;
 class Actor;
 class Dijkstra;
 class Texture;
@@ -61,11 +60,11 @@ public:
 	~Level();
 
 	void free();
-	void create(ActorManager *am, uint8_t depth);
+	void create(uint8_t depth);
 	void render() const;
 	void render_ui() const;
 	void animate();
-	void next_turn(ActorManager *am);
+	void next_turn();
 
 	bool get_victory() const { return victory; }
 	uint8_t get_damage_base() const { return dmg_base; }

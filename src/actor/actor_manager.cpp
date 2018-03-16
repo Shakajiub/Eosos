@@ -69,7 +69,7 @@ bool ActorManager::update(Level *level)
 	if (current_actor != nullptr && !next_turn)
 	{
 		Actor *prev_actor = current_actor;
-		while (current_actor->take_turn(level, this))
+		while (current_actor->take_turn(level))
 		{
 			current_actor->end_turn();
 
@@ -192,23 +192,21 @@ Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8
 	if (level == nullptr)
 		return nullptr;
 
-	auto spot = find_spot(level, xpos, ypos);
-	if (spot.first != 0)
+	Point spot = find_spot(level, Point(xpos, ypos));
+	if (spot.x != 0)
 	{
-		xpos = spot.first;
-		ypos = spot.second;
+		xpos = spot.x;
+		ypos = spot.y;
 
 		Actor *temp = nullptr;
-
-		if (at == ACTOR_HERO)
-			temp = new Hero;
-		else if (at == ACTOR_MONSTER)
-			temp = new Monster;
-		else if (at == ACTOR_MOUNT)
-			temp = new Mount;
-		else if (at == ACTOR_PROP)
-			temp = new Prop;
-
+		switch (at)
+		{
+			case ACTOR_HERO: temp = new Hero; break;
+			case ACTOR_MONSTER: temp = new Monster; break;
+			case ACTOR_MOUNT: temp = new Mount; break;
+			case ACTOR_PROP: temp = new Prop; break;
+			default: break;
+		}
 		if (temp != nullptr)
 		{
 			if (temp->init(at, xpos, ypos, texture_name))
@@ -240,20 +238,20 @@ void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_p
 	std::vector<Actor*> to_erase;
 	for (Actor *a : actors)
 	{
-		std::pair<uint8_t, uint8_t> spot;
+		Point spot = Point(0, 0);
 		if (a->get_actor_type() == ACTOR_HERO)
 		{
-			spot = find_spot(level, base_pos.first, base_pos.second);
+			spot = find_spot(level, Point(base_pos.first, base_pos.second));
 			Hero *herp = dynamic_cast<Hero*>(a);
 
 			herp->clear_status();
 			herp->clear_pathfinder();
 			herp->reset_moves();
 		}
-		else spot = find_spot(level, a->get_grid_x(), a->get_grid_y());
+		else spot = find_spot(level, Point(a->get_grid_x(), a->get_grid_y()));
 
-		if (spot.first != 0)
-			level->set_actor(spot.first, spot.second, a);
+		if (spot.x != 0)
+			level->set_actor(spot.x, spot.y, a);
 		else to_erase.push_back(a);
 	}
 	for (Actor *a : to_erase)
@@ -327,21 +325,21 @@ bool ActorManager::get_click(int16_t mouse_x, int16_t mouse_y) const
 		return ability_manager->get_click(dynamic_cast<Hero*>(current_actor), mouse_x, mouse_y);
 	return false;
 }
-std::pair<uint8_t, uint8_t> ActorManager::find_spot(Level *level, uint8_t xpos, uint8_t ypos) const
+Point ActorManager::find_spot(Level *level, Point pos) const
 {
-	if (level->get_wall(xpos, ypos, true))
+	if (level->get_wall(pos.x, pos.y, true))
 	{
 		for (int8_t x = -1; x < 2; x++)
 		{
 			for (int8_t y = -1; y < 2; y++)
 			{
-				if (!level->get_wall(xpos + x, ypos + y, true))
-					return std::make_pair(xpos + x, ypos + y);
+				if (!level->get_wall(pos.x + x, pos.y + y, true))
+					return Point(pos.x + x, pos.y + y);
 			}
 		}
-		return std::make_pair(0, 0);
+		return Point(0, 0);
 	}
-	return std::make_pair(xpos, ypos);
+	return pos;
 }
 void ActorManager::delete_actor(Level *level, Actor *actor)
 {
@@ -370,6 +368,6 @@ void ActorManager::delete_actor(Level *level, Actor *actor)
 	if (actor->get_actor_type() == ACTOR_HERO && heroes.size() == 0)
 		level->set_damage_base(20);
 
-	actor->death(this, level);
+	actor->death(level);
 	delete actor;
 }

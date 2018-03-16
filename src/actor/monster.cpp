@@ -17,9 +17,9 @@
 
 #include "engine.hpp"
 #include "monster.hpp"
-#include "actor_manager.hpp"
 #include "level.hpp"
 
+#include "actor_manager.hpp"
 #include "mount.hpp"
 #include "dijkstra.hpp"
 #include "camera.hpp"
@@ -75,11 +75,11 @@ void Monster::render() const
 		);
 	}
 }
-void Monster::death(ActorManager *am, Level *level)
+void Monster::death(Level *level)
 {
 	if (monster_class == MONSTER_KOBOLD_DEMONIAC)
 	{
-		Actor * temp = am->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
+		Actor *temp = engine.get_actor_manager()->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
 		dynamic_cast<Monster*>(temp)->init_class(MONSTER_KOBOLD_TRUEFORM);
 		level->set_turn(0);
 
@@ -102,7 +102,7 @@ void Monster::start_turn()
 	if (spell_timer > 0)
 		spell_timer -= 1;
 }
-bool Monster::take_turn(Level *level, ActorManager *am)
+bool Monster::take_turn(Level *level)
 {
 	if (turn_done)
 	{
@@ -168,22 +168,19 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 		}
 		if (moves.first > 0 && has_ability("necromancy") && spell_timer == 0)
 		{
-			if (am != nullptr)
+			Actor *spawn = engine.get_actor_manager()->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
+			if (spawn != nullptr)
 			{
-				Actor *spawn = am->spawn_actor(level, ACTOR_MONSTER, grid_x, grid_y);
-				if (spawn != nullptr)
-				{
-					if (engine.get_rng() % 10 != 0)
-						dynamic_cast<Monster*>(spawn)->init_class(MONSTER_SKELETON);
-					else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_SKELETON_DISEASED);
+				if (engine.get_rng() % 10 != 0)
+					dynamic_cast<Monster*>(spawn)->init_class(MONSTER_SKELETON);
+				else dynamic_cast<Monster*>(spawn)->init_class(MONSTER_SKELETON_DISEASED);
 
-					add_action(ACTION_INTERACT, grid_x, grid_y);
-					spell_timer = 4;
-					moves.first = 0;
+				add_action(ACTION_INTERACT, grid_x, grid_y);
+				spell_timer = 4;
+				moves.first = 0;
 
-					if (ui.get_message_log() != nullptr)
-						ui.get_message_log()->add_message("The " + name + " summons a minion!", DAWN_OCHER);
-				}
+				if (ui.get_message_log() != nullptr)
+					ui.get_message_log()->add_message("The " + name + " summons a minion!", DAWN_OCHER);
 			}
 		}
 		if (moves.first > 0 && level->get_dijkstra() != nullptr)//pathfinder != nullptr)
@@ -224,7 +221,7 @@ bool Monster::take_turn(Level *level, ActorManager *am)
 			step_pathfinder(level);*/
 		}
 	}
-	return Actor::take_turn(level, am);
+	return Actor::take_turn(level);
 }
 void Monster::end_turn()
 {
