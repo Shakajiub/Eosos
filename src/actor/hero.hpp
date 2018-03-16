@@ -62,7 +62,8 @@ public:
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 	void input_mouse_button_down(SDL_Event eve, Level *level);
-	void input_controller_down(uint8_t index, uint8_t value, Level *level);
+	void input_joy_button_down(uint8_t index, uint8_t value, Level *level);
+	void input_joy_hat_motion(uint8_t index, uint8_t value, Level *level);
 
 	void move_with_offset(Level *level, int8_t offset_x, int8_t offset_y);
 

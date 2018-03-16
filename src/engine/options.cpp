@@ -59,6 +59,8 @@ void Options::init()
 
 	options_i["sound-music_volume"] = 80;
 
+	options_b["controller-enabled"] = false;
+
 	options_s["ui-image"] = "background";
 	options_s["ui-font"] = "font";
 }

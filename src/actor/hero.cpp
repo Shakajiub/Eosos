@@ -498,7 +498,7 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 		else pathfinder->find_path(level, Point(grid_x, grid_y), Point(map_x, map_y), ACTOR_HERO);
 	}
 }
-void Hero::input_controller_down(uint8_t index, uint8_t value, Level *level)
+void Hero::input_joy_button_down(uint8_t index, uint8_t value, Level *level)
 {
 	if (!action_queue.empty() || moves.first <= 0 || ability_activated)
 		return;
@@ -506,17 +506,29 @@ void Hero::input_controller_down(uint8_t index, uint8_t value, Level *level)
 	int8_t offset_x = 0, offset_y = 0;
 	if (value == 1) switch (index)
 	{
-		case 4: offset_y = -1; break;
-		case 6: offset_y = 1; break;
-		case 7: offset_x = -1; break;
-		case 5: offset_x = 1; break;
-		case 14: /*interact_below = true;*/ break;
-		case 13:
+		case 0:
 			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
 				add_action(ACTION_INTERACT, grid_x, grid_y);
 			else turn_done = true;
 			moves.first = 0;
 			break;
+		default: break;
+	}
+	if (offset_x != 0 || offset_y != 0)
+		move_with_offset(level, offset_x, offset_y);
+}
+void Hero::input_joy_hat_motion(uint8_t index, uint8_t value, Level *level)
+{
+	if (!action_queue.empty() || moves.first <= 0 || ability_activated)
+		return;
+
+	int8_t offset_x = 0, offset_y = 0;
+	if (index == 0) switch (value)
+	{
+		case 1: offset_y = -1; break;
+		case 2: offset_x = 1; break;
+		case 4: offset_y = 1; break;
+		case 8: offset_x = -1; break;
 		default: break;
 	}
 	if (offset_x != 0 || offset_y != 0)

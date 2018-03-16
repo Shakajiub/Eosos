@@ -197,20 +197,32 @@ bool Scenario::update()
 		}
 		else if (event.type == SDL_JOYBUTTONDOWN)
 		{
-			//std::cout << "joybuttondown! (" << (int)event.jbutton.which << ", " << (int)event.jbutton.button << ", " << (int)event.jbutton.state << ")" << std::endl;
-
-			switch (event.jbutton.button)
+			std::cout << "joybuttondown! (" << (int)event.jbutton.which << ", " << (int)event.jbutton.button << ", " << (int)event.jbutton.state << ")" << std::endl;
+			engine.get_actor_manager()->input_joy_button_down(event.jbutton.button, event.jbutton.state, current_level);
+		}
+		else if (event.type == SDL_JOYHATMOTION)
+		{
+			std::cout << "joyhatmotion! (" << std::to_string(event.jhat.hat) << ", " << std::to_string(event.jhat.value) << ")" << std::endl;
+			engine.get_actor_manager()->input_joy_hat_motion(event.jhat.hat, event.jhat.value, current_level);
+		}
+		else if (event.type == SDL_JOYAXISMOTION)
+		{
+			if (event.jaxis.value > 2000)
 			{
-				//case 15: ui.toggle_inventory(); break;
-				default:
-					//if (!ui.input_controller(event.jbutton.button, event.jbutton.state))
-						engine.get_actor_manager()->input_controller_down(event.jbutton.button, event.jbutton.state, current_level);
-					break;
+				std::cout << "joyaxismotion! (" << std::to_string(event.jaxis.axis) << ", " << std::to_string(event.jaxis.value) << ")" << std::endl;
+				if (event.jaxis.axis == 0)
+					mouse_x += event.jaxis.value / 200 * engine.get_dt();
+				else if (event.jaxis.axis == 1)
+					mouse_y += event.jaxis.value / 200 * engine.get_dt();
 			}
 		}
 	}
-	//SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
-	SDL_GetMouseState(&mouse_x, &mouse_y);
+	if (options.get_b("controller-enabled"))
+	{
+		mouse_x = 1;
+		mouse_y = 1;
+	}
+	else SDL_GetMouseState(&mouse_x, &mouse_y);
 
 	if (current_level != nullptr)
 	{

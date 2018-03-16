@@ -280,10 +280,15 @@ void ActorManager::input_mouse_button_down(SDL_Event eve, Level *level)
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
 		dynamic_cast<Hero*>(current_actor)->input_mouse_button_down(eve, level);
 }
-void ActorManager::input_controller_down(uint8_t index, uint8_t value, Level *level)
+void ActorManager::input_joy_button_down(uint8_t index, uint8_t value, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
-		dynamic_cast<Hero*>(current_actor)->input_controller_down(index, value, level);
+		dynamic_cast<Hero*>(current_actor)->input_joy_button_down(index, value, level);
+}
+void ActorManager::input_joy_hat_motion(uint8_t index, uint8_t value, Level *level)
+{
+	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
+		dynamic_cast<Hero*>(current_actor)->input_joy_hat_motion(index, value, level);
 }
 bool ActorManager::get_next_turn()
 {
