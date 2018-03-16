@@ -187,6 +187,7 @@ void ActorManager::clear_heroes(Level *level)
 	heroes.clear();
 	//current_actor = nullptr;
 }
+//template <class T>
 Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name, bool place)
 {
 	if (level == nullptr)
@@ -199,7 +200,7 @@ Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8
 		ypos = spot.y;
 
 		Actor *temp = nullptr;
-		switch (at)
+		switch (at) // TODO - Maybe just pass the Actor class as a template?
 		{
 			case ACTOR_HERO: temp = new Hero; break;
 			case ACTOR_MONSTER: temp = new Monster; break;
@@ -220,7 +221,7 @@ Actor* ActorManager::spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8
 				if (place)
 					level->set_actor(xpos, ypos, temp);
 
-				if (temp->get_actor_type() == ACTOR_HERO)
+				if (at == ACTOR_HERO)
 					heroes.push_back(temp);
 			}
 			else
@@ -278,6 +279,11 @@ void ActorManager::input_mouse_button_down(SDL_Event eve, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
 		dynamic_cast<Hero*>(current_actor)->input_mouse_button_down(eve, level);
+}
+void ActorManager::input_controller_down(uint8_t index, uint8_t value, Level *level)
+{
+	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
+		dynamic_cast<Hero*>(current_actor)->input_controller_down(index, value, level);
 }
 bool ActorManager::get_next_turn()
 {

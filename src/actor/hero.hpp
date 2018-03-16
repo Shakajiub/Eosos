@@ -62,6 +62,9 @@ public:
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 	void input_mouse_button_down(SDL_Event eve, Level *level);
+	void input_controller_down(uint8_t index, uint8_t value, Level *level);
+
+	void move_with_offset(Level *level, int8_t offset_x, int8_t offset_y);
 
 	HeroClass get_hero_class() const { return hero_class; }
 	AStar* get_pathfinder() const { return pathfinder; }

@@ -195,6 +195,19 @@ bool Scenario::update()
 			if (!ui.get_click(event.button.x, event.button.y))
 				engine.get_actor_manager()->input_mouse_button_down(event, current_level);
 		}
+		else if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			//std::cout << "joybuttondown! (" << (int)event.jbutton.which << ", " << (int)event.jbutton.button << ", " << (int)event.jbutton.state << ")" << std::endl;
+
+			switch (event.jbutton.button)
+			{
+				//case 15: ui.toggle_inventory(); break;
+				default:
+					//if (!ui.input_controller(event.jbutton.button, event.jbutton.state))
+						engine.get_actor_manager()->input_controller_down(event.jbutton.button, event.jbutton.state, current_level);
+					break;
+			}
+		}
 	}
 	//SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
 	SDL_GetMouseState(&mouse_x, &mouse_y);

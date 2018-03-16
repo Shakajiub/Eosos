@@ -48,7 +48,7 @@ void BitmapFont::free()
 {
 	if (font_bitmap != nullptr)
 	{
-		engine.get_texture_manager()->free_texture(font_bitmap->get_name());
+		delete font_bitmap;
 		font_bitmap = nullptr;
 	}
 }
@@ -58,8 +58,11 @@ bool BitmapFont::build(const std::string &texture_name)
 
 	font_bitmap = new Texture;
 	if (!font_bitmap->load_from_file(texture_name, true))
+	{
+		delete font_bitmap;
+		font_bitmap = nullptr;
 		return false;
-
+	}
 	font_width = font_bitmap->get_width() / 16;
 	font_height = font_bitmap->get_height() / 16;
 
@@ -84,15 +87,15 @@ void BitmapFont::render_text(int16_t xpos, int16_t ypos, const std::string &text
 {
 	if (font_bitmap == nullptr)
 		return;
-	std::string final_text = text;
 
+	std::string final_text = text;
 	if (line_length > 0) // Split the text into multiple lines
 	{
 		uint8_t space_pos = 0;
 		uint8_t prev_space = 0;
 		uint8_t prev_length = 0;
-		bool text_split = false;
 
+		bool text_split = false;
 		while (!text_split)
 		{
 			prev_space = space_pos;
@@ -117,6 +120,7 @@ void BitmapFont::render_text(int16_t xpos, int16_t ypos, const std::string &text
 	{
 		if (final_text[i] == ' ')
 			xpos += 1;
+
 		else if (final_text[i] == '\n')
 		{
 			ypos += 1;

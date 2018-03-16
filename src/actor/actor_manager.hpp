@@ -42,11 +42,13 @@ public:
 	void clear_actors(Level *level, bool clear_heroes = false);
 	void clear_heroes(Level *level);
 
+	//template <class T>
 	Actor* spawn_actor(Level *level, ActorType at, uint8_t xpos, uint8_t ypos, const std::string &texture_name = "", bool place = true);
 	void place_actors(Level *level, std::pair<uint8_t, uint8_t> base_pos);
 
 	void input_keyboard_down(SDL_Keycode key, Level *level);
 	void input_mouse_button_down(SDL_Event eve, Level *level);
+	void input_controller_down(uint8_t index, uint8_t value, Level *level);
 
 	bool get_next_turn();
 

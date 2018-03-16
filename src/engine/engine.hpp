@@ -97,6 +97,7 @@ public:
 private:
 	SDL_Window *main_window;
 	SDL_Renderer *main_renderer;
+	SDL_Joystick *main_controller;
 
 	ActorManager *actor_manager;
 	SceneManager *scene_manager;

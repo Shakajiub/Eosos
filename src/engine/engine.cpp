@@ -27,7 +27,7 @@
 #include "ui.hpp"
 
 Engine::Engine() :
-	main_window(nullptr), main_renderer(nullptr), delta_time(0), current_time(0),
+	main_window(nullptr), main_renderer(nullptr), main_controller(nullptr), delta_time(0), current_time(0),
 	actor_manager(nullptr), scene_manager(nullptr), sound_manager(nullptr), texture_manager(nullptr)
 {
 
@@ -42,21 +42,19 @@ bool Engine::init()
 	//    Initialize core SDL
 	//
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
 	{
 		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
 	char *temp_path = SDL_GetBasePath();
 	base_path = std::string(temp_path);
+	SDL_free(temp_path);
 
 	// Initialize custom logging system && load game options
 
 	logging.init(base_path);
-
 	base_path += "data/";
-	SDL_free(temp_path);
-
 	options.load();
 
 	//
@@ -99,6 +97,21 @@ bool Engine::init()
 
 	SDL_SetRenderDrawColor(main_renderer, DAWN_BLACK.r, DAWN_BLACK.g, DAWN_BLACK.b, DAWN_BLACK.a);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	//
+	//    Initialize main SDL_Joystick
+	//
+
+	if (SDL_NumJoysticks() > 0)
+	{
+		main_controller = SDL_JoystickOpen(0);
+		if (main_controller == NULL)
+		{
+			logging.cerr(std::string("Could not open game controller! SDL Error: ") + SDL_GetError(), LOG_ENGINE);
+			main_controller = nullptr;
+		}
+	}
+	else logging.cout("No joysticks detected ...", LOG_ENGINE);
 
 	//
 	//    Initialize SDL_image
@@ -147,6 +160,9 @@ void Engine::close()
 		delete scene_manager;
 	if (texture_manager != nullptr)
 		delete texture_manager;
+
+	if (main_controller != nullptr)
+		SDL_JoystickClose(main_controller);
 
 	SDL_DestroyRenderer(main_renderer);
 	SDL_DestroyWindow(main_window);

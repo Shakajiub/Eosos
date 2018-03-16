@@ -456,35 +456,7 @@ void Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 		default: break;
 	}
 	if (offset_x != 0 || offset_y != 0)
-	{
-		Actor *temp_actor = level->get_actor(grid_x + offset_x, grid_y + offset_y);
-		if (temp_actor != nullptr)
-		{
-			if (temp_actor->get_actor_type() == ACTOR_MONSTER || temp_actor->get_actor_type() == ACTOR_PROP)
-			{
-				add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y, moves.first);
-				moves.first = 0;
-			}
-			else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
-			{
-				if (mount == nullptr)
-				{
-					add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
-					set_mount(dynamic_cast<Mount*>(temp_actor));
-					add_ability("dismount");
-					moves.first = 0;
-				}
-				else if (ui.get_message_log() != nullptr)
-					ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", DAWN_LEAF);
-			}
-		}
-		else if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
-		{
-			moves.first -= 1;
-			add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
-			camera.update_position((grid_x + offset_x) * 32, (grid_y + offset_y) * 32);
-		}
-	}
+		move_with_offset(level, offset_x, offset_y);
 }
 void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 {
@@ -524,6 +496,60 @@ void Hero::input_mouse_button_down(SDL_Event eve, Level *level)
 		}
 		// Otherwise just calculate the new path
 		else pathfinder->find_path(level, Point(grid_x, grid_y), Point(map_x, map_y), ACTOR_HERO);
+	}
+}
+void Hero::input_controller_down(uint8_t index, uint8_t value, Level *level)
+{
+	if (!action_queue.empty() || moves.first <= 0 || ability_activated)
+		return;
+
+	int8_t offset_x = 0, offset_y = 0;
+	if (value == 1) switch (index)
+	{
+		case 4: offset_y = -1; break;
+		case 6: offset_y = 1; break;
+		case 7: offset_x = -1; break;
+		case 5: offset_x = 1; break;
+		case 14: /*interact_below = true;*/ break;
+		case 13:
+			if (level->get_wall_type(grid_x, grid_y) == NT_BASE)
+				add_action(ACTION_INTERACT, grid_x, grid_y);
+			else turn_done = true;
+			moves.first = 0;
+			break;
+		default: break;
+	}
+	if (offset_x != 0 || offset_y != 0)
+		move_with_offset(level, offset_x, offset_y);
+}
+void Hero::move_with_offset(Level *level, int8_t offset_x, int8_t offset_y)
+{
+	Actor *temp_actor = level->get_actor(grid_x + offset_x, grid_y + offset_y);
+	if (temp_actor != nullptr)
+	{
+		if (temp_actor->get_actor_type() == ACTOR_MONSTER || temp_actor->get_actor_type() == ACTOR_PROP)
+		{
+			add_action(ACTION_ATTACK, grid_x + offset_x, grid_y + offset_y, moves.first);
+			moves.first = 0;
+		}
+		else if (temp_actor->get_actor_type() == ACTOR_MOUNT)
+		{
+			if (mount == nullptr)
+			{
+				add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
+				set_mount(dynamic_cast<Mount*>(temp_actor));
+				add_ability("dismount");
+				moves.first = 0;
+			}
+			else if (ui.get_message_log() != nullptr)
+				ui.get_message_log()->add_message(name + ": \"I already have a mount!\"", DAWN_LEAF);
+		}
+	}
+	else if (!level->get_wall(grid_x + offset_x, grid_y + offset_y, true))
+	{
+		moves.first -= 1;
+		add_action(ACTION_MOVE, grid_x + offset_x, grid_y + offset_y);
+		camera.update_position((grid_x + offset_x) * 32, (grid_y + offset_y) * 32);
 	}
 }
 bool Hero::get_auto_move() const
