@@ -19,6 +19,7 @@
 #include "scene_manager.hpp"
 #include "scene.hpp"
 
+#include "logging.hpp"
 #include "overworld.hpp"
 #include "sound_manager.hpp"
 #include "bitmap_font.hpp"
@@ -35,7 +36,7 @@ SceneManager::~SceneManager()
 void SceneManager::free()
 {
 	scene_map.clear();
-	std::cout << "all scenes erased" << std::endl;
+	logging.cout("All scenes erased", LOG_SCENE);
 }
 void SceneManager::init()
 {

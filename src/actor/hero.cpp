@@ -23,6 +23,7 @@
 
 #include "mount.hpp"
 #include "camera.hpp"
+#include "logging.hpp"
 #include "texture_manager.hpp"
 #include "bitmap_font.hpp"
 #include "message_log.hpp"
@@ -279,7 +280,7 @@ bool Hero::init_ui_texture()
 	if (ui_texture == NULL)
 	{
 		ui_texture = nullptr;
-		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to create blank texture! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return false;
 	}
 	if (ui.get_background() != nullptr)

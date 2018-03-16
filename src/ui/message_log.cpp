@@ -18,6 +18,7 @@
 #include "engine.hpp"
 #include "message_log.hpp"
 
+#include "logging.hpp"
 #include "options.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
@@ -51,7 +52,7 @@ void MessageLog::init()
 	if (log_texture == NULL)
 	{
 		log_texture = nullptr;
-		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to create blank texture! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return;
 	}
 	refresh_texture();

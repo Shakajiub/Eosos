@@ -18,6 +18,7 @@
 #include "engine.hpp"
 #include "ability.hpp"
 
+#include "logging.hpp"
 #include "texture_manager.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
@@ -86,7 +87,7 @@ bool Ability::init_texture(const std::string &icon, SDL_Color color)
 	if (ability_texture == NULL)
 	{
 		ability_texture = nullptr;
-		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to create blank texture! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return false;
 	}
 	if (ui.get_background() != nullptr)

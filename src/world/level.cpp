@@ -171,7 +171,7 @@ void Level::create(uint8_t depth)
 	init_map_texture();
 
 	camera.update_position(((map_width - 2) * 32) / 2, ((map_height - 1) * 32) / 2);
-	std::cout << "map created, size: " << (int)(map_width) << ", " << (int)(map_height) << std::endl;
+	logging.cout(std::string("Map created, size: ") + std::to_string((int)map_width) + ", " + std::to_string((int)map_height), LOG_LEVEL);
 }
 void Level::render() const
 {
@@ -297,7 +297,7 @@ void Level::init_map_texture()
 	if (map_texture == NULL)
 	{
 		map_texture = nullptr;
-		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to create blank texture! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return;
 	}
 	SDL_SetRenderTarget(engine.get_renderer(), map_texture);

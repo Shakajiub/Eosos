@@ -21,6 +21,7 @@
 #include "texture.hpp"
 
 #include "camera.hpp"
+#include "logging.hpp"
 #include "texture_manager.hpp"
 #include "ui.hpp"
 
@@ -60,7 +61,7 @@ bool LevelUpBox::init(Hero *hero)
 	if (selection_box == NULL)
 	{
 		selection_box = nullptr;
-		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to create blank texture! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return false;
 	}
 	temp_hero = hero;

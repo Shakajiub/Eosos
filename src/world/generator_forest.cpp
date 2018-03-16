@@ -24,6 +24,7 @@
 #include "hero.hpp"
 #include "monster.hpp"
 #include "mount.hpp"
+#include "logging.hpp"
 #include "sound_manager.hpp"
 #include "texture.hpp"
 #include "bitmap_font.hpp"
@@ -114,7 +115,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 			}
 		}
 		if (!map_fine)
-			std::cout << "map discarded, no access to right edge" << std::endl;
+			logging.cout("Map discarded, no access to right edge", LOG_LEVEL);
 	}
 	const std::string woods = (depth % 2 == 0) ? "spruce_dead" : "oak_dead";
 	const std::string bases[4] = { "base_camp", "base_outpost", "base_garrison", "base_fort" };
@@ -155,7 +156,7 @@ const std::string GeneratorForest::generate(uint8_t depth)
 		}
 		level += '\n';
 	}
-	std::cout << level << std::endl;
+	logging.cout(level, LOG_LEVEL);
 	return level;
 }
 void GeneratorForest::post_process(Level *level)

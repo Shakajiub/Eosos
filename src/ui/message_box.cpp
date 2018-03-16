@@ -57,7 +57,7 @@ bool MessageBox::init(const std::string &title, const std::string &message, uint
 	if (box_background == NULL)
 	{
 		box_background = nullptr;
-		std::cout << "unable to create blank texture! SDL Error: " << SDL_GetError() << std::endl;
+		logging.cerr(std::string("Unable to create blank texture! SDL Error: ") + SDL_GetError(), LOG_TEXTURE);
 		return false;
 	}
 	SDL_SetRenderTarget(engine.get_renderer(), box_background);

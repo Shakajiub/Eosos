@@ -167,10 +167,8 @@ void UI::clear_message_box(bool pass_lock)
 void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight) const
 {
 	if (ui_background == nullptr)
-	{
-		std::cout << "ui error: no proper background texture!" << std::endl;
 		return;
-	}
+
 	if (width == 1) // If the width is 1, just draw a vertical "bar"
 	{
 		for (uint8_t i = 0; i < height + 1; i++)

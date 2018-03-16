@@ -227,7 +227,6 @@ void Actor::interact(Level *level, Point pos)
 }
 uint8_t Actor::get_damage() const
 {
-	//std::cout << "warning! Actor::get_damage() has no override!" << std::endl;
 	return (max_damage > 1) ? (engine.get_rng() % max_damage) + 1 : max_damage;
 }
 void Actor::add_action(ActionType at, uint8_t xpos, uint8_t ypos, int8_t value)

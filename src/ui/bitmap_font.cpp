@@ -19,6 +19,7 @@
 #include "bitmap_font.hpp"
 #include "texture.hpp"
 
+#include "logging.hpp"
 #include "options.hpp"
 #include "texture_manager.hpp"
 
@@ -76,7 +77,7 @@ bool BitmapFont::build(const std::string &texture_name)
 	}
 	font_bitmap->set_color(DAWN_PEPPERMINT);
 
-	std::cout << "font loaded, size: " << std::to_string(font_width) << ", " << std::to_string(font_height) << std::endl;
+	logging.cout(std::string("Font loaded, size: ") + std::to_string(font_width) + ", " + std::to_string(font_height), LOG_ENGINE);
 	return true;
 }
 void BitmapFont::render_text(int16_t xpos, int16_t ypos, const std::string &text, uint8_t line_length) const
