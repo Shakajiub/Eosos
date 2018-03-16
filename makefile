@@ -1,12 +1,37 @@
-SRC_DIRS  := $(wildcard src/*)
-INCLUDES  := $(addprefix -I,$(SRC_DIRS))
-SOURCES   := $(foreach sdir,$(SRC_DIRS),$(wildcard $(sdir)/*.cpp))
-
 CC        := g++
-SRC       := src/*.cpp $(SOURCES)
-COMPILER  := -w -O0 -g -std=c++14
-LINKER    := -lSDL2 -lSDL2_image -lSDL2_mixer $(INCLUDES)
-OUT       := build/eosos
+LD        := g++
 
-linux : $(SRC)
-	$(CC) $(SRC) $(COMPILER) $(LINKER) -o $(OUT)
+MODULES   := ability actor algorithm engine scene scene/scenario sound texture ui
+COMPILER  := -w -O0 -g -std=c++14
+LINKER    := -lSDL2 -lSDL2_image -lSDL2_mixer
+
+SRC_DIRS  := $(addprefix src/,$(MODULES)) src
+BLD_DIRS  := $(addprefix obj/,$(MODULES)) obj
+
+SRC       := $(foreach sdir,$(SRC_DIRS),$(wildcard $(sdir)/*.cpp))
+OBJ       := $(patsubst src/%.cpp,obj/%.o,$(SRC))
+INCLUDES  := $(addprefix -I,$(SRC_DIRS))
+
+vpath %.cpp $(SRC_DIRS)
+
+define make-goal
+$1/%.o: %.cpp
+	$(CC) $(COMPILER) $(INCLUDES) -c $$< -o $$@
+endef
+
+.PHONY: all checkdirs clean
+
+all: checkdirs build/eosos
+
+build/eosos: $(OBJ)
+	$(LD) $^ -o $@ $(LINKER)
+
+checkdirs: $(BLD_DIRS)
+
+$(BLD_DIRS):
+	@mkdir -p $@
+
+clean:
+	@rm -rf $(BLD_DIRS)
+
+$(foreach bdir,$(BLD_DIRS),$(eval $(call make-goal,$(bdir))))

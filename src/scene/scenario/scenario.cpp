@@ -16,7 +16,7 @@
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
 #include "engine.hpp"
-#include "overworld.hpp"
+#include "scenario.hpp"
 #include "actor.hpp"
 #include "level.hpp"
 #include "texture.hpp"
@@ -33,18 +33,18 @@
 
 #include <cmath> // for std::floor
 
-Overworld::Overworld() :
+Scenario::Scenario() :
 	in_menu(true), state(GAME_IN_PROGRESS), base_health(20), anim_timer(0), current_depth(1),
 	hovered_actor(nullptr), current_level(nullptr), node_highlight(nullptr), base_healthbar(nullptr),
 	frames(0), display_fps(0), frame_counter(0)
 {
 
 }
-Overworld::~Overworld()
+Scenario::~Scenario()
 {
 	free();
 }
-void Overworld::free()
+void Scenario::free()
 {
 	engine.get_actor_manager()->free();
 
@@ -69,7 +69,7 @@ void Overworld::free()
 
 	hovered_actor = nullptr;
 }
-void Overworld::init()
+void Scenario::init()
 {
 	ui.init_background();
 	ui.init_message_log();
@@ -82,7 +82,6 @@ void Overworld::init()
 	engine.get_actor_manager()->init();
 
 	current_level = new Level;
-	current_level->create(current_depth);
 
 	if (engine.get_sound_manager() != nullptr)
 	{
@@ -132,15 +131,8 @@ void Overworld::init()
 		if (temp_pntr != nullptr)
 			pointers.push_back(temp_pntr);
 	}
-	camera.update_position(
-		((current_level->get_map_width() - 2) * 32) / 2,
-		(((current_level->get_map_height() - 1) * 32) / 2) - 240,
-		true
-	);
-	ui.clear_message_box(true);
-	ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 }
-bool Overworld::update()
+bool Scenario::update()
 {
 	frames += 1;
 	frame_counter += engine.get_dt();
@@ -184,6 +176,11 @@ bool Overworld::update()
 						free();
 						init();
 						engine.get_sound_manager()->set_playlist(PT_MENU);
+						camera.update_position(
+							((current_level->get_map_width() - 2) * 32) / 2,
+							(((current_level->get_map_height() - 1) * 32) / 2) - 240,
+							true
+						);
 						return true;
 					}
 					else return false;
@@ -194,10 +191,13 @@ bool Overworld::update()
 						in_menu = false;
 						if (current_level != nullptr)
 						{
-							camera.update_position(
+							current_level->create(current_depth);
+							/*camera.update_position(
 								((current_level->get_map_width() - 2) * 32) / 2,
 								((current_level->get_map_height() - 1) * 32) / 2
-							);
+							);*/
+							ui.clear_message_box(true);
+							ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 						}
 					}
 					else if (state == GAME_BOSS_WON || state == GAME_END)
@@ -247,10 +247,13 @@ bool Overworld::update()
 				in_menu = false;
 				if (current_level != nullptr)
 				{
-					camera.update_position(
+					current_level->create(current_depth);
+					/*camera.update_position(
 						((current_level->get_map_width() - 2) * 32) / 2,
 						((current_level->get_map_height() - 1) * 32) / 2
-					);
+					);*/
+					ui.clear_message_box(true);
+					ui.spawn_message_box("Level #" + std::to_string(current_depth), "");
 				}
 			}
 			else if (!ui.get_click(event.button.x, event.button.y))
@@ -352,7 +355,7 @@ bool Overworld::update()
 	engine.get_sound_manager()->update();
 	return true;
 }
-void Overworld::render() const
+void Scenario::render() const
 {
 	SDL_RenderClear(engine.get_renderer());
 
@@ -460,7 +463,7 @@ void Overworld::render() const
 
 	SDL_RenderPresent(engine.get_renderer());
 }
-void Overworld::next_turn()
+void Scenario::next_turn()
 {
 	if (current_level != nullptr)
 		current_level->next_turn();

@@ -22,7 +22,7 @@
 #include <unordered_map>
 
 class Scene;
-class Overworld;
+class Scenario;
 
 class SceneManager
 {
@@ -41,7 +41,7 @@ public:
 	bool set_scene(const std::string &scene_name);
 	bool free_scene(const std::string &scene_name);
 
-	Overworld* get_scene(const std::string &scene_name);
+	Scenario* get_scene(const std::string &scene_name);
 	void set_window_focus(bool focus) { window_focus = focus; }
 
 private:

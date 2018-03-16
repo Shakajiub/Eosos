@@ -25,7 +25,7 @@
 #include "scene_manager.hpp"
 #include "texture_manager.hpp"
 #include "level.hpp"
-#include "overworld.hpp"
+#include "scenario.hpp"
 
 AbilitySprout::AbilitySprout() : target_texture(nullptr), temp_hero(nullptr)
 {
@@ -62,7 +62,7 @@ void AbilitySprout::apply(Hero *hero, bool cancel)
 {
 	if (!activated && !cancel)
 	{
-		Overworld *scene = engine.get_scene_manager()->get_scene("test");
+		Scenario *scene = engine.get_scene_manager()->get_scene("test");
 		Level *level = nullptr;
 
 		if (scene != nullptr)
@@ -105,7 +105,7 @@ bool AbilitySprout::get_click(uint16_t mouse_x, uint16_t mouse_y)
 	{
 		if (node.first == map_x && node.second == map_y)
 		{
-			Overworld *scene = engine.get_scene_manager()->get_scene("test");
+			Scenario *scene = engine.get_scene_manager()->get_scene("test");
 			Level *level = nullptr;
 
 			if (scene != nullptr)

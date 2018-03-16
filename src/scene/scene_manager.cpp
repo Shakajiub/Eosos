@@ -20,7 +20,7 @@
 #include "scene.hpp"
 
 #include "logging.hpp"
-#include "overworld.hpp"
+#include "scenario.hpp"
 #include "sound_manager.hpp"
 #include "bitmap_font.hpp"
 #include "ui.hpp"
@@ -43,7 +43,7 @@ void SceneManager::init()
 	// Must initialize the bitmap font here in case we fail to load a scene
 	ui.init_bitmap_font();
 
-	load_scene<Overworld>("test");
+	load_scene<Scenario>("test");
 	set_scene("test");
 }
 bool SceneManager::update()
@@ -137,14 +137,14 @@ bool SceneManager::free_scene(const std::string &scene_name)
 	}
 	return false;
 }
-Overworld* SceneManager::get_scene(const std::string &scene_name)
+Scenario* SceneManager::get_scene(const std::string &scene_name)
 {
-	// TODO - Return any scene (not just overworld)
+	// TODO - Return any scene (not just scenario)
 
 	auto it = scene_map.find(scene_name);
 	if (it != scene_map.end())
 	{
-		Overworld *scene = dynamic_cast<Overworld*>(it->second.get());
+		Scenario *scene = dynamic_cast<Scenario*>(it->second.get());
 		if (scene != NULL)
 			return scene;
 	}

@@ -31,11 +31,11 @@ enum GameState
 	GAME_BOSS_WON,
 	GAME_END
 };
-class Overworld : public Scene
+class Scenario : public Scene
 {
 public:
-	Overworld();
-	~Overworld();
+	Scenario();
+	~Scenario();
 
 	virtual void free();
 	virtual void init();

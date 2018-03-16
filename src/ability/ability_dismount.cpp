@@ -24,7 +24,7 @@
 #include "scene_manager.hpp"
 #include "texture_manager.hpp"
 #include "level.hpp"
-#include "overworld.hpp"
+#include "scenario.hpp"
 
 AbilityDismount::AbilityDismount() : target_texture(nullptr), temp_hero(nullptr)
 {
@@ -61,7 +61,7 @@ void AbilityDismount::apply(Hero *hero, bool cancel)
 {
 	if (!activated && !cancel)
 	{
-		Overworld *scene = engine.get_scene_manager()->get_scene("test");
+		Scenario *scene = engine.get_scene_manager()->get_scene("test");
 		Level *level = nullptr;
 
 		if (scene != nullptr)
