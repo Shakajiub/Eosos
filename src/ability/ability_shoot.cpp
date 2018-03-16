@@ -61,7 +61,7 @@ void AbilityShoot::apply(Hero *hero, bool cancel)
 {
 	if (!activated && !cancel)
 	{
-		Scenario *scene = engine.get_scene_manager()->get_scene("test");
+		Scenario *scene = engine.get_scene_manager()->get_scene("scenario");
 		Level *level = nullptr;
 
 		if (scene != nullptr)

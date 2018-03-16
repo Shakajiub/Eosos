@@ -15,27 +15,18 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OVERWORLD_HPP
-#define OVERWORLD_HPP
+#ifndef MENU_HPP
+#define MENU_HPP
 
 #include "scene.hpp"
 
-class Actor;
-class Level;
 class Texture;
 
-enum GameState
-{
-	GAME_IN_PROGRESS,
-	GAME_OVER,
-	GAME_BOSS_WON,
-	GAME_END
-};
-class Scenario : public Scene
+class Menu : public Scene
 {
 public:
-	Scenario();
-	~Scenario();
+	Menu();
+	~Menu();
 
 	virtual void free();
 	virtual void init();
@@ -43,29 +34,8 @@ public:
 	virtual bool update();
 	virtual void render() const;
 
-	void next_turn();
-
-	Level* get_level() const { return current_level; }
-
 private:
-	GameState state;
-
-	uint8_t base_health;
-	uint8_t anim_timer;
-	uint8_t current_depth;
-
-	Actor *hovered_actor;
-	Level *current_level;
-
-	Texture *node_highlight;
-	Texture *base_healthbar;
-	std::vector<Texture*> pointers;
-
-	uint8_t frames;
-	uint8_t display_fps;
-	uint16_t frame_counter;
-
-	int mouse_x, mouse_y; // for SDL_GetMouseState() from update() to render()
+	Texture *pointer;
 };
 
-#endif // OVERWORLD_HPP
+#endif // MENU_HPP

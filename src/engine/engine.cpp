@@ -179,3 +179,59 @@ void Engine::render() const
 			SDL_Delay(ticks_per_frame - frame_delta_time);
 	}
 }
+bool Engine::handle_window_event(uint8_t event)
+{
+	bool game_minimized = false;
+	switch (event)
+	{
+		case SDL_WINDOWEVENT_HIDDEN:
+		case SDL_WINDOWEVENT_MINIMIZED:
+		case SDL_WINDOWEVENT_FOCUS_LOST:
+			SDL_SetRelativeMouseMode(SDL_FALSE);
+			scene_manager->set_window_focus(false);
+			sound_manager->pause_music();
+			game_minimized = true;
+			break;
+
+		case SDL_WINDOWEVENT_SHOWN:
+		case SDL_WINDOWEVENT_MAXIMIZED:
+		case SDL_WINDOWEVENT_FOCUS_GAINED:
+		case SDL_WINDOWEVENT_RESTORED:
+			SDL_SetRelativeMouseMode(SDL_TRUE);
+			scene_manager->set_window_focus(true);
+			sound_manager->resume_music();
+			break;
+
+		default: break;
+	}
+	return game_minimized;
+}
+bool Engine::handle_keyboard_input(SDL_Keycode key)
+{
+	bool input = false;
+	switch (key)
+	{
+		case SDLK_d:
+			if (SDL_GetModState() & KMOD_CTRL)
+			{
+				options.load();
+				input = true;
+			}
+			break;
+		case SDLK_c: case SDLK_AUDIONEXT: case SDLK_AUDIOPLAY:
+			if (!sound_manager->get_paused())
+			{
+				sound_manager->skip_song();
+				input = true;
+			}
+			break;
+		case SDLK_x: case SDLK_AUDIOMUTE:
+			if (sound_manager->get_paused())
+				sound_manager->resume_music(true);
+			else sound_manager->pause_music(true);
+			input = true;
+			break;
+		default: break;
+	}
+	return input;
+}

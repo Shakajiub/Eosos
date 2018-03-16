@@ -20,6 +20,7 @@
 #include "scene.hpp"
 
 #include "logging.hpp"
+#include "menu.hpp"
 #include "scenario.hpp"
 #include "sound_manager.hpp"
 #include "bitmap_font.hpp"
@@ -40,11 +41,10 @@ void SceneManager::free()
 }
 void SceneManager::init()
 {
-	// Must initialize the bitmap font here in case we fail to load a scene
-	ui.init_bitmap_font();
+	load_scene<Menu>("menu");
+	load_scene<Scenario>("scenario");
 
-	load_scene<Scenario>("test");
-	set_scene("test");
+	set_scene("menu");
 }
 bool SceneManager::update()
 {
@@ -59,20 +59,7 @@ bool SceneManager::update()
 				return false;
 			}
 			else if (event.type == SDL_WINDOWEVENT)
-			{
-				switch (event.window.event)
-				{
-					case SDL_WINDOWEVENT_SHOWN:
-					case SDL_WINDOWEVENT_MAXIMIZED:
-					case SDL_WINDOWEVENT_FOCUS_GAINED:
-					case SDL_WINDOWEVENT_RESTORED:
-						SDL_SetRelativeMouseMode(SDL_TRUE);
-						engine.get_sound_manager()->resume_music();
-						window_focus = true;
-						break;
-					default: break;
-				}
-			}
+				engine.handle_window_event(event.window.event);
 		}
 		return true;
 	}
@@ -94,12 +81,13 @@ void SceneManager::render() const
 {
 	if (!window_focus)
 		return;
+
 	if (current_scene == nullptr)
 	{
 		SDL_RenderClear(engine.get_renderer());
 
 		ui.get_bitmap_font()->render_text(120, 120, "Warning! No scene loaded!");
-		ui.get_bitmap_font()->render_text(120, 132, "Press [escape] to quit.");
+		ui.get_bitmap_font()->render_text(120, 132, "Press %A[Escape]%F to quit.");
 
 		SDL_RenderPresent(engine.get_renderer());
 	}
@@ -112,7 +100,6 @@ bool SceneManager::load_scene(const std::string &scene_name)
 	if (it == scene_map.end())
 	{
 		scene_map[scene_name] = std::make_shared<T>();
-		scene_map[scene_name]->init();
 		return true;
 	}
 	return false;
@@ -123,7 +110,15 @@ bool SceneManager::set_scene(const std::string &scene_name)
 	if (it == scene_map.end())
 		return false;
 
+	if (current_scene != nullptr)
+		current_scene->free();
+
 	current_scene = scene_map[scene_name];
+
+	ui.init();
+	if (current_scene != nullptr)
+		current_scene->init();
+
 	return true;
 }
 bool SceneManager::free_scene(const std::string &scene_name)

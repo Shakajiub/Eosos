@@ -78,6 +78,9 @@ public:
 	bool update();
 	void render() const;
 
+	bool handle_window_event(uint8_t event);
+	bool handle_keyboard_input(SDL_Keycode key);
+
 	SDL_Window* get_window() const { return main_window; }
 	SDL_Renderer* get_renderer() const { return main_renderer; }
 
