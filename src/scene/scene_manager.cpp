@@ -22,9 +22,6 @@
 #include "logging.hpp"
 #include "menu.hpp"
 #include "scenario.hpp"
-#include "sound_manager.hpp"
-#include "bitmap_font.hpp"
-#include "ui.hpp"
 
 SceneManager::SceneManager() : window_focus(true), current_scene(nullptr)
 {
@@ -65,33 +62,15 @@ bool SceneManager::update()
 	}
 	if (current_scene == nullptr)
 	{
-		render();
-		while (SDL_WaitEvent(&event))
-		{
-			if (event.type == SDL_QUIT)
-				return false;
-			else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
-				return false;
-			return true;
-		}
+		logging.cerr("No scene loaded! Exiting ...", LOG_SCENE);
+		return false;
 	}
-	return current_scene->update();
+	else current_scene->update();
 }
 void SceneManager::render() const
 {
-	if (!window_focus)
-		return;
-
-	if (current_scene == nullptr)
-	{
-		SDL_RenderClear(engine.get_renderer());
-
-		ui.get_bitmap_font()->render_text(120, 120, "Warning! No scene loaded!");
-		ui.get_bitmap_font()->render_text(120, 132, "Press %A[Escape]%F to quit.");
-
-		SDL_RenderPresent(engine.get_renderer());
-	}
-	else current_scene->render();
+	if (window_focus && current_scene != nullptr)
+		current_scene->render();
 }
 template <class T>
 bool SceneManager::load_scene(const std::string &scene_name)
@@ -115,7 +94,6 @@ bool SceneManager::set_scene(const std::string &scene_name)
 
 	current_scene = scene_map[scene_name];
 
-	ui.init();
 	if (current_scene != nullptr)
 		current_scene->init();
 
@@ -134,8 +112,6 @@ bool SceneManager::free_scene(const std::string &scene_name)
 }
 Scenario* SceneManager::get_scene(const std::string &scene_name)
 {
-	// TODO - Return any scene (not just scenario)
-
 	auto it = scene_map.find(scene_name);
 	if (it != scene_map.end())
 	{

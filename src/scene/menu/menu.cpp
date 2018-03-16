@@ -41,10 +41,13 @@ void Menu::free()
 		engine.get_texture_manager()->free_texture(pointer->get_name());
 		pointer = nullptr;
 	}
+	ui.free();
 }
 void Menu::init()
 {
 	free();
+
+	ui.init_bitmap_font();
 
 	engine.get_sound_manager()->clear_playlist(PT_MENU);
 	engine.get_sound_manager()->add_to_playlist(PT_MENU, "music/Menu_01.mid");

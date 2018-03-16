@@ -68,9 +68,12 @@ void Scenario::free()
 
 	pointers.clear();
 	hovered_actor = nullptr;
+
+	ui.free();
 }
 void Scenario::init()
 {
+	ui.init_bitmap_font();
 	ui.init_background();
 	ui.init_message_log();
 
@@ -82,6 +85,7 @@ void Scenario::init()
 	camera.update_position(-320, -160, true);
 
 	current_level = new Level;
+	current_level->create(current_depth);
 
 	if (engine.get_sound_manager() != nullptr)
 	{

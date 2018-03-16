@@ -33,7 +33,6 @@ public:
 	UI();
 	~UI();
 
-	void init();
 	void free();
 
 	void update();

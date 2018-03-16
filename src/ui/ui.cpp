@@ -39,12 +39,6 @@ UI::~UI()
 {
 	free();
 }
-void UI::init()
-{
-	free();
-
-	init_bitmap_font();
-}
 void UI::free()
 {
 	if (ui_background != nullptr)
