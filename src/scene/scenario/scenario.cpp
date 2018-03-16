@@ -80,6 +80,7 @@ void Scenario::init()
 	base_health = 20;
 
 	engine.get_actor_manager()->init();
+	camera.update_position(-320, -160, true);
 
 	current_level = new Level;
 
@@ -176,11 +177,11 @@ bool Scenario::update()
 						free();
 						init();
 						engine.get_sound_manager()->set_playlist(PT_MENU);
-						camera.update_position(
-							((current_level->get_map_width() - 2) * 32) / 2,
+						//camera.update_position(0, -320, true);
+							/*((current_level->get_map_width() - 2) * 32) / 2,
 							(((current_level->get_map_height() - 1) * 32) / 2) - 240,
 							true
-						);
+						);*/
 						return true;
 					}
 					else return false;

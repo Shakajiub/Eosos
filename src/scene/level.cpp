@@ -170,7 +170,7 @@ void Level::create(uint8_t depth)
 	neighbor_rules.clear();
 	init_map_texture();
 
-	camera.update_position(((map_width - 2) * 32) / 2, ((map_height - 1) * 32) / 2);
+	//camera.update_position(((map_width - 2) * 32) / 2, ((map_height - 1) * 32) / 2);
 	logging.cout(std::string("Map created, size: ") + std::to_string((int)map_width) + ", " + std::to_string((int)map_height), LOG_LEVEL);
 }
 void Level::render() const
