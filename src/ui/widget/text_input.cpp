@@ -16,41 +16,29 @@
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
 #include "engine.hpp"
-#include "widget.hpp"
+#include "text_input.hpp"
 
-Widget::Widget() : widget_activated(false), widget_name("???")
-{
-
-}
-Widget::~Widget()
+TextInput::TextInput()
 {
 
 }
-void Widget::input_keyboard_down(SDL_Keycode key)
+TextInput::~TextInput()
+{
+	free();
+}
+void TextInput::free()
 {
 
 }
-void Widget::input_mouse_button_down(SDL_Event eve)
+void TextInput::render() const
 {
 
 }
-void Widget::input_joy_button_down(uint8_t index, uint8_t value)
+void TextInput::input_keyboard_down(SDL_Keycode key)
 {
 
 }
-void Widget::input_joy_hat_motion(uint8_t index, uint8_t value)
+void TextInput::input_text(const std::string &input)
 {
 
-}
-void Widget::input_text(const std::string &input)
-{
-
-}
-bool Widget::get_overlap(int16_t mouse_x, int16_t mouse_y)
-{
-	return false;
-}
-bool Widget::get_click(int16_t mouse_x, int16_t mouse_y)
-{
-	return false;
 }

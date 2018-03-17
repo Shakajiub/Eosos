@@ -163,6 +163,7 @@ bool LevelUpBox::init(Hero *hero)
 	SDL_SetRenderTarget(engine.get_renderer(), NULL);
 
 	ui.set_capture_input(true);
+	widget_activated = true;
 	return true;
 }
 void LevelUpBox::render() const

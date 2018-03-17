@@ -18,7 +18,6 @@
 #include "engine.hpp"
 #include "ui.hpp"
 #include "texture.hpp"
-#include "level_up_box.hpp"
 #include "widget.hpp"
 #include "bitmap_font.hpp"
 #include "message_box.hpp"
@@ -30,7 +29,11 @@
 #include "options.hpp"
 #include "texture_manager.hpp"
 
+#include "level_up_box.hpp"
+#include "text_input.hpp"
+
 template Widget* UI::spawn_widget<LevelUpBox>(const std::string &widget_name);
+template Widget* UI::spawn_widget<TextInput>(const std::string &widget_name);
 
 UI ui;
 
@@ -153,6 +156,35 @@ bool UI::remove_widget(const std::string &widget_name)
 		return true;
 	}
 	else return false;
+}
+bool UI::input_keyboard_down(SDL_Keycode key)
+{
+	for (auto widget : widget_map) if (widget.second.get()->get_activated())
+	{
+		if (widget.second.get()->input_keyboard_down(key))
+			return true;
+	}
+	return false;
+}
+bool UI::input_mouse_button_down(SDL_Event eve)
+{
+	for (auto widget : widget_map) if (widget.second.get()->get_activated())
+		widget.second.get()->input_mouse_button_down(eve);
+}
+bool UI::input_joy_button_down(uint8_t index, uint8_t value)
+{
+	for (auto widget : widget_map) if (widget.second.get()->get_activated())
+		widget.second.get()->input_joy_button_down(index, value);
+}
+bool UI::input_joy_hat_motion(uint8_t index, uint8_t value)
+{
+	for (auto widget : widget_map) if (widget.second.get()->get_activated())
+		widget.second.get()->input_joy_hat_motion(index, value);
+}
+bool UI::input_text(const std::string &input)
+{
+	for (auto widget : widget_map) if (widget.second.get()->get_activated())
+		widget.second.get()->input_text(input);
 }
 bool UI::spawn_message_box(const std::string &title, const std::string &message, bool lock)
 {

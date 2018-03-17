@@ -49,6 +49,12 @@ public:
 	Widget* get_widget(const std::string &widget_name) const;
 	bool remove_widget(const std::string &widget_name);
 
+	bool input_keyboard_down(SDL_Keycode key);
+	bool input_mouse_button_down(SDL_Event eve);
+	bool input_joy_button_down(uint8_t index, uint8_t value);
+	bool input_joy_hat_motion(uint8_t index, uint8_t value);
+	bool input_text(const std::string &input);
+
 	bool spawn_message_box(const std::string &title, const std::string &message, bool lock = false);
 	void clear_message_box(bool pass_lock = false);
 

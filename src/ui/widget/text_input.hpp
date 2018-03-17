@@ -15,35 +15,28 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef WIDGET_HPP
-#define WIDGET_HPP
+#ifndef TEXT_INPUT_HPP
+#define TEXT_INPUT_HPP
 
-class Widget
+#include "widget.hpp"
+
+class TextInput : public Widget
 {
 public:
-	Widget();
-	~Widget();
+	TextInput::TextInput();
+	TextInput::~TextInput();
 
-	virtual void free() = 0;
-	virtual void render() const = 0;
+	virtual void free();
+	virtual void render() const;
 
 	virtual void input_keyboard_down(SDL_Keycode key);
-	virtual void input_mouse_button_down(SDL_Event eve);
-	virtual void input_joy_button_down(uint8_t index, uint8_t value);
-	virtual void input_joy_hat_motion(uint8_t index, uint8_t value);
 	virtual void input_text(const std::string &input);
 
-	virtual bool get_overlap(int16_t mouse_x, int16_t mouse_y);
-	virtual bool get_click(int16_t mouse_x, int16_t mouse_y);
+	std::strin& get_text() const { return box_text; }
+	void set_text(const std::string text) { box_text = text; }
 
-	bool get_activated() const { return widget_activated; }
-
-	void set_activated(bool activated) { widget_activated = activated; }
-	void set_name(const std::string &name) { widget_name = name; }
-
-protected:
-	bool widget_activated;
-	std::string widget_name;
+private:
+	std::string box_text;
 };
 
-#endif // WIDGET_HPP
+#endif // TEXT_INPUT_HPP
