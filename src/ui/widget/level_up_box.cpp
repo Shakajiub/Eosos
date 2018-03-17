@@ -161,6 +161,8 @@ bool LevelUpBox::init(Hero *hero)
 		ui.get_background()->render(i * 48 + 16, 32, &corners[3]);
 	}
 	SDL_SetRenderTarget(engine.get_renderer(), NULL);
+
+	ui.set_capture_input(true);
 	return true;
 }
 void LevelUpBox::render() const
@@ -207,7 +209,7 @@ bool LevelUpBox::get_overlap(int16_t mouse_x, int16_t mouse_y)
 	}
 	return false;
 }
-bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
+bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y)
 {
 	for (uint8_t i = 0; i < level_options.size(); i++) if (level_options[i].overlap)
 	{
@@ -245,6 +247,8 @@ bool LevelUpBox::get_click(int16_t mouse_x, int16_t mouse_y) const
 			temp_hero->set_moves(0);
 		}
 		ui.clear_message_box();
+		ui.remove_widget(widget_name);
+		ui.set_capture_input(false);
 		return true;
 	}
 	return false;

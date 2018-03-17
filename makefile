@@ -1,7 +1,7 @@
 CC        := g++
 LD        := g++
 
-MODULES   := ability actor algorithm engine scene scene/menu scene/scenario sound texture ui
+MODULES   := ability actor algorithm engine scene scene/menu scene/scenario sound texture ui ui/widget
 COMPILER  := -w -O0 -g -std=c++14
 LINKER    := -lSDL2 -lSDL2_image -lSDL2_mixer
 

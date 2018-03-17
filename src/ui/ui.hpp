@@ -19,11 +19,13 @@
 #define UI_HPP
 
 #include <queue>
+#include <memory>
+#include <unordered_map>
 
 class Hero;
 class Texture;
+class Widget;
 class BitmapFont;
-class LevelUpBox;
 class MessageBox;
 class MessageLog;
 
@@ -42,30 +44,38 @@ public:
 	bool init_bitmap_font();
 	void init_message_log();
 
-	bool spawn_level_up_box(Hero *hero);
+	template <class T>
+	Widget* spawn_widget(const std::string &widget_name);
+	Widget* get_widget(const std::string &widget_name) const;
+	bool remove_widget(const std::string &widget_name);
+
 	bool spawn_message_box(const std::string &title, const std::string &message, bool lock = false);
 	void clear_message_box(bool pass_lock = false);
 
 	void draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, bool highlight = false) const;
 
-	bool get_overlap(int16_t xpos, int16_t ypos) const;
+	bool get_overlap(int16_t xpos, int16_t ypos);
 	bool get_click(int16_t xpos, int16_t ypos);
+
+	bool get_capture_input() const { return capture_input; }
 
 	Texture* get_background() const { return ui_background; }
 	BitmapFont* get_bitmap_font() const { return main_font; }
-	LevelUpBox* get_level_up_box() const { return level_up_box; }
 	MessageLog* get_message_log() const { return message_log; }
+
+	void set_capture_input(bool capture) { capture_input = capture; }
 
 private:
 	bool mb_lock;
+	bool capture_input;
 
 	Texture *ui_background;
 	BitmapFont *main_font;
-	LevelUpBox *level_up_box;
 	MessageLog *message_log;
 	MessageBox *message_box;
 
 	std::queue<MessageBox*> message_queue;
+	std::unordered_map<std::string, std::shared_ptr<Widget> > widget_map;
 };
 extern UI ui;
 

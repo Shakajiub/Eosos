@@ -15,40 +15,32 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LEVEL_UP_BOX_HPP
-#define LEVEL_UP_BOX_HPP
+#ifndef WIDGET_HPP
+#define WIDGET_HPP
 
-#include <vector>
+class Level;
 
-class Hero;
-class Texture;
-
-typedef struct
-{
-	bool overlap;
-	Texture *texture;
-	std::string title;
-	std::string message;
-}
-LevelOption;
-
-class LevelUpBox
+class Widget
 {
 public:
-	LevelUpBox();
-	~LevelUpBox();
+	Widget();
+	~Widget();
 
-	void free();
-	bool init(Hero *hero);
-	void render() const;
+	virtual void free() = 0;
+	virtual void render() const = 0;
 
-	bool get_overlap(int16_t mouse_x, int16_t mouse_y);
-	bool get_click(int16_t mouse_x, int16_t mouse_y) const;
+	virtual void input_keyboard_down(SDL_Keycode key, Level *level);
+	virtual void input_mouse_button_down(SDL_Event eve, Level *level);
+	virtual void input_joy_button_down(uint8_t index, uint8_t value, Level *level);
+	virtual void input_joy_hat_motion(uint8_t index, uint8_t value, Level *level);
 
-private:
-	Hero *temp_hero;
-	SDL_Texture *selection_box;
-	std::vector<LevelOption> level_options;
+	virtual bool get_overlap(int16_t mouse_x, int16_t mouse_y);
+	virtual bool get_click(int16_t mouse_x, int16_t mouse_y);
+
+	void set_name(const std::string &name) { widget_name = name; }
+
+protected:
+	std::string widget_name;
 };
 
-#endif // LEVEL_UP_BOX_HPP
+#endif // WIDGET_HPP

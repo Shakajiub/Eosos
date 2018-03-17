@@ -185,7 +185,7 @@ bool Scenario::update()
 				default:
 					if (engine.handle_keyboard_input(event.key.keysym.sym))
 						break;
-					if (ui.get_level_up_box() == nullptr)
+					if (!ui.get_capture_input())
 						engine.get_actor_manager()->input_keyboard_down(event.key.keysym.sym, current_level);
 					break;
 			}
@@ -210,19 +210,15 @@ bool Scenario::update()
 			if (event.jaxis.value > 2000)
 			{
 				std::cout << "joyaxismotion! (" << std::to_string(event.jaxis.axis) << ", " << std::to_string(event.jaxis.value) << ")" << std::endl;
-				if (event.jaxis.axis == 0)
+				/*if (event.jaxis.axis == 0)
 					mouse_x += event.jaxis.value / 200 * engine.get_dt();
 				else if (event.jaxis.axis == 1)
-					mouse_y += event.jaxis.value / 200 * engine.get_dt();
+					mouse_y += event.jaxis.value / 200 * engine.get_dt();*/
 			}
 		}
 	}
-	if (options.get_b("controller-enabled"))
-	{
-		mouse_x = 1;
-		mouse_y = 1;
-	}
-	else SDL_GetMouseState(&mouse_x, &mouse_y);
+	if (!options.get_b("controller-enabled"))
+		SDL_GetMouseState(&mouse_x, &mouse_y);
 
 	if (current_level != nullptr)
 	{

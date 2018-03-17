@@ -65,7 +65,7 @@ bool SceneManager::update()
 		logging.cerr("No scene loaded! Exiting ...", LOG_SCENE);
 		return false;
 	}
-	else current_scene->update();
+	else return current_scene->update();
 }
 void SceneManager::render() const
 {

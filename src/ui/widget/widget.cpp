@@ -15,41 +15,38 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LOGGING_HPP
-#define LOGGING_HPP
+#include "engine.hpp"
+#include "widget.hpp"
 
-#include <fstream> // for std::ofstream
-
-enum LogCategory
+Widget::Widget() : widget_name("???")
 {
-	LOG_NONE,
-	LOG_ENGINE,
-	LOG_OPTIONS,
-	LOG_SCENE,
-	LOG_SOUND,
-	LOG_TEXTURE,
-	LOG_LEVEL,
-	LOG_UI
-};
-class Logging
+
+}
+Widget::~Widget()
 {
-public:
-	Logging();
-	~Logging();
 
-	void init(const std::string &base_path);
-	void free();
+}
+void Widget::input_keyboard_down(SDL_Keycode key, Level *level)
+{
 
-	void cout(const std::string &text, LogCategory category = LOG_NONE);
-	void cerr(const std::string &text, LogCategory category = LOG_NONE);
+}
+void Widget::input_mouse_button_down(SDL_Event eve, Level *level)
+{
 
-private:
-	bool initialized;
-	LogCategory prev_category;
+}
+void Widget::input_joy_button_down(uint8_t index, uint8_t value, Level *level)
+{
 
-	std::ofstream out;
-	std::ofstream err;
-};
-extern Logging logging;
+}
+void Widget::input_joy_hat_motion(uint8_t index, uint8_t value, Level *level)
+{
 
-#endif // LOGGING_HPP
+}
+bool Widget::get_overlap(int16_t mouse_x, int16_t mouse_y)
+{
+	return false;
+}
+bool Widget::get_click(int16_t mouse_x, int16_t mouse_y)
+{
+	return false;
+}

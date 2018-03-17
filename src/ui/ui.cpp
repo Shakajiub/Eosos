@@ -18,20 +18,25 @@
 #include "engine.hpp"
 #include "ui.hpp"
 #include "texture.hpp"
-#include "bitmap_font.hpp"
 #include "level_up_box.hpp"
+#include "widget.hpp"
+#include "bitmap_font.hpp"
 #include "message_box.hpp"
 #include "message_log.hpp"
 
 #include "actor_manager.hpp"
 #include "camera.hpp"
+#include "logging.hpp"
 #include "options.hpp"
 #include "texture_manager.hpp"
+
+template Widget* UI::spawn_widget<LevelUpBox>(const std::string &widget_name);
 
 UI ui;
 
 UI::UI() :
-	mb_lock(false), ui_background(nullptr), main_font(nullptr), message_log(nullptr), message_box(nullptr)
+	mb_lock(false), capture_input(false), ui_background(nullptr),
+	main_font(nullptr), message_log(nullptr), message_box(nullptr)
 {
 
 }
@@ -67,7 +72,8 @@ void UI::free()
 		message_queue.pop();
 		delete mb;
 	}
-	//std::queue<MessageBox*>().swap(message_queue);
+	widget_map.clear();
+	logging.cout("All widgets erased", LOG_UI);
 }
 void UI::update()
 {
@@ -82,8 +88,8 @@ void UI::render() const
 	if (message_log != nullptr)
 		message_log->render();
 
-	if (level_up_box != nullptr)
-		level_up_box->render();
+	for (auto widget : widget_map)
+		widget.second.get()->render();
 
 	if (message_box != nullptr)
 		message_box->render();
@@ -117,16 +123,36 @@ void UI::init_message_log()
 	message_log->init();
 	//message_log->add_message("Welcome to HELL.", DAWN_BERRY);
 }
-bool UI::spawn_level_up_box(Hero *hero)
+template <class T>
+Widget* UI::spawn_widget(const std::string &widget_name)
 {
-	if (level_up_box == nullptr)
-		level_up_box = new LevelUpBox;
-
-	if (!level_up_box->init(hero))
+	auto it = widget_map.find(widget_name);
+	if (it == widget_map.end())
 	{
-		delete level_up_box;
-		level_up_box = nullptr;
+		widget_map[widget_name] = std::make_shared<T>();
+		widget_map[widget_name]->set_name(widget_name);
+		return widget_map[widget_name].get();
 	}
+	logging.cerr(std::string("Warning! Attempting to spawn a second '") + widget_name + "' widget!", LOG_UI);
+	return nullptr;
+}
+Widget* UI::get_widget(const std::string &widget_name) const
+{
+	auto it = widget_map.find(widget_name);
+	if (it != widget_map.end())
+		return it->second.get();
+	else return nullptr;
+}
+bool UI::remove_widget(const std::string &widget_name)
+{
+	auto it = widget_map.find(widget_name);
+	if (it != widget_map.end())
+	{
+		it->second.reset();
+		widget_map.erase(it);
+		return true;
+	}
+	else return false;
 }
 bool UI::spawn_message_box(const std::string &title, const std::string &message, bool lock)
 {
@@ -229,24 +255,23 @@ void UI::draw_box(uint16_t xpos, uint16_t ypos, uint8_t width, uint8_t height, b
 		}
 	}
 }
-bool UI::get_overlap(int16_t xpos, int16_t ypos) const
+bool UI::get_overlap(int16_t xpos, int16_t ypos)
 {
-	if (level_up_box != nullptr)
-		return level_up_box->get_overlap(xpos, ypos);
+	for (auto widget : widget_map)
+	{
+		if (widget.second.get()->get_overlap(xpos, ypos))
+			return true;
+	}
 	if (engine.get_actor_manager()->get_overlap(xpos, ypos))
 		return true;
 	return false;
 }
 bool UI::get_click(int16_t xpos, int16_t ypos)
 {
-	if (level_up_box != nullptr)
+	for (auto widget : widget_map)
 	{
-		if (level_up_box->get_click(xpos, ypos))
-		{
-			delete level_up_box;
-			level_up_box = nullptr;
-		}
-		return true;
+		if (widget.second.get()->get_click(xpos, ypos))
+			return true;
 	}
 	if (message_box != nullptr)
 	{

@@ -15,41 +15,43 @@
 //	You should have received a copy of the GNU General Public License
 //	along with Eosos. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LOGGING_HPP
-#define LOGGING_HPP
+#ifndef LEVEL_UP_BOX_HPP
+#define LEVEL_UP_BOX_HPP
 
-#include <fstream> // for std::ofstream
+#include "widget.hpp"
 
-enum LogCategory
+#include <vector>
+
+class Hero;
+class Texture;
+
+typedef struct
 {
-	LOG_NONE,
-	LOG_ENGINE,
-	LOG_OPTIONS,
-	LOG_SCENE,
-	LOG_SOUND,
-	LOG_TEXTURE,
-	LOG_LEVEL,
-	LOG_UI
-};
-class Logging
+	bool overlap;
+	Texture *texture;
+	std::string title;
+	std::string message;
+}
+LevelOption;
+
+class LevelUpBox : public Widget
 {
 public:
-	Logging();
-	~Logging();
+	LevelUpBox();
+	~LevelUpBox();
 
-	void init(const std::string &base_path);
-	void free();
+	bool init(Hero *hero);
 
-	void cout(const std::string &text, LogCategory category = LOG_NONE);
-	void cerr(const std::string &text, LogCategory category = LOG_NONE);
+	virtual void free();
+	virtual void render() const;
+
+	virtual bool get_overlap(int16_t mouse_x, int16_t mouse_y);
+	virtual bool get_click(int16_t mouse_x, int16_t mouse_y);
 
 private:
-	bool initialized;
-	LogCategory prev_category;
-
-	std::ofstream out;
-	std::ofstream err;
+	Hero *temp_hero;
+	SDL_Texture *selection_box;
+	std::vector<LevelOption> level_options;
 };
-extern Logging logging;
 
-#endif // LOGGING_HPP
+#endif // LEVEL_UP_BOX_HPP

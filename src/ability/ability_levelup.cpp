@@ -19,6 +19,8 @@
 #include "ability_levelup.hpp"
 #include "hero.hpp"
 
+#include "level_up_box.hpp"
+#include "widget.hpp"
 #include "ui.hpp"
 
 AbilityLevelUp::AbilityLevelUp()
@@ -41,5 +43,9 @@ bool AbilityLevelUp::init()
 void AbilityLevelUp::apply(Hero *hero, bool cancel)
 {
 	if (hero != nullptr && !cancel)
-		ui.spawn_level_up_box(hero);
+	{
+		Widget *box = ui.spawn_widget<LevelUpBox>("level-up-box");
+		if (box != nullptr)
+			dynamic_cast<LevelUpBox*>(box)->init(hero);
+	}
 }
