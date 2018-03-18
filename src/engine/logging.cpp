@@ -72,7 +72,7 @@ void Logging::cout(const std::string &text, LogCategory category)
 		}
 		out << text << std::endl;
 	}
-	else std::cerr << "Logging::cout() Warning! Logging uninitialized!" << std::endl;
+	else std::cerr << "Logging::cout() Warning! Logging uninitialized! | " << text << std::endl;
 }
 void Logging::cerr(const std::string &text, LogCategory category)
 {
@@ -85,5 +85,5 @@ void Logging::cerr(const std::string &text, LogCategory category)
 		}
 		err << text << std::endl;
 	}
-	else std::cerr << "Logging::cerr() Warning! Logging uninitialized!" << std::endl;
+	else std::cerr << "Logging::cerr() Warning! Logging uninitialized! | " << text << std::endl;
 }

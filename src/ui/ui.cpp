@@ -169,22 +169,38 @@ bool UI::input_keyboard_down(SDL_Keycode key)
 bool UI::input_mouse_button_down(SDL_Event eve)
 {
 	for (auto widget : widget_map) if (widget.second.get()->get_activated())
-		widget.second.get()->input_mouse_button_down(eve);
+	{
+		if (widget.second.get()->input_mouse_button_down(eve))
+			return true;
+	}
+	return false;
 }
 bool UI::input_joy_button_down(uint8_t index, uint8_t value)
 {
 	for (auto widget : widget_map) if (widget.second.get()->get_activated())
-		widget.second.get()->input_joy_button_down(index, value);
+	{
+		if (widget.second.get()->input_joy_button_down(index, value))
+			return true;
+	}
+	return false;
 }
 bool UI::input_joy_hat_motion(uint8_t index, uint8_t value)
 {
 	for (auto widget : widget_map) if (widget.second.get()->get_activated())
-		widget.second.get()->input_joy_hat_motion(index, value);
+	{
+		if (widget.second.get()->input_joy_hat_motion(index, value))
+			return true;
+	}
+	return false;
 }
 bool UI::input_text(const std::string &input)
 {
 	for (auto widget : widget_map) if (widget.second.get()->get_activated())
-		widget.second.get()->input_text(input);
+	{
+		if (widget.second.get()->input_text(input))
+			return true;
+	}
+	return false;
 }
 bool UI::spawn_message_box(const std::string &title, const std::string &message, bool lock)
 {

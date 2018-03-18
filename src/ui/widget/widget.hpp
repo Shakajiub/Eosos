@@ -27,11 +27,11 @@ public:
 	virtual void free() = 0;
 	virtual void render() const = 0;
 
-	virtual void input_keyboard_down(SDL_Keycode key);
-	virtual void input_mouse_button_down(SDL_Event eve);
-	virtual void input_joy_button_down(uint8_t index, uint8_t value);
-	virtual void input_joy_hat_motion(uint8_t index, uint8_t value);
-	virtual void input_text(const std::string &input);
+	virtual bool input_keyboard_down(SDL_Keycode key);
+	virtual bool input_mouse_button_down(SDL_Event eve);
+	virtual bool input_joy_button_down(uint8_t index, uint8_t value);
+	virtual bool input_joy_hat_motion(uint8_t index, uint8_t value);
+	virtual bool input_text(const std::string &input);
 
 	virtual bool get_overlap(int16_t mouse_x, int16_t mouse_y);
 	virtual bool get_click(int16_t mouse_x, int16_t mouse_y);

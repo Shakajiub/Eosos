@@ -26,23 +26,23 @@ Widget::~Widget()
 {
 
 }
-void Widget::input_keyboard_down(SDL_Keycode key)
+bool Widget::input_keyboard_down(SDL_Keycode key)
 {
 
 }
-void Widget::input_mouse_button_down(SDL_Event eve)
+bool Widget::input_mouse_button_down(SDL_Event eve)
 {
 
 }
-void Widget::input_joy_button_down(uint8_t index, uint8_t value)
+bool Widget::input_joy_button_down(uint8_t index, uint8_t value)
 {
 
 }
-void Widget::input_joy_hat_motion(uint8_t index, uint8_t value)
+bool Widget::input_joy_hat_motion(uint8_t index, uint8_t value)
 {
 
 }
-void Widget::input_text(const std::string &input)
+bool Widget::input_text(const std::string &input)
 {
 
 }

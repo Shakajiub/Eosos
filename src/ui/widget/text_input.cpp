@@ -34,11 +34,11 @@ void TextInput::render() const
 {
 
 }
-void TextInput::input_keyboard_down(SDL_Keycode key)
+bool TextInput::input_keyboard_down(SDL_Keycode key)
 {
-
+	return false;
 }
-void TextInput::input_text(const std::string &input)
+bool TextInput::input_text(const std::string &input)
 {
-
+	return false;
 }

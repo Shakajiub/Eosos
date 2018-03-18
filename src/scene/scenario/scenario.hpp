@@ -66,6 +66,7 @@ private:
 	uint16_t frame_counter;
 
 	int mouse_x, mouse_y; // for SDL_GetMouseState() from update() to render()
+	int8_t dir_x, dir_y;
 };
 
 #endif // OVERWORLD_HPP

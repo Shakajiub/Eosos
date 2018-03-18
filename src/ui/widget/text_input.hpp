@@ -23,16 +23,16 @@
 class TextInput : public Widget
 {
 public:
-	TextInput::TextInput();
-	TextInput::~TextInput();
+	TextInput();
+	~TextInput();
 
 	virtual void free();
 	virtual void render() const;
 
-	virtual void input_keyboard_down(SDL_Keycode key);
-	virtual void input_text(const std::string &input);
+	virtual bool input_keyboard_down(SDL_Keycode key);
+	virtual bool input_text(const std::string &input);
 
-	std::strin& get_text() const { return box_text; }
+	std::string get_text() const { return box_text; }
 	void set_text(const std::string text) { box_text = text; }
 
 private:

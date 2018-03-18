@@ -103,8 +103,10 @@ void AbilityManager::clear(Hero *hero)
 	for (Ability *a : abilities)
 		a->clear(hero);
 }
-void AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
+bool AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
 {
+	bool input = false;
+
 	const SDL_Keycode hotkeys[10] = {
 		SDLK_1, SDLK_2, SDLK_3, SDLK_4, SDLK_5, SDLK_6, SDLK_7, SDLK_8, SDLK_9, SDLK_0
 	};
@@ -114,11 +116,15 @@ void AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
 		if (hero->has_ability(a->get_ability_name()))
 		{
 			if (key == hotkeys[i])
+			{
 				a->apply(hero);
+				input = true;
+			}
 			else a->apply(hero, true);
 			i += 1;
 		}
 	}
+	return input;
 }
 bool AbilityManager::get_overlap(Hero *hero, int16_t mouse_x, int16_t mouse_y) const
 {

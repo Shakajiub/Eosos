@@ -36,7 +36,7 @@
 Scenario::Scenario() :
 	state(GAME_IN_PROGRESS), base_health(20), anim_timer(0), current_depth(1), hovered_actor(nullptr),
 	current_level(nullptr), node_highlight(nullptr), base_healthbar(nullptr), frames(0), display_fps(0),
-	frame_counter(0)
+	frame_counter(0), dir_x(0), dir_y(0)
 {
 
 }
@@ -138,8 +138,10 @@ void Scenario::init()
 }
 bool Scenario::update()
 {
+	const float dt = engine.get_dt();
+
 	frames += 1;
-	frame_counter += engine.get_dt();
+	frame_counter += dt;
 
 	if (frame_counter > 1000)
 	{
@@ -192,33 +194,76 @@ bool Scenario::update()
 		}
 		else if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
-			if (!ui.get_click(event.button.x, event.button.y))
-				engine.get_actor_manager()->input_mouse_button_down(event, current_level);
+			if (!ui.get_click(mouse_x, mouse_y))
+				engine.get_actor_manager()->input_mouse_button_down(mouse_x, mouse_y, current_level);
 		}
 		else if (event.type == SDL_JOYBUTTONDOWN)
 		{
-			std::cout << "joybuttondown! (" << (int)event.jbutton.which << ", " << (int)event.jbutton.button << ", " << (int)event.jbutton.state << ")" << std::endl;
-			engine.get_actor_manager()->input_joy_button_down(event.jbutton.button, event.jbutton.state, current_level);
+			//std::cout << "joybuttondown! (" << (int)event.jbutton.which << ", " << (int)event.jbutton.button << ", " << (int)event.jbutton.state << ")" << std::endl;
+			if (!engine.get_actor_manager()->input_joy_button_down(event.jbutton.button, event.jbutton.state, current_level))
+			{
+				if (!ui.get_click(mouse_x, mouse_y))
+					engine.get_actor_manager()->input_mouse_button_down(mouse_x, mouse_y, current_level);
+			}
 		}
 		else if (event.type == SDL_JOYHATMOTION)
 		{
-			std::cout << "joyhatmotion! (" << std::to_string(event.jhat.hat) << ", " << std::to_string(event.jhat.value) << ")" << std::endl;
-			engine.get_actor_manager()->input_joy_hat_motion(event.jhat.hat, event.jhat.value, current_level);
+			//std::cout << "joyhatmotion! (" << std::to_string(event.jhat.hat) << ", " << std::to_string(event.jhat.value) << ")" << std::endl;
+			//engine.get_actor_manager()->input_joy_hat_motion(event.jhat.hat, event.jhat.value, current_level);
+			if (event.jhat.hat == 0) switch (event.jhat.value)
+			{
+				case 1: mouse_y -= 32; break;
+				case 2: mouse_x += 32; break;
+				case 4: mouse_y += 32; break;
+				case 8: mouse_x -= 32; break;
+				default: break;
+			}
 		}
 		else if (event.type == SDL_JOYAXISMOTION)
 		{
-			if (event.jaxis.value > 2000)
+			if (event.jaxis.axis == 0)
 			{
-				std::cout << "joyaxismotion! (" << std::to_string(event.jaxis.axis) << ", " << std::to_string(event.jaxis.value) << ")" << std::endl;
-				/*if (event.jaxis.axis == 0)
-					mouse_x += event.jaxis.value / 200 * engine.get_dt();
-				else if (event.jaxis.axis == 1)
-					mouse_y += event.jaxis.value / 200 * engine.get_dt();*/
+				if (event.jaxis.value > 8000)
+					dir_x = 1;
+				else if (event.jaxis.value < -8000)
+					dir_x = -1;
+				else dir_x = 0;
 			}
+			else if (event.jaxis.axis == 1)
+			{
+				if (event.jaxis.value > 8000)
+					dir_y = 1;
+				else if (event.jaxis.value < -8000)
+					dir_y = -1;
+				else dir_y = 0;
+			}
+			/*else if (event.jaxis.axis == 3)
+			{
+				if (event.jaxis.value > 8000)
+					camera.move_camera(8, current_level->get_map_width(), current_level->get_map_height());
+				else if (event.jaxis.value < 8000)
+					camera.move_camera(4, current_level->get_map_width(), current_level->get_map_height());
+			}
+			else if (event.jaxis.axis == 4)
+			{
+				if (event.jaxis.value > 8000)
+					camera.move_camera(2, current_level->get_map_width(), current_level->get_map_height());
+				else if (event.jaxis.value < 8000)
+					camera.move_camera(1, current_level->get_map_width(), current_level->get_map_height());
+			}*/
 		}
 	}
-	if (!options.get_b("controller-enabled"))
-		SDL_GetMouseState(&mouse_x, &mouse_y);
+	if (options.get_b("controller-enabled"))
+	{
+		mouse_x += dir_x * dt * 0.2f;
+		mouse_y += dir_y * dt * 0.2f;
+
+		if (mouse_x < 0) mouse_x = 0;
+		else if (mouse_x > camera.get_cam_w() - 1) mouse_x = camera.get_cam_w() - 1;
+		if (mouse_y < 0) mouse_y = 0;
+		else if (mouse_y > camera.get_cam_h() - 1) mouse_y = camera.get_cam_h() - 1;
+	}
+	else SDL_GetMouseState(&mouse_x, &mouse_y);
 
 	if (current_level != nullptr)
 	{

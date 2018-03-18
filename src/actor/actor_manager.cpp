@@ -258,7 +258,7 @@ void ActorManager::place_actors(Level *level, std::pair<uint8_t, uint8_t> base_p
 	for (Actor *a : to_erase)
 		delete_actor(level, a);
 }
-void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
+bool ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
 	{
@@ -267,28 +267,32 @@ void ActorManager::input_keyboard_down(SDL_Keycode key, Level *level)
 			case SDLK_1: case SDLK_2: case SDLK_3: case SDLK_4: case SDLK_5:
 			case SDLK_6: case SDLK_7: case SDLK_8: case SDLK_9: case SDLK_0:
 				if (ability_manager != nullptr)
-					ability_manager->input_keyboard_down(dynamic_cast<Hero*>(current_actor), key);
+					return ability_manager->input_keyboard_down(dynamic_cast<Hero*>(current_actor), key);
 				break;
 			default:
-				dynamic_cast<Hero*>(current_actor)->input_keyboard_down(key, level);
+				return dynamic_cast<Hero*>(current_actor)->input_keyboard_down(key, level);
 				break;
 		}
 	}
+	return false;
 }
-void ActorManager::input_mouse_button_down(SDL_Event eve, Level *level)
+bool ActorManager::input_mouse_button_down(uint16_t mouse_x, uint16_t mouse_y, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
-		dynamic_cast<Hero*>(current_actor)->input_mouse_button_down(eve, level);
+		return dynamic_cast<Hero*>(current_actor)->input_mouse_button_down(mouse_x, mouse_y, level);
+	else return false;
 }
-void ActorManager::input_joy_button_down(uint8_t index, uint8_t value, Level *level)
+bool ActorManager::input_joy_button_down(uint8_t index, uint8_t value, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
-		dynamic_cast<Hero*>(current_actor)->input_joy_button_down(index, value, level);
+		return dynamic_cast<Hero*>(current_actor)->input_joy_button_down(index, value, level);
+	else return false;
 }
-void ActorManager::input_joy_hat_motion(uint8_t index, uint8_t value, Level *level)
+bool ActorManager::input_joy_hat_motion(uint8_t index, uint8_t value, Level *level)
 {
 	if (current_actor != nullptr && current_actor->get_actor_type() == ACTOR_HERO)
-		dynamic_cast<Hero*>(current_actor)->input_joy_hat_motion(index, value, level);
+		return dynamic_cast<Hero*>(current_actor)->input_joy_hat_motion(index, value, level);
+	else return false;
 }
 bool ActorManager::get_next_turn()
 {
