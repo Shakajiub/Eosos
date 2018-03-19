@@ -25,7 +25,7 @@
 #include "texture_manager.hpp"
 #include "ui.hpp"
 
-LevelUpBox::LevelUpBox() : temp_hero(nullptr), selection_box(nullptr)
+LevelUpBox::LevelUpBox() : mouse_input(true), temp_hero(nullptr), selection_box(nullptr), selected_option(-1)
 {
 
 }
@@ -188,6 +188,41 @@ void LevelUpBox::render() const
 		}
 	}
 }
+bool LevelUpBox::input_keyboard_down(SDL_Keycode key)
+{
+	int8_t prev_option = selected_option;
+	bool input = true;
+	switch (key)
+	{
+		case SDLK_LEFT: case SDLK_KP_4: case SDLK_h:
+			if (selected_option > 0)
+				selected_option -= 1;
+			else selected_option = level_options.size() - 1;
+			mouse_input = false;
+			break;
+		case SDLK_RIGHT: case SDLK_KP_6: case SDLK_l:
+			if (selected_option < level_options.size() - 1)
+				selected_option += 1;
+			else selected_option = 0;
+			mouse_input = false;
+			break;
+		case SDLK_RETURN: case SDLK_RETURN2: case SDLK_KP_ENTER:
+			if (!mouse_input)
+			{
+				// TODO - Actual "apply" function, and maybe "move_selection_left" & "move_selection_right"
+				return get_click(0, 0);
+			}
+			break;
+		default: input = false; break;
+	}
+	if (!mouse_input && prev_option >= 0 && prev_option < level_options.size())
+		level_options[prev_option].overlap = false;
+
+	if (!mouse_input && selected_option >= 0 && selected_option < level_options.size())
+		level_options[selected_option].overlap = true;
+
+	return input;
+}
 bool LevelUpBox::get_overlap(int16_t mouse_x, int16_t mouse_y)
 {
 	uint16_t render_x = (camera.get_cam_w() / 2) - (level_options.size() * 32) + 8;
@@ -203,9 +238,16 @@ bool LevelUpBox::get_overlap(int16_t mouse_x, int16_t mouse_y)
 				ui.clear_message_box();
 				ui.spawn_message_box(level_options[i].title, level_options[i].message);
 			}
+			if (i > 0) for (uint8_t j = 0; j < i; j++)
+				level_options[j].overlap = false;
+
 			level_options[i].overlap = true;
+			mouse_input = true;
 		}
-		else level_options[i].overlap = false;
+		else if (mouse_input)
+		{
+			level_options[i].overlap = false;
+		}
 		render_x += 64;
 	}
 	return false;

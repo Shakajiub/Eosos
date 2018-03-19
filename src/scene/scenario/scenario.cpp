@@ -162,7 +162,16 @@ bool Scenario::update()
 		}
 		else if (event.type == SDL_KEYDOWN)
 		{
-			switch (event.key.keysym.sym)
+			bool input = false;
+
+			if (engine.handle_keyboard_input(event.key.keysym.sym))
+				input = true;
+			if (!input && ui.input_keyboard_down(event.key.keysym.sym))
+				input = true;
+			if (!input && engine.get_actor_manager()->input_keyboard_down(event.key.keysym.sym, current_level))
+				input = true;
+
+			if (!input) switch (event.key.keysym.sym)
 			{
 				case SDLK_ESCAPE:
 					engine.get_scene_manager()->set_scene("menu");
@@ -184,12 +193,7 @@ bool Scenario::update()
 						return true;
 					}
 					break;
-				default:
-					if (engine.handle_keyboard_input(event.key.keysym.sym))
-						break;
-					if (!ui.get_capture_input())
-						engine.get_actor_manager()->input_keyboard_down(event.key.keysym.sym, current_level);
-					break;
+				default: break;
 			}
 		}
 		else if (event.type == SDL_MOUSEBUTTONDOWN)

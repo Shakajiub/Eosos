@@ -45,13 +45,18 @@ public:
 	virtual void free();
 	virtual void render() const;
 
+	virtual bool input_keyboard_down(SDL_Keycode key);
+
 	virtual bool get_overlap(int16_t mouse_x, int16_t mouse_y);
 	virtual bool get_click(int16_t mouse_x, int16_t mouse_y);
 
 private:
+	bool mouse_input;
 	Hero *temp_hero;
+
 	SDL_Texture *selection_box;
 	std::vector<LevelOption> level_options;
+	int8_t selected_option;
 };
 
 #endif // LEVEL_UP_BOX_HPP

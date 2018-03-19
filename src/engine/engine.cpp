@@ -224,30 +224,23 @@ bool Engine::handle_window_event(uint8_t event)
 }
 bool Engine::handle_keyboard_input(SDL_Keycode key)
 {
-	bool input = false;
+	bool input = true;
 	switch (key)
 	{
 		case SDLK_d:
 			if (SDL_GetModState() & KMOD_CTRL)
-			{
 				options.load();
-				input = true;
-			}
 			break;
 		case SDLK_c: case SDLK_AUDIONEXT: case SDLK_AUDIOPLAY:
 			if (!sound_manager->get_paused())
-			{
 				sound_manager->skip_song();
-				input = true;
-			}
 			break;
 		case SDLK_x: case SDLK_AUDIOMUTE:
 			if (sound_manager->get_paused())
 				sound_manager->resume_music(true);
 			else sound_manager->pause_music(true);
-			input = true;
 			break;
-		default: break;
+		default: input = false; break;
 	}
 	return input;
 }
