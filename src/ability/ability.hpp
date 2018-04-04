@@ -34,7 +34,7 @@ class Ability
 {
 public:
 	Ability();
-	~Ability();
+	virtual ~Ability();
 
 	void free();
 

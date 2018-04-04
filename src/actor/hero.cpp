@@ -325,7 +325,6 @@ bool Hero::init_pathfinder()
 }
 bool Hero::init_class(HeroClass hc)
 {
-	const uint8_t hp = health.second;
 	std::string class_texture = "actor/orc_peon.png";
 	hero_class = hc;
 
@@ -461,7 +460,7 @@ bool Hero::input_keyboard_down(SDL_Keycode key, Level *level)
 }
 bool Hero::input_mouse_button_down(uint16_t mouse_x, uint16_t mouse_y, Level *level)
 {
-	if (pathfinder != nullptr && actions_empty() || moves.first > 0)
+	if (pathfinder != nullptr && (actions_empty() || moves.first > 0))
 	{
 		const int16_t map_x = (mouse_x + camera.get_cam_x()) / 32;
 		const int16_t map_y = (mouse_y + camera.get_cam_y()) / 32;

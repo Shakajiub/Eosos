@@ -44,6 +44,10 @@ private:
 	std::unordered_map<std::string, bool> options_b;
 	std::unordered_map<std::string, int16_t> options_i;
 	std::unordered_map<std::string, std::string> options_s;
+
+	bool default_b;
+	int16_t default_i;
+	std::string default_s;
 };
 extern Options options;
 

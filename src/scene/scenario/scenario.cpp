@@ -295,8 +295,11 @@ bool Scenario::update()
 	while (anim_timer > 100)
 	{
 		anim_timer -= 100;
-		static uint8_t loop; loop += 1;
-		if (loop < 4) continue; loop = 0;
+		static uint8_t loop;
+		loop += 1;
+		if (loop < 4)
+			continue;
+		loop = 0;
 
 		static bool animate_map; animate_map = !animate_map;
 		if (animate_map)

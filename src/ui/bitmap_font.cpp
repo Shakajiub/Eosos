@@ -111,7 +111,6 @@ void BitmapFont::render_text(int16_t xpos, int16_t ypos, const std::string &text
 			}
 		}
 	}
-	const uint8_t original_x = (uint8_t)xpos;
 	const uint16_t screen_x = xpos; xpos = 0;
 	const uint16_t screen_y = ypos; ypos = 0;
 

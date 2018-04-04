@@ -35,6 +35,8 @@ bool AbilitySleep::init()
 {
 	if (init_texture("ui/icon/sleep.png", DAWN_MIDNIGHT))
 		ability_name = "sleep";
+
+	return true;
 }
 void AbilitySleep::apply(Hero *hero, bool cancel)
 {

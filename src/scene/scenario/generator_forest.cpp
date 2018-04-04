@@ -234,7 +234,7 @@ void GeneratorForest::next_turn(Level *level)
 			peon = true;
 			if (current_depth < 4)
 			{
-				Actor *hero = engine.get_actor_manager()->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "actor/orc_peon.png");
+				engine.get_actor_manager()->spawn_actor(level, ACTOR_HERO, base_pos.first, base_pos.second, "actor/orc_peon.png");
 				if (current_depth > 1)
 					ui.spawn_message_box("", "A new Peon has joined the party");
 			}

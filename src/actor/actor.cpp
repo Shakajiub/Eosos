@@ -550,7 +550,7 @@ void Actor::attack(Actor *other)
 		ml->add_message("The " + name + " kills the " + other->name + "! (%6" + std::to_string(damage) + "%F damage)");
 
 		experience += other->combat_level;
-		//if (experience >= combat_level * 10)
+		if (experience >= combat_level * 10)
 		{
 			set_status(STATUS_LEVELUP);
 			add_ability("level-up");

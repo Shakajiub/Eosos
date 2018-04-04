@@ -33,7 +33,9 @@ Options options;
 
 Options::Options()
 {
-
+	default_b = false;
+	default_i = 0;
+	default_s = "error";
 }
 Options::~Options()
 {
@@ -86,7 +88,7 @@ bool Options::load()
 	{
 		if (line[0] == '[') // Lines starting with a square bracket declare a category
 		{
-			category = line.substr(1, line.length() - 3); // -3 for Windows-style line endings
+			category = line.substr(1, line.length() - 2); // -3 for Windows-style line endings?
 		}
 		else if (line[0] != '\n' && line[0] != ';') // Other lines define the options
 		{
@@ -161,7 +163,7 @@ const bool& Options::get_b(const std::string &option)
 		return options_b[option];
 
 	logging.cerr(std::string("Could not get option '") + option + "'!", LOG_OPTIONS);
-	return false;
+	return default_b;
 }
 const int16_t& Options::get_i(const std::string &option)
 {
@@ -169,7 +171,7 @@ const int16_t& Options::get_i(const std::string &option)
 		return options_i[option];
 
 	logging.cerr(std::string("Could not get option '") + option + "'!", LOG_OPTIONS);
-	return 0;
+	return default_i;
 }
 const std::string& Options::get_s(const std::string &option)
 {
@@ -177,7 +179,7 @@ const std::string& Options::get_s(const std::string &option)
 		return options_s[option];
 
 	logging.cerr(std::string("Could not get option '") + option + "'!", LOG_OPTIONS);
-	return "error";
+	return default_s;
 }
 void Options::set_b(const std::string &option, const bool &value)
 {

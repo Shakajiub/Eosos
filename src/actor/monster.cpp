@@ -91,7 +91,7 @@ void Monster::death(Level *level)
 }
 void Monster::start_turn()
 {
-	turn_done = false;
+	turn_done = true;
 
 	const uint8_t temp_moves = (mount != nullptr) ? max_moves + 1 : max_moves;
 	moves = std::make_pair(temp_moves, temp_moves);
@@ -109,7 +109,9 @@ bool Monster::take_turn(Level *level)
 		if (moves.first > 0)
 			turn_done = false;
 	}
-	if (action_queue.empty())
+	else return false;
+
+	if (!turn_done && action_queue.empty())
 	{
 		if (moves.first > 0 && has_ability("shoot"))
 		{

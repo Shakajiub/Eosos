@@ -42,6 +42,10 @@ bool Engine::init()
 	//    Initialize core SDL
 	//
 
+	#ifdef _WIN32
+		SDL_SetMainReady();
+	#endif
+
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
 	{
 		std::cerr << "SDL could not initialize! SDL Error: " << SDL_GetError() << std::endl;

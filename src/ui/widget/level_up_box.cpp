@@ -201,7 +201,7 @@ bool LevelUpBox::input_keyboard_down(SDL_Keycode key)
 			mouse_input = false;
 			break;
 		case SDLK_RIGHT: case SDLK_KP_6: case SDLK_l:
-			if (selected_option < level_options.size() - 1)
+			if (selected_option < (int8_t)level_options.size() - 1)
 				selected_option += 1;
 			else selected_option = 0;
 			mouse_input = false;
@@ -215,10 +215,10 @@ bool LevelUpBox::input_keyboard_down(SDL_Keycode key)
 			break;
 		default: input = false; break;
 	}
-	if (!mouse_input && prev_option >= 0 && prev_option < level_options.size())
+	if (!mouse_input && prev_option >= 0 && prev_option < (int8_t)level_options.size())
 		level_options[prev_option].overlap = false;
 
-	if (!mouse_input && selected_option >= 0 && selected_option < level_options.size())
+	if (!mouse_input && selected_option >= 0 && selected_option < (int8_t)level_options.size())
 		level_options[selected_option].overlap = true;
 
 	return input;

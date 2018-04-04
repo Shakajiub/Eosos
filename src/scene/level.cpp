@@ -309,7 +309,7 @@ void Level::init_map_texture()
 void Level::refresh_map_texture(bool animated_only)
 {
 	SDL_SetRenderTarget(engine.get_renderer(), map_texture);
-	SDL_Rect default_rect = { 0, 0, 16, 16 };
+	//SDL_Rect default_rect = { 0, 0, 16, 16 };
 
 	//Texture *grass = engine.get_texture_manager()->load_texture("level/decor/grass.png");
 	for (uint8_t y = 0; y < map_height; y++)
@@ -346,7 +346,7 @@ void Level::load_neighbor_rules()
 	std::ifstream rules_file(engine.get_base_path() + "texture/level/rules.txt");
 	if (rules_file.is_open())
 	{
-		uint8_t line_num;
+		uint8_t line_num = 0;
 		std::string line;
 		std::string prefix;
 

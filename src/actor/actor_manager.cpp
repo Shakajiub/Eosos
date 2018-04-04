@@ -361,7 +361,6 @@ void ActorManager::delete_actor(Level *level, Actor *actor)
 	if (level == nullptr || actor == nullptr)
 		return;
 
-	bool victory = false;
 	if (actor->get_actor_type() == ACTOR_MONSTER)
 	{
 		MonsterClass mc = dynamic_cast<Monster*>(actor)->get_monster_class();

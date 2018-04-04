@@ -208,8 +208,6 @@ void AStar::step()
 	if (path.size() == 0)
 		return;
 
-	const uint8_t current_x = goto_x;
-	const uint8_t current_y = goto_y;
 	path.pop_back();
 
 	if (path.size() == 0)

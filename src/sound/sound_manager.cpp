@@ -104,7 +104,7 @@ void SoundManager::skip_song(uint16_t ms)
 		prev_song = next_song;
 
 		next_song += 1;
-		if (next_song >= playlists[current_playlist].size())
+		if (next_song >= (int8_t)playlists[current_playlist].size())
 			next_song = 0;
 	}
 	silence_timer = ms + 500;

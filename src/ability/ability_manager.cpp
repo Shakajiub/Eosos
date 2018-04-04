@@ -40,12 +40,12 @@ AbilityManager::~AbilityManager()
 }
 void AbilityManager::free()
 {
-	for (uint8_t i = 0; i < abilities.size(); i++)
+	for (uint8_t i = 0; i < loaded_abilities.size(); i++)
 	{
-		if (abilities[i] != nullptr)
-			delete abilities[i];
+		if (loaded_abilities[i] != nullptr)
+			delete loaded_abilities[i];
 	}
-	abilities.clear();
+	loaded_abilities.clear();
 }
 void AbilityManager::render_ui(Hero *hero) const
 {
@@ -57,7 +57,7 @@ void AbilityManager::render_ui(Hero *hero) const
 		const uint16_t xpos = camera.get_cam_w() - 48;
 		uint16_t ypos = 48;
 
-		for (auto *a : abilities)
+		for (auto *a : loaded_abilities)
 		{
 			if (hero->has_ability(a->get_ability_name()))
 			{
@@ -69,7 +69,7 @@ void AbilityManager::render_ui(Hero *hero) const
 }
 void AbilityManager::load_ability(const std::string &ability)
 {
-	for (auto *a : abilities)
+	for (Ability *a : loaded_abilities)
 	{
 		if (a->get_ability_name() == ability)
 			return;
@@ -94,13 +94,13 @@ void AbilityManager::load_ability(const std::string &ability)
 	if (new_ability != nullptr)
 	{
 		if (new_ability->init())
-			abilities.push_back(new_ability);
+			loaded_abilities.push_back(new_ability);
 		else delete new_ability;
 	}
 }
 void AbilityManager::clear(Hero *hero)
 {
-	for (Ability *a : abilities)
+	for (Ability *a : loaded_abilities)
 		a->clear(hero);
 }
 bool AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
@@ -111,7 +111,7 @@ bool AbilityManager::input_keyboard_down(Hero *hero, SDL_Keycode key)
 		SDLK_1, SDLK_2, SDLK_3, SDLK_4, SDLK_5, SDLK_6, SDLK_7, SDLK_8, SDLK_9, SDLK_0
 	};
 	uint8_t i = 0;
-	for (auto *a : abilities)
+	for (Ability *a : loaded_abilities)
 	{
 		if (hero->has_ability(a->get_ability_name()))
 		{
@@ -132,7 +132,7 @@ bool AbilityManager::get_overlap(Hero *hero, int16_t mouse_x, int16_t mouse_y) c
 	uint16_t ypos = 48;
 	bool overlap = false;
 
-	for (Ability *a : abilities)
+	for (Ability *a : loaded_abilities)
 	{
 		if (!hero->has_ability(a->get_ability_name()))
 			continue;
@@ -152,7 +152,7 @@ bool AbilityManager::get_click(Hero *hero, int16_t mouse_x, int16_t mouse_y) con
 	const uint16_t xpos = camera.get_cam_w() - 48;
 	uint16_t ypos = 48;
 
-	for (Ability *a : abilities)
+	for (Ability *a : loaded_abilities)
 	{
 		if (!hero->has_ability(a->get_ability_name()))
 			continue;

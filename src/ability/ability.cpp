@@ -49,7 +49,7 @@ void Ability::render(uint16_t xpos, uint16_t ypos, SDL_Keycode key) const
 		const SDL_Rect quad = { xpos, ypos, 48, 48 };
 
 		std::string hotkey_name = " ";
-		if (key != NULL)
+		if (key != 0)
 			hotkey_name = SDL_GetKeyName(key);
 
 		SDL_RenderCopyEx(engine.get_renderer(), ability_texture, &rect, &quad, 0.0, nullptr, SDL_FLIP_NONE);

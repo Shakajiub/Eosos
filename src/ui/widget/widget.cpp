@@ -28,23 +28,23 @@ Widget::~Widget()
 }
 bool Widget::input_keyboard_down(SDL_Keycode key)
 {
-
+	return false;
 }
 bool Widget::input_mouse_button_down(SDL_Event eve)
 {
-
+	return false;
 }
 bool Widget::input_joy_button_down(uint8_t index, uint8_t value)
 {
-
+	return false;
 }
 bool Widget::input_joy_hat_motion(uint8_t index, uint8_t value)
 {
-
+	return false;
 }
 bool Widget::input_text(const std::string &input)
 {
-
+	return false;
 }
 bool Widget::get_overlap(int16_t mouse_x, int16_t mouse_y)
 {

@@ -76,7 +76,7 @@ void UI::free()
 		delete mb;
 	}
 	widget_map.clear();
-	logging.cout("All widgets erased", LOG_UI);
+	//logging.cout("All widgets erased", LOG_UI);
 }
 void UI::update()
 {

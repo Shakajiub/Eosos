@@ -23,6 +23,8 @@ class Level;
 class Generator
 {
 public:
+	virtual ~Generator() { };
+
 	virtual void free() = 0;
 	virtual void init() = 0;
 	virtual void render_ui() = 0;

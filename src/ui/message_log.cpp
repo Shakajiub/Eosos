@@ -137,7 +137,7 @@ void MessageLog::refresh_texture()
 	SDL_RenderClear(engine.get_renderer());
 	SDL_SetRenderDrawColor(engine.get_renderer(), 20, 12, 28, 255);
 
-	const uint8_t real_width = (width * 32) - 32;
+	//const uint8_t real_width = (width * 32) - 32;
 	const uint8_t real_height = (height * 32) - 32;
 
 	if (message_log.size() != 0)

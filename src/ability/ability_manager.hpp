@@ -40,7 +40,7 @@ public:
 	bool get_click(Hero *hero, int16_t mouse_x, int16_t mouse_y) const;
 
 private:
-	std::vector<Ability*> abilities;
+	std::vector<Ability*> loaded_abilities;
 };
 
 #endif // ABILITY_MANAGER_HPP
